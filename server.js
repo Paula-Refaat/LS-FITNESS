@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
@@ -10,15 +11,16 @@ dotenv.config({ path: "config.env" });
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
 const globalError = require("./middlewares/errorMiddleware");
+const mountRoute = require("./routes");
 
-const authRoute = require("./routes/authRoute");
+// const authRoute = require("./routes/authRoute");
 
 dbConnection();
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(express.static(path.join(__dirname, "uploads")));
 //enable other domains access your application
 app.use(
   cors({
@@ -32,14 +34,14 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`mode: ${process.env.NODE_ENV}`);
 }
-// Configure multer to handle form-data (optional storage)
-const upload = multer();
+// // Configure multer to handle form-data (optional storage)
+// const upload = multer();
 
 // Mount Routes with multer middleware for form-data
-app.use("/api/v1/auth", upload.none(), authRoute);
+// app.use("/api/v1/auth", upload.none(), authRoute);
 
 //Mount Routes
-// app.use("/api/v1/auth", authRoute);
+mountRoute(app);
 
 // Initialize Passport
 app.use(passport.initialize());

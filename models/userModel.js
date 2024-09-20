@@ -64,4 +64,22 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+const setProfileImageURL = (doc) => {
+  //return image base url + iamge name
+  if (doc.profileImg) {
+    const URL = `${process.env.BASE_URL}/users/${doc.profileImg}`;
+    doc.profileImg = URL;
+  }
+};
+//after initializ the doc in db
+// check if the document contains image
+// it work with findOne,findAll,update
+userSchema.post("init", (doc) => {
+  setProfileImageURL(doc);
+});
+// it work with create
+userSchema.post("save", (doc) => {
+  setProfileImageURL(doc);
+});
+
 module.exports = mongoose.model("User", userSchema);

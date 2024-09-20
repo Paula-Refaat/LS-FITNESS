@@ -8,7 +8,7 @@ const {
   forgotPassword,
   verifyPassResetCode,
   resetPassword,
-} = require("../services/authServices");
+} = require("../../services/authServices");
 
 const {
   signupValidator,
@@ -16,8 +16,7 @@ const {
   forgotPasswordValidator,
   verifyPassResetCodeValidator,
   resetPasswordValidator,
-} = require("../utils/validators/authValidator");
-
+} = require("../../utils/validators/authValidator");
 
 // Create a limiter for login requests
 const loginLimiter = rateLimit({
@@ -34,7 +33,6 @@ const forgotPasswordLimiter = rateLimit({
 });
 
 const router = express.Router();
-
 
 // Route to start the Google authentication process
 router.get(
