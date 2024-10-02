@@ -204,10 +204,12 @@ exports.updateLoggedUserValidator = [
     .isIn(["male", "female"])
     .withMessage("gender must be male or female"),
 
-  //   check("location")
-  //     .optional()
-  //     .isString()
-  //     .withMessage("location must be a text"),
+  check("age")
+    .optional()
+    .isNumeric()
+    .withMessage("age must be a number")
+    .isInt({ min: 14, max: 99 })
+    .withMessage("age must be between 14 and 99"),
   validatorMiddleware,
 ];
 exports.changeLoggedUserPasswordValidator = [
