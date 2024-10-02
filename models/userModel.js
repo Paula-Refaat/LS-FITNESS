@@ -8,18 +8,6 @@ const userSchema = new mongoose.Schema({
     required: [true, "Name required"],
     minLength: [3, "Too short user name"],
   },
-  google: {
-    id: String,
-    email: String,
-  },
-  facebook: { // Add Facebook fields
-    id: String,
-    email: String,
-  },
-  slug: {
-    type: String,
-    lowercase: true,
-  },
   email: {
     type: String,
     required: [true, "Email Required"],
@@ -36,16 +24,28 @@ const userSchema = new mongoose.Schema({
     ],
     minlength: [8, "Too short Password"],
   },
+  phone: String,
+  profileImg: String,
+
+  google: {
+    id: String,
+    email: String,
+  },
+  facebook: {
+    // Add Facebook fields
+    id: String,
+    email: String,
+  },
+  slug: {
+    type: String,
+    lowercase: true,
+  },
+
   isOAuthUser: {
     type: Boolean,
     default: false,
   },
-  passwordChangedAt: Date,
-  passwordResetCode: String,
-  passwordResetExpires: Date,
-  passwordResetVerified: Boolean,
-  phone: String,
-  profileImg: String,
+
   role: {
     type: String,
     enum: ["user", "admin"],
@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  passwordChangedAt: Date,
+  passwordResetCode: String,
+  passwordResetExpires: Date,
+  passwordResetVerified: Boolean,
 });
 
 userSchema.pre("save", async function (next) {
