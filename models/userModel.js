@@ -24,7 +24,16 @@ const userSchema = new mongoose.Schema({
     ],
     minlength: [8, "Too short Password"],
   },
-  phone: String,
+  phone: {
+    type: String,
+    unique: true,
+    required: [true, "Phone number required"],
+  },
+  gender: {
+    type:String,
+    enum:["male","female"],
+    lowercase:true
+  },
   profileImg: String,
 
   google: {
