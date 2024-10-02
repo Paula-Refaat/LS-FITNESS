@@ -181,9 +181,28 @@ exports.updateLoggedUserValidator = [
   check("phone")
     .optional()
     .isMobilePhone(phonenumberformate())
-    .withMessage("Phone number must be a real phone number"),
+    .withMessage("Phone number must be a real phone number")
+    .custom((val, { req }) =>
+      User.findOne({ phone: val }).then((user) => {
+        if (user) {
+          if (user._id.toString() === req.user._id.toString()) {
+            return true;
+          } else {
+            throw new Error(
+              "This phone already exists and must to be a unique"
+            );
+          }
+        }
+      })
+    ),
 
-  //   check("gender").optional().isString().withMessage("gender must be a text"),
+  check("gender")
+    .optional()
+    .isString()
+    .withMessage("gender must be a text")
+    .toLowerCase()
+    .isIn(["male", "female"])
+    .withMessage("gender must be male or female"),
 
   //   check("location")
   //     .optional()

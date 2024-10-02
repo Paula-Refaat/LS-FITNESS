@@ -2,7 +2,7 @@ const { check } = require("express-validator");
 const slugify = require("slugify");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const User = require("../../models/userModel");
-const verifyEmailWithMailboxlayer = require("../verifyEmail");
+const phonenumberformate = require("../PhoneNumberFormate");
 
 exports.signupValidator = [
   check("username")
@@ -18,13 +18,13 @@ exports.signupValidator = [
     .isEmail()
     .withMessage("invalid email address")
     .toLowerCase()
-    .custom((val) => 
+    .custom((val) =>
       User.findOne({ email: val }).then((email) => {
         if (email) {
           throw new Error("E-mail already exists");
         }
-    })
-  ),
+      })
+    ),
   check("password")
     .notEmpty()
     .withMessage("Password Required")
@@ -40,6 +40,18 @@ exports.signupValidator = [
       }
       return true;
     }),
+  check("phone")
+    .notEmpty()
+    .withMessage("phone Required")
+    .isMobilePhone(phonenumberformate())
+    .withMessage("Phone number must be a real phone number")
+    .custom((val) =>
+      User.findOne({ phone: val }).then((phone) => {
+        if (phone) {
+          throw new Error("This phone already exists and must to be a unique");
+        }
+      })
+    ),
   validatorMiddleware,
 ];
 
@@ -87,7 +99,7 @@ exports.resetPasswordValidator = [
     .withMessage("new Password required")
     .isLength({ min: 8 })
     .withMessage("Too short password"),
-    check("newPasswordConfirm")
+  check("newPasswordConfirm")
     .notEmpty()
     .withMessage("new confirm Password required")
     .custom((val, { req }) => {
