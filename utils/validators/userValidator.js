@@ -210,6 +210,49 @@ exports.updateLoggedUserValidator = [
     .withMessage("age must be a number")
     .isInt({ min: 14, max: 99 })
     .withMessage("age must be between 14 and 99"),
+  check("length")
+    .trim()
+    .optional()
+    .customSanitizer((value) => value.replace(/\s+/g, " ")) // Replace multiple whitespaces with a single space
+    .customSanitizer((value) =>
+      value.replace(
+        /(\d+)\s*(cm|ft)$/i,
+        (match, number, unit) => `${number}${unit.toUpperCase()}`
+      )
+    ) // Remove any whitespace between number and unit and convert unit to uppercase
+    .matches(/^\d+(CM|FT)$/) // Validate length contains a number followed by "CM" or "FT" without any space
+    .withMessage(
+      "length must contain a number followed by either 'CM' or 'FT' (e.g., '155CM' or '60 FT')."
+    ),
+  check("weight")
+    .trim()
+    .optional()
+    .customSanitizer((value) => value.replace(/\s+/g, " ")) // Replace multiple whitespaces with a single space
+    .customSanitizer((value) =>
+      value.replace(
+        /(\d+)\s*(lb|kg)$/i,
+        (match, number, unit) => `${number}${unit.toUpperCase()}`
+      )
+    ) // Remove any whitespace between number and unit and convert unit to uppercase
+    .matches(/^\d+(LB|KG)$/) // Validate length contains a number followed by "CM" or "FT" without any space
+    .withMessage(
+      "weight must contain a number followed by either 'LB' or 'KG' (e.g., '155KG' or '60 LB')."
+    ),
+
+  check("targetWeight")
+    .trim()
+    .optional()
+    .customSanitizer((value) => value.replace(/\s+/g, " ")) // Replace multiple whitespaces with a single space
+    .customSanitizer((value) =>
+      value.replace(
+        /(\d+)\s*(lb|kg)$/i,
+        (match, number, unit) => `${number}${unit.toUpperCase()}`
+      )
+    ) // Remove any whitespace between number and unit and convert unit to uppercase
+    .matches(/^\d+(LB|KG)$/) // Validate length contains a number followed by "CM" or "FT" without any space
+    .withMessage(
+      "target weight must contain a number followed by either 'LB' or 'KG' (e.g., '155KG' or '60 LB')."
+    ),
   validatorMiddleware,
 ];
 exports.changeLoggedUserPasswordValidator = [
