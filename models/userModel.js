@@ -40,6 +40,15 @@ const userSchema = new mongoose.Schema(
       min: 14,
       max: 99,
     },
+    length: {
+      type: String,
+    },
+    weight: {
+      type: String,
+    },
+    targetWeight: {
+      type: String,
+    },
     profileImg: String,
 
     google: {
