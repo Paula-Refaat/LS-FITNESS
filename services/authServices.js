@@ -147,9 +147,18 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
     return next(new ApiError("Incorrect email or password", 401));
   }
-
+  login_Response = {
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    isOAuthUser: user.isOAuthUser,
+    role: user.role,
+    active: user.active,
+    updatedAt: user.updatedAt,
+    createdAt: user.createdAt,
+  };
   const token = createToken(user._id);
-  res.status(200).json({ data: user, token });
+  res.status(200).json({ data: login_Response, token });
 });
 
 // @desc  make sure the user is logged in
