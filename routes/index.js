@@ -4,6 +4,7 @@ const userRoute = require("./apis/userRoute");
 const categoryRoute = require("./apis/categoryRoute");
 const bodyPartRoute = require("./apis/bodyPartRoute");
 const exerciseRoute = require("./apis/exerciseRoute");
+const mealsCalculationRoute = require("./apis/mealsCalculationRoute");
 
 const mountRoute = (app) => {
   // Configure multer to handle form-data (optional storage)
@@ -15,6 +16,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/categories", upload.none(), categoryRoute);
   app.use("/api/v1/bodyParts", upload.none(), bodyPartRoute);
   app.use("/api/v1/exercises", upload.none(), exerciseRoute);
+  app.use("/api/v1/mealsCalculation", upload.none(), mealsCalculationRoute);
 };
 
 module.exports = mountRoute;
