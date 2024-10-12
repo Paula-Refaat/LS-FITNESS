@@ -35,6 +35,7 @@ const upload = multer();
 router.get("/getMe", authServices.protect, getLoggedUserData, getUser);
 // router.delete("/deleteMe", authServices.protect, deleteLoggedUser);
 // router.put("/activeMe", authServices.protect, activeLoggedUser);
+
 router.put(
   "/changeMyPassword",
   authServices.protect,
@@ -47,6 +48,14 @@ router.put(
   authServices.protect,
   uploadProfileImage,
   resizeImage,
+  updateLoggedUserValidator,
+  updateLoggedUserData
+);
+router.post(
+  "/MyGoals",
+  authServices.protect,
+  authServices.protect,
+  uploadProfileImage,
   updateLoggedUserValidator,
   updateLoggedUserData
 );
