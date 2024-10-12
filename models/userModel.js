@@ -96,7 +96,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-
 const setProfileImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.profileImg) {
@@ -125,6 +124,16 @@ userSchema.methods.toJSON = function () {
   delete obj.passwordResetExpires;
   delete obj.password;
   delete obj.__v;
+  delete obj.createdAt;
+  delete obj.updatedAt;
+
+  // Setting optional user fields to null if they don't exist
+  obj.age = obj.age || null;
+  obj.gender = obj.gender || null;
+  obj.length = obj.length || null;
+  obj.weight = obj.weight || null;
+  obj.targetWeight = obj.targetWeight || null;
+  obj.profileImg = obj.profileImg || null;
 
   return obj;
 };

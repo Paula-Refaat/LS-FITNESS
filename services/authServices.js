@@ -11,6 +11,8 @@ const sendEmail = require("../utils/sendEmail");
 const createToken = require("../utils/createToken");
 
 const User = require("../models/userModel");
+const { LoginResponseDTO } = require("../utils/dtos/LoginResponseDTO");
+const { RegisterResponseDTO } = require("../utils/dtos/RegisterResponseDTO");
 
 // @desc    User Register,login with Google
 // @route   POST /api/v1/auth/google
@@ -134,31 +136,38 @@ exports.signup = asyncHandler(async (req, res, next) => {
     password: req.body.password,
     phone: req.body.phone,
   });
+  const signupResponse = new RegisterResponseDTO(user);
   // 2- Creat token
   const token = createToken(user._id);
-  res.status(201).json({ data: user, token });
+  res.status(201).json({ data: signupResponse, token });
 });
 
 // @desc    User Login
 // @route   POST /api/v1/auth/login
 // @access  Public
 exports.login = asyncHandler(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-  if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
+  const { email, password } = req.body;
+
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
     return next(new ApiError("Incorrect email or password", 401));
   }
-  login_Response = {
-    _id: user._id,
-    username: user.username,
-    email: user.email,
-    isOAuthUser: user.isOAuthUser,
-    role: user.role,
-    active: user.active,
-    updatedAt: user.updatedAt,
-    createdAt: user.createdAt,
-  };
+
+  // Compare password asynchronously
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    return next(new ApiError("Incorrect email or password", 401));
+  }
+
+  // Prepare login response
+  const loginResponse = new LoginResponseDTO(user);
+
+  // Create JWT token
   const token = createToken(user._id);
-  res.status(200).json({ data: login_Response, token });
+
+  // Send response
+  res.status(200).json({ data: loginResponse, token });
 });
 
 // @desc  make sure the user is logged in
@@ -208,12 +217,14 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     .update(resetCode)
     .digest("hex");
 
-  // Save hashedRestCode in db
-  user.passwordResetCode = hashResetCode;
-  user.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-  user.passwordResetVerified = false;
+  const updateFields = {
+    passwordResetCode: hashResetCode,
+    passwordResetExpires: Date.now() + 10 * 60 * 1000,
+    passwordResetVerified: false,
+  };
 
-  await user.save();
+  //  Update user with the reset code and expiration time
+  await User.updateOne({ email: req.body.email }, updateFields);
 
   const message = `Hi ${user.username},
    \n We received a request to reset the passwrd on your Flare Account .
@@ -229,11 +240,14 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
       message,
     });
   } catch (err) {
-    user.passwordResetCode = undefined;
-    user.passwordResetExpires = undefined;
-    user.passwordResetVerified = undefined;
-
-    await user.save();
+    await user.updateOne(
+      { email: req.body.email },
+      {
+        passwordResetCode: undefined,
+        passwordResetExpires: undefined,
+        passwordResetVerified: undefined,
+      }
+    );
     return next(new ApiError("There is an error in sending email", 500));
   }
   res
@@ -260,8 +274,7 @@ exports.verifyPassResetCode = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Reset Code invalid or expired", 422));
   }
   //2) resetcode valid
-  user.passwordResetVerified = true;
-  await user.save();
+  await User.updateOne({ _id: user._id }, { passwordResetVerified: true });
 
   res.status(200).json({
     status: "success",
@@ -281,12 +294,18 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   if (!user.passwordResetVerified) {
     return next(new ApiError("Reset code not verified", 400));
   }
-  user.password = req.body.newPassword;
-  user.passwordResetCode = undefined;
-  user.passwordResetExpires = undefined;
-  user.passwordResetVerified = undefined;
-
-  await user.save();
+  await user.updateOne(
+    { _id: user._id },
+    {
+      password: req.body.password,
+      passwordResetCode: undefined,
+      passwordResetExpires: undefined,
+      passwordResetVerified: undefined,
+    },
+    {
+      new: true,
+    }
+  );
 
   //3) if every thing is okay, generate token
   const token = createToken(user._id);

@@ -144,7 +144,7 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   delete req.body.password;
   delete req.body.role;
-//   delete req.body.email;
+  //   delete req.body.email;
   delete req.body.isOAuthUser;
   delete req.body.emailVerified;
   delete req.body.active;
