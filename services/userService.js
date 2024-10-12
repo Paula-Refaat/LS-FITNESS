@@ -138,20 +138,37 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: user, token });
 });
 
-//@desc update logged user data without updating password or role or email
+//@desc update logged user data without updating password, role, email, or sensitive fields
 //@route PUT /api/v1/user/changeMyData
 //@access private/protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
+  // Remove fields that shouldn't be updated
   delete req.body.password;
   delete req.body.role;
-  //   delete req.body.email;
   delete req.body.isOAuthUser;
   delete req.body.emailVerified;
   delete req.body.active;
 
+  // Update the user's data
   const user = await User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
   });
+
+  // Create the MyGoals response object
+  let myGoalsResponse = {
+    age: user.age || null,
+    gender: user.gender || null,
+    length: user.length || null,
+    weight: user.weight || null,
+    targetWeight: user.targetWeight || null,
+  };
+
+  // If the request is for MyGoals, send the MyGoals response and return
+  if (req.url.includes("/MyGoals")) {
+    return res.status(200).json({ data: myGoalsResponse });
+  }
+
+  // Otherwise, send the updated user data
   res.status(200).json({ data: user });
 });
 
