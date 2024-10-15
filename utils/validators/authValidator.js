@@ -91,7 +91,7 @@ exports.verifyPassResetCodeValidator = [
 exports.resetPasswordValidator = [
   check("email")
     .notEmpty()
-    .withMessage("Email Reauired")
+    .withMessage("Email Required")
     .isEmail()
     .withMessage("Please enter a valid email address"),
   check("newPassword")

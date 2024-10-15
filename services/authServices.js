@@ -288,26 +288,34 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   if (!user) {
     return next(
-      new ApiError(`No user for this email : ${req.body.email}`, 404)
+      new ApiError(`No user found for this email: ${req.body.email}`, 404)
     );
   }
+
   if (!user.passwordResetVerified) {
     return next(new ApiError("Reset code not verified", 400));
   }
-  await user.updateOne(
-    { _id: user._id },
+
+  // Hash the new password before updating
+  const hashedPassword = await bcrypt.hash(req.body.password, 12);
+
+  // Update the user with the hashed password using `findByIdAndUpdate`
+  const updatedUser = await User.findByIdAndUpdate(
+    user._id,
     {
-      password: req.body.password,
+      password: hashedPassword,
       passwordResetCode: undefined,
       passwordResetExpires: undefined,
       passwordResetVerified: undefined,
     },
-    {
-      new: true,
-    }
+    { new: true } // This returns the updated user document
   );
 
-  //3) if every thing is okay, generate token
-  const token = createToken(user._id);
-  res.status(200).json({ token });
+  // If the password is successfully updated, generate a token
+  if (updatedUser) {
+    const token = createToken(user._id);
+    res.status(200).json({ token });
+  } else {
+    return next(new ApiError("Password update failed", 500));
+  }
 });
