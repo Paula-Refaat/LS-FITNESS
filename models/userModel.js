@@ -116,25 +116,39 @@ userSchema.post("save", (doc) => {
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
 
+  // Helper function to delete sensitive fields
+  const deleteFields = (fields) => {
+    fields.forEach((field) => delete obj[field]);
+  };
+
   // Removing sensitive fields from the object
-  delete obj.emailVerifyCode;
-  delete obj.emailVerifyExpires;
-  delete obj.passwordChangedAt;
-  delete obj.passwordResetCode;
-  delete obj.passwordResetExpires;
-  delete obj.password;
-  delete obj.__v;
-  delete obj.createdAt;
-  delete obj.updatedAt;
+  deleteFields([
+    "emailVerifyCode",
+    "emailVerifyExpires",
+    "passwordChangedAt",
+    "passwordResetCode",
+    "passwordResetExpires",
+    "password",
+    "__v",
+    "createdAt",
+    "updatedAt",
+  ]);
 
   // Setting optional user fields to null if they don't exist
-  obj.age = obj.age || null;
-  obj.gender = obj.gender || null;
-  obj.length = obj.length || null;
-  obj.weight = obj.weight || null;
-  obj.targetWeight = obj.targetWeight || null;
-  obj.profileImg = obj.profileImg || null;
+  const optionalFields = [
+    "age",
+    "gender",
+    "length",
+    "weight",
+    "targetWeight",
+    "profileImg",
+  ];
+
+  optionalFields.forEach((field) => {
+    obj[field] = obj[field] || null;
+  });
 
   return obj;
 };
+
 module.exports = mongoose.model("User", userSchema);

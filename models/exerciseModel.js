@@ -59,21 +59,21 @@ exerciseSchema.pre(/^find/, function (next) {
   next();
 });
 
-exerciseSchema.methods.toJSON = function () {
-  const obj = this.toObject();
+// exerciseSchema.methods.toJSON = function () {
+//   const obj = this.toObject();
 
-  // Create a copy of the object to safely remove videoUrl
-  const { videoUrl, ...responseWithoutVideoUrl } = obj;
-  const data = {
-    ...responseWithoutVideoUrl,
-    video: {
-      url: videoUrl,
-      public_id: videoUrl.split("/").pop(),
-    },
-  };
+//   // Create a copy of the object to safely remove videoUrl
+//   const { videoUrl, ...responseWithoutVideoUrl } = obj;
+//   const data = {
+//     ...responseWithoutVideoUrl,
+//     video: {
+//       url: videoUrl,
+//       public_id: videoUrl.split("/").pop(),
+//     },
+//   };
 
-  return data;
-};
+//   return data;
+// };
 
 //2- create model
 const ExerciseModel = mongoose.model("Exercise", exerciseSchema);
