@@ -18,7 +18,7 @@ exports.makeCalculationValidator = [
   check("quantities")
     .notEmpty()
     .withMessage("quantities required")
-    .isInt({ min: 1 })
+    .isFloat({ min: 1 })
     .withMessage("quantities must be an integer more than 0"),
   validatorMiddleware,
 ];

@@ -14,7 +14,7 @@ const calculateNutritionalValue = (
   }
 
   const expectedNutritionalValue = (reqQ * baseN) / baseQ;
-  return parseFloat(expectedNutritionalValue.toFixed(2)); // return a number with two decimals
+  return parseFloat(expectedNutritionalValue);
 };
 
 module.exports = calculateNutritionalValue;
