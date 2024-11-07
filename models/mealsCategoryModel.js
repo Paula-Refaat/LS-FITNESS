@@ -10,4 +10,4 @@ const mealsCategorySchema = new mongoose.Schema({
     required: [true, "Please provide a title in english"],
   },
 });
-module.exports = mongoose.model("mealCategory", mealsCategorySchema);
+module.exports = mongoose.model("MealCategory", mealsCategorySchema);
