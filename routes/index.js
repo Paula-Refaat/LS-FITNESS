@@ -6,6 +6,8 @@ const bodyPartRoute = require("./apis/bodyPartRoute");
 const exerciseRoute = require("./apis/exerciseRoute");
 const mealsCalculationRoute = require("./apis/mealsCalculationRoute");
 const progressRoute = require("./apis/progressRoute");
+const mealsCategoryRoute = require("./apis/mealsCategoryRoute");
+
 const { getNutritionDetails } = require("../utils/helpers/nutrition");
 
 const mountRoute = (app) => {
@@ -21,6 +23,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/exercises", upload.none(), exerciseRoute);
   app.use("/api/v1/mealsCalculation", upload.none(), mealsCalculationRoute);
   app.use("/api/v1/progress", upload.none(), progressRoute);
+  app.use("/api/v1/mealsCategory", upload.none(), mealsCategoryRoute);
 
   // API endpoint to upload and analyze an image
   app.post("/api/v1/nutrition", upload.single("image"), getNutritionDetails);

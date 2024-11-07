@@ -37,20 +37,47 @@ class ApiFeatures {
     return this;
   }
 
+  // search(modelName) {
+  //   if (this.queryStr.keyword) {
+  //     let query = {};
+  //     if (modelName === "User") {
+  //       query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
+  //     } else if (modelName === "Event") {
+  //       query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
+  //     } else {
+  //       query = {
+  //         title: { $regex: this.queryStr.keyword, $options: "i" },
+  //       };
+  //     }
+  //     this.mongooseeQuery = this.mongooseeQuery.find(query);
+  //   }
+  //   return this;
+  // }
+
   search(modelName) {
     if (this.queryStr.keyword) {
       let query = {};
+
       if (modelName === "User") {
         query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
       } else if (modelName === "Event") {
         query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
+      } else if (modelName === "MealsCategory") {
+        query = {
+          $or: [
+            { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
+            { Title_EN: { $regex: this.queryStr.keyword, $options: "i" } },
+          ],
+        };
       } else {
         query = {
           title: { $regex: this.queryStr.keyword, $options: "i" },
         };
       }
+
       this.mongooseeQuery = this.mongooseeQuery.find(query);
     }
+
     return this;
   }
 
