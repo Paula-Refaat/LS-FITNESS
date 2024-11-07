@@ -4,10 +4,12 @@ const asyncHandler = require("express-async-handler");
 const factory = require("./handllerFactory");
 const calculateNutritionalValue = require("../utils/calculationFormula");
 
-exports.getMealsCalculation = asyncHandler(async (req, res, next) => {
-  const allMealsCalculations = await mealsCalculation.find();
-  res.status(200).json({ data: allMealsCalculations });
-});
+exports.getMealsCalculation = factory.getAll(
+  mealsCalculation,
+  "MealsCalculation"
+);
+
+exports.getSpecificMealCalculation = factory.getOne(mealsCalculation);
 
 exports.calculateMeal = asyncHandler(async (req, res, next) => {
   const { mealId, quantities } = req.body;
@@ -27,27 +29,144 @@ exports.calculateMeal = asyncHandler(async (req, res, next) => {
   try {
     const calculatedNutritionalValues = {
       _id: meal._id,
-      title: meal.title,
+      title_AR: meal.title_AR,
+      title_EN: meal.title_EN,
+      mealCategory: meal.mealCategory,
+      image: meal.image,
       calculationData: {
-        calories: calculateNutritionalValue(
+        Calories: calculateNutritionalValue(
           meal.quantities,
-          meal.calories,
+          meal.Calories,
           quantities
         ),
-        protein: calculateNutritionalValue(
+        Protein: calculateNutritionalValue(
           meal.quantities,
-          meal.proteins,
+          meal.Protein,
           quantities
         ),
-        carbs: calculateNutritionalValue(
+        Carbohydrates: calculateNutritionalValue(
           meal.quantities,
-          meal.carbohydrates,
+          meal.Carbohydrates,
           quantities
         ),
-        fats: calculateNutritionalValue(meal.quantities, meal.fats, quantities),
-        fibers: calculateNutritionalValue(
+        Fats: calculateNutritionalValue(meal.quantities, meal.Fats, quantities),
+        Fiber: calculateNutritionalValue(
           meal.quantities,
-          meal.fibers,
+          meal.Fiber,
+          quantities
+        ),
+        Sugar: calculateNutritionalValue(
+          meal.quantities,
+          meal.Sugar,
+          quantities
+        ),
+        Vitamin_A: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_A,
+          quantities
+        ),
+        Vitamin_B1: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B1,
+          quantities
+        ),
+        Vitamin_B2: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B2,
+          quantities
+        ),
+        Vitamin_B3: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B3,
+          quantities
+        ),
+        Vitamin_B5: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B5,
+          quantities
+        ),
+        Vitamin_B6: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B6,
+          quantities
+        ),
+        Vitamin_B7: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B7,
+          quantities
+        ),
+        Vitamin_B9: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B9,
+          quantities
+        ),
+        Vitamin_B12: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_B12,
+          quantities
+        ),
+        Vitamin_C: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_C,
+          quantities
+        ),
+        Vitamin_D: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_D,
+          quantities
+        ),
+        Vitamin_E: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_E,
+          quantities
+        ),
+        Vitamin_K: calculateNutritionalValue(
+          meal.quantities,
+          meal.Vitamin_K,
+          quantities
+        ),
+        Calcium: calculateNutritionalValue(
+          meal.quantities,
+          meal.Calcium,
+          quantities
+        ),
+        Iron: calculateNutritionalValue(meal.quantities, meal.Iron, quantities),
+        Magnesium: calculateNutritionalValue(
+          meal.quantities,
+          meal.Magnesium,
+          quantities
+        ),
+        Phosphorus: calculateNutritionalValue(
+          meal.quantities,
+          meal.Phosphorus,
+          quantities
+        ),
+        Potassium: calculateNutritionalValue(
+          meal.quantities,
+          meal.Potassium,
+          quantities
+        ),
+        Sodium: calculateNutritionalValue(
+          meal.quantities,
+          meal.Sodium,
+          quantities
+        ),
+        Zinc: calculateNutritionalValue(meal.quantities, meal.Zinc, quantities),
+        Copper: calculateNutritionalValue(
+          meal.quantities,
+          meal.Copper,
+          quantities
+        ),
+
+        Manganese: calculateNutritionalValue(
+          meal.quantities,
+          meal.Manganese,
+          quantities
+        ),
+
+        Selenium: calculateNutritionalValue(
+          meal.quantities,
+          meal.Selenium,
           quantities
         ),
       },
