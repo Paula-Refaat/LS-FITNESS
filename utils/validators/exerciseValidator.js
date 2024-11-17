@@ -1,7 +1,7 @@
 const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Exercise = require("../../models/exerciseModel");
-const Category = require("../../models/categoryModel");
+const DeepAnatomy = require("../../models/deepAnatomyModel");
 const BodyPart = require("../../models/bodyPartModel");
 
 exports.getExerciseValidator = [
@@ -34,15 +34,15 @@ exports.createExerciseValidator = [
         }
       })
     ),
-  check("category")
+  check("deepAnatomy")
     .notEmpty()
-    .withMessage("category required")
+    .withMessage("deepAnatomy required")
     .isMongoId()
-    .withMessage("Invalid category id format")
+    .withMessage("Invalid deepAnatomy id format")
     .custom((val) => {
-      return Category.findById(val).then((category) => {
-        if (!category) {
-          throw new Error(`This ID not related to category`);
+      return DeepAnatomy.findById(val).then((deepAnatomy) => {
+        if (!deepAnatomy) {
+          throw new Error(`This ID not related to deepAnatomy`);
         }
       });
     }),
@@ -115,12 +115,12 @@ exports.updateExerciseValidator = [
         });
       });
     }),
-  check("category")
+  check("deepAnatomy")
     .optional()
     .notEmpty()
-    .withMessage("category required")
+    .withMessage("deepAnatomy required")
     .isMongoId()
-    .withMessage("Invalid category id format"),
+    .withMessage("Invalid deepAnatomy id format"),
   check("bodyPart")
     .optional()
     .notEmpty()

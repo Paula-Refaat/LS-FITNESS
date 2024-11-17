@@ -1,28 +1,28 @@
 // const mongoose = require("mongoose");
 // const asyncHandler = require("express-async-handler");
 // const ApiError = require("../utils/apiError");
-const Category = require("../models/categoryModel");
+const ToolOrMachine = require("../models/toolOrMachineModel");
 const factory = require("./handllerFactory");
 
-//@desc get list of categories
-//@route GET /api/v1/categories
+//@desc get list of ToolOrMachine
+//@route GET /api/v1/ToolOrMachine
 //@access public
-exports.getCategories = factory.getAll(Category, "Category");
+exports.getToolOrMachines = factory.getAll(ToolOrMachine, "ToolOrMachine");
 
-//@desc get specific category by id
-//@route GET /api/v1/categories/:id
+//@desc get specific ToolOrMachine by id
+//@route GET /api/v1/ToolOrMachine/:id
 //@access public
-exports.getCategory = factory.getOne(Category);
+exports.getToolOrMachine = factory.getOne(ToolOrMachine);
 
-//@desc create category
-//@route POST /api/v1/categories
+//@desc create ToolOrMachine
+//@route POST /api/v1/ToolOrMachine
 //@access private
-exports.createCategory = factory.createOne(Category);
+exports.createToolOrMachine = factory.createOne(ToolOrMachine);
 
-//@desc update specific category
-//@route PUT /api/v1/categories/:id
+//@desc update specific ToolOrMachine
+//@route PUT /api/v1/ToolOrMachine/:id
 //@access private
-exports.updateCategory = factory.updateOne(Category);
+exports.updateToolOrMachine = factory.updateOne(ToolOrMachine);
 
 // TODO:
 //@desc delete category

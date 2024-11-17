@@ -1,20 +1,19 @@
 const express = require("express");
 
 const {
-  getCategoryValidator,
-  createCategoryValidator,
-  updateCategoryValidator,
-  // deleteCategoryValidator,
-} = require("../../utils/validators/categoryValidator");
-const {
-  getCategories,
-  createCategory,
-  getCategory,
-  updateCategory,
+  getDeepAnatomy,
+  getDeepAnatomies,
+  createDeepAnatomy,
+  updateDeepAnatomy,
   // deleteCategory,
-} = require("../../services/categoryService");
+} = require("../../services/deepAnatomyService");
 
 const authServices = require("../../services/authServices");
+const {
+  createDeepAnatomyValidator,
+  getDeepAnatomyValidator,
+  updateDeepAnatomyValidator,
+} = require("../../utils/validators/deepAnatomyValidator");
 
 // const serviceRoute = require("./serviceRoute");
 
@@ -27,27 +26,27 @@ router
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin"),
-    getCategories
+    getDeepAnatomies
   )
   .post(
     authServices.protect,
     authServices.allowTo("admin"),
-    createCategoryValidator,
-    createCategory
+    createDeepAnatomyValidator,
+    createDeepAnatomy
   );
 router
   .route("/:id")
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin"),
-    getCategoryValidator,
-    getCategory
+    getDeepAnatomyValidator,
+    getDeepAnatomy
   )
   .put(
     authServices.protect,
     authServices.allowTo("admin"),
-    updateCategoryValidator,
-    updateCategory
+    updateDeepAnatomyValidator,
+    updateDeepAnatomy
   );
 // .delete(
 //   authServices.protect,

@@ -10,9 +10,9 @@ const exerciseSchema = mongoose.Schema(
       minlength: [3, "too short exercise  title "],
       maxlength: [32, "too long exercise title"],
     },
-    category: {
+    deepAnatomy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "DeepAnatomy",
     },
     bodyPart: {
       type: mongoose.Schema.Types.ObjectId,
@@ -52,7 +52,7 @@ const exerciseSchema = mongoose.Schema(
 );
 
 exerciseSchema.pre(/^find/, function (next) {
-  this.populate({ path: "category", select: "title" })
+  this.populate({ path: "deepAnatomy", select: "title" })
     .populate({ path: "bodyPart", select: "title" })
     .sort({ title: 1 }); // Sort by title in ascending order
   // console.log(videoUrl)
