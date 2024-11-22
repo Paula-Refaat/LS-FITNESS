@@ -1,4 +1,3 @@
-const asyncHandler = require("express-async-handler");
 const Exercise = require("../models/exerciseModel");
 const factory = require("./handllerFactory");
 

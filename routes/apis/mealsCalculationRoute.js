@@ -9,9 +9,26 @@ const {
 } = require("../../utils/validators/mealsCalculationValidator");
 
 const router = express.Router();
+const authServices = require("../../services/authServices");
 
-router.get("/", getMealsCalculation);
-router.get("/:id", getSpecificMealCalculation);
-router.post("/calc", makeCalculationValidator, calculateMeal);
+router.get(
+  "/",
+  authServices.protect,
+  authServices.allowTo("user", "admin"),
+  getMealsCalculation
+);
+router.get(
+  "/:id",
+  authServices.protect,
+  authServices.allowTo("user", "admin"),
+  getSpecificMealCalculation
+);
+router.post(
+  "/calc",
+  authServices.protect,
+  authServices.allowTo("user", "admin"),
+  makeCalculationValidator,
+  calculateMeal
+);
 
 module.exports = router;
