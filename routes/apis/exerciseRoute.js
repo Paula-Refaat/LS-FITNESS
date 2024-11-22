@@ -12,6 +12,7 @@ const {
   getExercise,
   updateExercise,
   deleteExercise,
+  filterExercisesBasedOnGender,
 } = require("../../services/exerciseServices");
 
 const authServices = require("../../services/authServices");
@@ -27,6 +28,7 @@ router
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin"),
+    filterExercisesBasedOnGender,
     getExercises
   )
   .post(

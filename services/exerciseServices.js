@@ -1,5 +1,18 @@
+const asyncHandler = require("express-async-handler");
 const Exercise = require("../models/exerciseModel");
 const factory = require("./handllerFactory");
+
+exports.filterExercisesBasedOnGender = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  if (req.user.gender === "male") {
+    req.filterObj.targetGender = "men";
+  } else if (req.user.gender === "female") {
+    req.filterObj.targetGender = "women";
+  }
+  next();
+};
 
 //@desc get list of Exercises
 //@route GET /api/v1/exercises
