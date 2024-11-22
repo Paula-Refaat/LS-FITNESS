@@ -7,28 +7,45 @@ exports.createOne = (Model) =>
     const document = await Model.create(req.body);
     res.status(201).json({ data: document });
   });
-
-exports.getAll = (Model, modelName = "") =>
+exports.getAll = (Model, modelName = "", populationOt) =>
   asyncHandler(async (req, res) => {
     let filter = {};
     if (req.filterObj) {
       filter = req.filterObj;
     }
-    const documentsCounts = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(filter), req.query)
-      .paginate(documentsCounts)
+
+    // Initialize query
+    let query = Model.find(filter);
+    if (populationOt) {
+      query = query.populate(populationOt);
+    }
+
+    // Apply API Features
+    let apiFeatures = new ApiFeatures(query, req.query)
       .filter()
       .search(modelName)
-      .limitFields()
-      .sort();
+      .limitFields();
 
+    // Count documents after applying filters
+    const filteredQuery = apiFeatures.mongooseeQuery;
+    const filteredDocumentsCount = await filteredQuery.clone().countDocuments();
+
+    // Check role status to apply pagination
+    if (req.role === "admin") {
+      apiFeatures = apiFeatures.paginate(filteredDocumentsCount);
+    }
+
+    // Apply sort and execute query
+    apiFeatures.sort();
     const { mongooseeQuery, paginationResult } = apiFeatures;
     const documents = await mongooseeQuery;
 
+    // Respond with the results
     res.status(200).json({
       results: documents.length,
-      totlaCount: documentsCounts,
-      paginationResult,
+      // totalCount: filteredDocumentsCount,
+      paginationResult:
+        req.role === "admin" ? paginationResult : undefined, // Include pagination only for admin
       data: documents,
     });
   });
