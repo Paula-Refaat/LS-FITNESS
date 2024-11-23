@@ -4,14 +4,14 @@ const {
   getBodyPartValidator,
   createBodyPartValidator,
   updateBodyPartValidator,
-  // deleteBodyPartValidator,
+  deleteBodyPartValidator,
 } = require("../../utils/validators/bodyPartValidator");
 const {
   getBodyParts,
   createBodyPart,
   getBodyPart,
   updateBodyPart,
-  // deleteBodyPart,
+  deleteBodyPart,
 } = require("../../services/bodyPartServices");
 
 const authServices = require("../../services/authServices");
@@ -48,12 +48,12 @@ router
     authServices.allowTo("admin"),
     updateBodyPartValidator,
     updateBodyPart
+  )
+  .delete(
+    authServices.protect,
+    authServices.allowTo("admin"),
+    deleteBodyPartValidator,
+    deleteBodyPart
   );
-// .delete(
-//   authServices.protect,
-//   authServices.allowTo("admin"),
-//   deleteBodyPartValidator,
-//   deleteBodyPart
-// );
 
 module.exports = router;
