@@ -84,6 +84,8 @@ exerciseSchema.methods.toJSON = function () {
     },
     Description: null,
     instructions: null,
+    createdAt: "2024-11-23T19:20:13.186Z",
+    updatedAt: "2024-11-23T19:20:13.186Z",
   };
 
   // Merge missing fields with default values

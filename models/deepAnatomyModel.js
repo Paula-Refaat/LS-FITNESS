@@ -13,7 +13,17 @@ const deepAnatomySchema = mongoose.Schema(
   },
   { timestamps: true }
 );
-
+deepAnatomySchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  if (!obj.createdAt) {
+    obj.createdAt = "2024-11-23T19:20:13.186Z";
+  }
+  if (!obj.updatedAt) {
+    obj.updatedAt = "2024-11-23T19:20:13.186Z";
+  }
+  delete obj.__v;
+  return obj;
+};
 //2- create model
 const DeepAnatomyModel = mongoose.model("DeepAnatomy", deepAnatomySchema);
 
