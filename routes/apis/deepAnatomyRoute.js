@@ -5,6 +5,7 @@ const {
   getDeepAnatomies,
   createDeepAnatomy,
   updateDeepAnatomy,
+  deleteDeepAnatomy,
   // deleteCategory,
 } = require("../../services/deepAnatomyService");
 
@@ -13,6 +14,7 @@ const {
   createDeepAnatomyValidator,
   getDeepAnatomyValidator,
   updateDeepAnatomyValidator,
+  deleteDeepAnatomyValidator,
 } = require("../../utils/validators/deepAnatomyValidator");
 
 // const serviceRoute = require("./serviceRoute");
@@ -47,12 +49,12 @@ router
     authServices.allowTo("admin"),
     updateDeepAnatomyValidator,
     updateDeepAnatomy
+  )
+  .delete(
+    authServices.protect,
+    authServices.allowTo("admin"),
+    deleteDeepAnatomyValidator,
+    deleteDeepAnatomy
   );
-// .delete(
-//   authServices.protect,
-//   authServices.allowTo("admin"),
-//   deleteCategoryValidator,
-//   deleteCategory
-// );
 
 module.exports = router;
