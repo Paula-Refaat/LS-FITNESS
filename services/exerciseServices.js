@@ -60,10 +60,6 @@ exports.getThumbnailsFromUrl = async (req, res, next) => {
   }
 };
 
-// // Example Vimeo video URL
-// const vimeoUrl = "https://vimeo.com/1028447848"; // Replace with your Vimeo video URL
-// getThumbnailsFromUrl(vimeoUrl);
-
 //@desc get list of Exercises
 //@route GET /api/v1/exercises
 //@access public
