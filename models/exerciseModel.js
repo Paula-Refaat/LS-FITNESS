@@ -40,9 +40,18 @@ const exerciseSchema = mongoose.Schema(
       required: [true, "targetGender field is required"],
     },
     video: {
-      thumbnail: {},
-      public_id: {},
-      url: {},
+      url: {
+        type: String,
+        required: [true, "video url required"],
+      },
+      public_id: {
+        type: Number,
+        required: [true, "video public_id required"],
+      },
+      thumbnail: {
+        type: String,
+        required: [true, "video thumbnail required"],
+      },
     },
     Description: {
       type: String,
@@ -87,7 +96,8 @@ exerciseSchema.methods.toJSON = function () {
     createdAt: "2024-11-23T19:20:13.186Z",
     updatedAt: "2024-11-23T19:20:13.186Z",
   };
-
+  delete exercise.__v;
+  
   // Merge missing fields with default values
   return { ...defaultFields, ...exercise };
 };

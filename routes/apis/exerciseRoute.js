@@ -13,6 +13,7 @@ const {
   updateExercise,
   deleteExercise,
   filterExercisesBasedOnGender,
+  getThumbnailsFromUrl,
 } = require("../../services/exerciseServices");
 
 const authServices = require("../../services/authServices");
@@ -34,6 +35,7 @@ router
   .post(
     authServices.protect,
     authServices.allowTo("admin"),
+    getThumbnailsFromUrl,
     createExerciseValidator,
     createExercise
   );
@@ -48,6 +50,7 @@ router
   .put(
     authServices.protect,
     authServices.allowTo("admin"),
+    getThumbnailsFromUrl,
     updateExerciseValidator,
     updateExercise
   )
