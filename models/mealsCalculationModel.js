@@ -19,67 +19,70 @@ const createNutrientField = (fieldName) => ({
   max: [10000, validationMessages.maxValue(fieldName, 10000)],
 });
 
-const mealsCalculationSchema = mongoose.Schema({
-  title_AR: {
-    type: String,
-    required: [true, validationMessages.required("Meal Arabic title")],
-    minlength: [3, validationMessages.minLength("Meal Arabic title", 3)],
-    maxlength: [32, validationMessages.maxLength("Meal Arabic title", 32)],
+const mealsCalculationSchema = mongoose.Schema(
+  {
+    title_AR: {
+      type: String,
+      required: [true, validationMessages.required("Meal Arabic title")],
+      minlength: [3, validationMessages.minLength("Meal Arabic title", 3)],
+      maxlength: [32, validationMessages.maxLength("Meal Arabic title", 32)],
+    },
+    title_EN: {
+      type: String,
+      required: [true, validationMessages.required("Meal English title")],
+      minlength: [3, validationMessages.minLength("Meal English title", 3)],
+      maxlength: [32, validationMessages.maxLength("Meal English title", 32)],
+    },
+    mealCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MealCategory",
+      required: [true, validationMessages.required("Meal category")],
+    },
+    image: {
+      type: String,
+    },
+    quantities: {
+      type: Number,
+      required: [true, validationMessages.required("Quantity")],
+      min: [1, validationMessages.minValue("Quantity", 1)],
+      max: [100, validationMessages.maxValue("Quantity", 100)],
+    },
+    Calories: createNutrientField("Calories"),
+    Protein: createNutrientField("Protein"),
+    Carbohydrates: createNutrientField("Carbohydrates"),
+    Fats: createNutrientField("Fats"),
+    Fiber: createNutrientField("Fiber"),
+    Sugar: createNutrientField("Sugar"),
+    Vitamin_A: createNutrientField("Vitamin A"),
+    Vitamin_B1: createNutrientField("Vitamin B1"),
+    Vitamin_B2: createNutrientField("Vitamin B2"),
+    Vitamin_B3: createNutrientField("Vitamin B3"),
+    Vitamin_B5: createNutrientField("Vitamin B5"),
+    Vitamin_B6: createNutrientField("Vitamin B6"),
+    Vitamin_B7: createNutrientField("Vitamin B7"),
+    Vitamin_B9: createNutrientField("Vitamin B9"),
+    Vitamin_B12: createNutrientField("Vitamin B12"),
+    Vitamin_C: createNutrientField("Vitamin C"),
+    Vitamin_D: createNutrientField("Vitamin D"),
+    Vitamin_E: createNutrientField("Vitamin E"),
+    Vitamin_K: createNutrientField("Vitamin K"),
+    Calcium: createNutrientField("Calcium"),
+    Iron: createNutrientField("Iron"),
+    Magnesium: createNutrientField("Magnesium"),
+    Phosphorus: createNutrientField("Phosphorus"),
+    Potassium: createNutrientField("Potassium"),
+    Sodium: createNutrientField("Sodium"),
+    Zinc: createNutrientField("Zinc"),
+    Copper: createNutrientField("Copper"),
+    Manganese: createNutrientField("Manganese"),
+    Selenium: createNutrientField("Selenium"),
   },
-  title_EN: {
-    type: String,
-    required: [true, validationMessages.required("Meal English title")],
-    minlength: [3, validationMessages.minLength("Meal English title", 3)],
-    maxlength: [32, validationMessages.maxLength("Meal English title", 32)],
-  },
-  mealCategory: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "MealCategory",
-    required: [true, validationMessages.required("Meal category")],
-  },
-  image: {
-    type: String,
-  },
-  quantities: {
-    type: Number,
-    required: [true, validationMessages.required("Quantity")],
-    min: [1, validationMessages.minValue("Quantity", 1)],
-    max: [100, validationMessages.maxValue("Quantity", 100)],
-  },
-  Calories: createNutrientField("Calories"),
-  Protein: createNutrientField("Protein"),
-  Carbohydrates: createNutrientField("Carbohydrates"),
-  Fats: createNutrientField("Fats"),
-  Fiber: createNutrientField("Fiber"),
-  Sugar: createNutrientField("Sugar"),
-  Vitamin_A: createNutrientField("Vitamin A"),
-  Vitamin_B1: createNutrientField("Vitamin B1"),
-  Vitamin_B2: createNutrientField("Vitamin B2"),
-  Vitamin_B3: createNutrientField("Vitamin B3"),
-  Vitamin_B5: createNutrientField("Vitamin B5"),
-  Vitamin_B6: createNutrientField("Vitamin B6"),
-  Vitamin_B7: createNutrientField("Vitamin B7"),
-  Vitamin_B9: createNutrientField("Vitamin B9"),
-  Vitamin_B12: createNutrientField("Vitamin B12"),
-  Vitamin_C: createNutrientField("Vitamin C"),
-  Vitamin_D: createNutrientField("Vitamin D"),
-  Vitamin_E: createNutrientField("Vitamin E"),
-  Vitamin_K: createNutrientField("Vitamin K"),
-  Calcium: createNutrientField("Calcium"),
-  Iron: createNutrientField("Iron"),
-  Magnesium: createNutrientField("Magnesium"),
-  Phosphorus: createNutrientField("Phosphorus"),
-  Potassium: createNutrientField("Potassium"),
-  Sodium: createNutrientField("Sodium"),
-  Zinc: createNutrientField("Zinc"),
-  Copper: createNutrientField("Copper"),
-  Manganese: createNutrientField("Manganese"),
-  Selenium: createNutrientField("Selenium"),
-});
+  { timestamps: true }
+);
 
-// Add a unique index on title fields to ensure uniqueness is enforced by MongoDB
-mealsCalculationSchema.index({ title_AR: 1 }, { unique: true });
-mealsCalculationSchema.index({ title_EN: 1 }, { unique: true });
+// // Add a unique index on title fields to ensure uniqueness is enforced by MongoDB
+// mealsCalculationSchema.index({ title_AR: 1 }, { unique: true });
+// mealsCalculationSchema.index({ title_EN: 1 }, { unique: true });
 
 mealsCalculationSchema.pre(/^find/, function (next) {
   this.populate("mealCategory");
@@ -104,6 +107,17 @@ const setCalculationImageURL = (doc) => {
     const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}.png`;
     doc.image = URL;
   }
+};
+mealsCalculationSchema.methods.toJSON = function () {
+  const obj = this.toObject();
+  if (!obj.createdAt) {
+    obj.createdAt = "2024-11-23T19:20:13.186Z";
+  }
+  if (!obj.updatedAt) {
+    obj.updatedAt = "2024-11-23T19:20:13.186Z";
+  }
+  delete obj.__v;
+  return obj;
 };
 //after initializ the doc in db
 // check if the document contains image

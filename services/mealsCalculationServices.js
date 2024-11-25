@@ -3,14 +3,56 @@ const ApiError = require("../utils/ApiError");
 const asyncHandler = require("express-async-handler");
 const factory = require("./handllerFactory");
 const calculateNutritionalValue = require("../utils/calculationFormula");
+const { v4: uuidv4 } = require("uuid");
+const { uploadSingleMedia } = require("../middlewares/uploadImageMiddleware");
+const fs = require("fs/promises");
+const path = require("path");
 
+//upload Single image
+exports.uploadMealCalculationImage = uploadSingleMedia("image", "image");
+
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  if (req.file) {
+    const directoryPath = "uploads/mealsCalculations";
+
+    // Ensure the directory exists
+    await fs.mkdir(directoryPath, { recursive: true });
+
+    const imageName = `mealsCalculations-${uuidv4()}-${Date.now()}.png`;
+    const imagePath = path.join(directoryPath, imageName);
+
+    // Save the image buffer asynchronously
+    await fs.writeFile(imagePath, req.file.buffer);
+
+    // Remove img extension before save it in db
+    const nameOfImg = imageName.split(".")[0];
+    // Save the image name into the request body to update the database later
+    req.body.image = nameOfImg;
+  }
+
+  next();
+});
+
+//@desc create meals calculation
+//@route POST /api/v1/mealsCalculation
+//@access protected
+exports.createMealsCalculation = factory.createOne(mealsCalculation);
+
+//@desc get all meals calculation
+//@route GET /api/v1/mealsCalculation
+//@access protected
 exports.getMealsCalculation = factory.getAll(
   mealsCalculation,
   "MealsCalculation"
 );
 
+//@desc get specific meals calculation by id
+//@route GET /api/v1/mealsCalculation/:id
+//@access protected
 exports.getSpecificMealCalculation = factory.getOne(mealsCalculation);
 
+//@desc calculate meal nutritional values
+//@route POST /api/v1/mealsCalculation/calc
 exports.calculateMeal = asyncHandler(async (req, res, next) => {
   const { mealId, quantities } = req.body;
 
@@ -178,3 +220,13 @@ exports.calculateMeal = asyncHandler(async (req, res, next) => {
     return next(new ApiError("Error calculating nutritional values", 500));
   }
 });
+
+//@desc update meals calculation
+//@route PUT /api/v1/mealsCalculation/:id
+//@access protected
+exports.updateMealsCalculation = factory.updateOne(mealsCalculation);
+
+//@desc delete meals calculation
+//@route DELETE /api/v1/mealsCalculation/:id
+//@access protected
+exports.deleteMealsCalculation = factory.deleteOne(mealsCalculation);

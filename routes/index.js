@@ -23,7 +23,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/deepAnatomy", upload.none(), deepAnatomyRoute);
   app.use("/api/v1/toolOrMachine", upload.none(), toolOrMachineRoute);
   app.use("/api/v1/exercises", upload.none(), exerciseRoute);
-  app.use("/api/v1/mealsCalculation", upload.none(), mealsCalculationRoute);
+  app.use("/api/v1/mealsCalculation", mealsCalculationRoute);
   app.use("/api/v1/progress", upload.none(), progressRoute);
   app.use("/api/v1/mealsCategory", upload.none(), mealsCategoryRoute);
 
