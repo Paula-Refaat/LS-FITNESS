@@ -41,11 +41,11 @@ exports.updateMealCategoryValidator = [
 ];
 
 exports.getOneMealCategoryValidator = [
-  check("id").isMongoId().withMessage("Invalid Exercise id format"),
+  check("id").isMongoId().withMessage("Invalid MealCategory id format"),
   validatorMiddleware,
 ];
 
 exports.deleteMealCategoryValidator = [
-  check("id").isMongoId().withMessage("Invalid Exercise id format"),
+  check("id").isMongoId().withMessage("Invalid MealCategory id format"),
   validatorMiddleware,
 ];
