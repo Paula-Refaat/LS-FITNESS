@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const passport = require("passport");
 const cors = require("cors");
+const compression = require("compression");
 
 dotenv.config({ path: "config.env" });
 
@@ -18,16 +19,24 @@ dbConnection();
 
 // Express app
 const app = express();
+
+// Parsers
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(trimAll); // Use the trimAll middleware
+
+// GZIP Compression
+app.use(compression());
+
+// Static Files
 app.use(express.static(path.join(__dirname, "uploads")));
 
+// Trim Input Middleware
+app.use(trimAll);
+
 // Enable CORS
-//enable other domains access your application
 app.use(
   cors({
-    origin: true, // dynamically set the origin based on request origin
+    origin: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
