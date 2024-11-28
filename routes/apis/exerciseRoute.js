@@ -13,7 +13,7 @@ const {
   updateExercise,
   deleteExercise,
   filterExercisesBasedOnGender,
-  getThumbnailsFromUrl,
+  handlingVideoResponse,
 } = require("../../services/exerciseServices");
 
 const authServices = require("../../services/authServices");
@@ -35,7 +35,7 @@ router
   .post(
     authServices.protect,
     authServices.allowTo("admin"),
-    getThumbnailsFromUrl,
+    handlingVideoResponse,
     createExerciseValidator,
     createExercise
   );
@@ -50,7 +50,7 @@ router
   .put(
     authServices.protect,
     authServices.allowTo("admin"),
-    getThumbnailsFromUrl,
+    handlingVideoResponse,
     updateExerciseValidator,
     updateExercise
   )

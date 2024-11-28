@@ -1,7 +1,7 @@
 const Exercise = require("../models/exerciseModel");
 const factory = require("./handllerFactory");
-const ApiError = require("../utils/ApiError");
-const axios = require("axios");
+const { getThumbnailsFromUrl } = require("../utils/getThumbnailsFromUrl");
+
 // Filter exercises based on user's gender
 exports.filterExercisesBasedOnGender = (req, res, next) => {
   if (!req.filterObj) {
@@ -15,49 +15,11 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   next();
 };
 
-// Function to get video ID from Vimeo URL
-function getVideoIdFromUrl(vimeoUrl) {
-  const regex = /vimeo\.com\/(\d+)/;
-  const match = vimeoUrl.match(regex);
-  return match ? match[1] : null;
-}
-
 // Function to get thumbnails using the video ID from Vimeo URL
-exports.getThumbnailsFromUrl = async (req, res, next) => {
-  const videoId = getVideoIdFromUrl(req.body.vimeo_video_Url);
-
-  if (!videoId) {
-    console.error("Invalid Vimeo URL.");
-    return next(new ApiError("Invalid Vimeo URL", 400));
-  }
-
-  try {
-    const response = await axios.get(`${process.env.VIMEO_API}/${videoId}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
-      },
-    });
-
-    const { pictures } = response.data;
-
-    // Filter out default thumbnails (if needed) and print content-based thumbnails
-    const thumbnails = pictures.sizes
-      .map((size) => size.link)
-      .filter((url) => !url.includes("default-"));
-
-    req.body.video = {
-      url: req.body.vimeo_video_Url,
-      public_id: videoId,
-      thumbnail: thumbnails.pop(),
-    };
-
-    // console.log("Thumbnails:", thumbnails.pop());
-    // return thumbnails;
-    next();
-  } catch (error) {
-    console.error("Error fetching video thumbnails:", error);
-    return next(new ApiError("Error fetching video thumbnails", 500));
-  }
+exports.handlingVideoResponse = async (req, res, next) => {
+  const videoResponse = await getThumbnailsFromUrl(req.body.vimeo_video_Url);
+  req.body.video = videoResponse;
+  next();
 };
 
 //@desc get list of Exercises
