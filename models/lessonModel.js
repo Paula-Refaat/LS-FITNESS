@@ -19,9 +19,19 @@ const lessonSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-    videoUrl: {
-      type: String,
-      required: true,
+    video: {
+      url: {
+        type: String,
+        required: [true, "video url required"],
+      },
+      public_id: {
+        type: Number,
+        required: [true, "video public_id required"],
+      },
+      thumbnail: {
+        type: String,
+        required: [true, "video thumbnail required"],
+      },
     },
     attachment: {
       type: String,

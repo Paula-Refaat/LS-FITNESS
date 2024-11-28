@@ -21,8 +21,11 @@ exports.createLessonValidator = [
         }
       })
     ),
-  check("videoUrl").notEmpty().withMessage("Lesson videos Required"),
-
+  check("vimeo_video_Url")
+    .notEmpty()
+    .withMessage("vimeo_video_Url required")
+    .isURL()
+    .withMessage("vimeo_video_Url must be a valid URL"),
   validatorMiddleware,
 ];
 exports.getLessonValidator = [
@@ -55,7 +58,12 @@ exports.updateLessonValidator = [
       })
     ),
 
-  check("videoUrl").notEmpty().withMessage("Lesson videos Required").optional(),
+  check("vimeo_video_Url")
+    .optional()
+    .notEmpty()
+    .withMessage("vimeo_video_Url required")
+    .isURL()
+    .withMessage("vimeo_video_Url must be a valid URL"),
   validatorMiddleware,
 ];
 

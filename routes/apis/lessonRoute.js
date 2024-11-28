@@ -18,6 +18,7 @@ const {
   setCourseIdToBody,
   accessLessonsOfMyCourses,
   accessOneLessonOfMyCourse,
+  handlingVideoResponse,
   // eslint-disable-next-line import/newline-after-import
 } = require("../../services/lessonServices");
 const router = express.Router({ mergeParams: true });
@@ -30,6 +31,7 @@ router.post(
   uploadLessonMedia,
   resizeMedia,
   setCourseIdToBody,
+  handlingVideoResponse,
   createLessonValidator,
   createLesson
 );
@@ -59,6 +61,7 @@ router.put(
   authServices.allowTo("admin"),
   uploadLessonMedia,
   resizeMedia,
+  handlingVideoResponse,
   updateLessonValidator,
   updateLesson
 );
