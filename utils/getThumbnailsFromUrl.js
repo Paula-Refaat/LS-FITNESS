@@ -1,4 +1,3 @@
-const ApiError = require("./ApiError");
 const axios = require("axios");
 
 // Function to get video ID from Vimeo URL
@@ -10,11 +9,20 @@ function getVideoIdFromUrl(vimeoUrl) {
 
 // Function to get thumbnails using the video ID from Vimeo URL
 async function getThumbnailsFromUrl(vimeo_video_Url) {
+  if (!vimeo_video_Url.includes("vimeo.com")) {
+    return {
+      success: false,
+      message: "Invalid Vimeo URL. Must be a valid Vimeo video URL.",
+    };
+  }
+
   const videoId = getVideoIdFromUrl(vimeo_video_Url);
 
   if (!videoId) {
-    console.error("Invalid Vimeo URL.");
-    return next(new ApiError("Invalid Vimeo URL", 400));
+    return {
+      success: false,
+      message: "Invalid Vimeo URL. Unable to extract video ID.",
+    };
   }
 
   try {
@@ -38,8 +46,15 @@ async function getThumbnailsFromUrl(vimeo_video_Url) {
     };
     return videoResponse;
   } catch (error) {
-    console.error("Error fetching video thumbnails:", error);
-    return next(new ApiError("Error fetching video thumbnails", 500));
+    console.error(
+      "Error fetching video thumbnails:",
+      error.response?.data || error.message
+    );
+    return {
+      success: false,
+      message: "Error fetching video thumbnails",
+      error: error.response?.data || error.message,
+    };
   }
 }
 
