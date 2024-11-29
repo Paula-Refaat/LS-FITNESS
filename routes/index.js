@@ -11,6 +11,8 @@ const mealsCategoryRoute = require("./apis/mealsCategoryRoute");
 const couponRoute = require("./apis/couponRoute");
 const courseRoute = require("./apis/courseRoute");
 const lessonRoute = require("./apis/lessonRoute");
+const quizRoute = require("./apis/quizRoute");
+
 const { getNutritionDetails } = require("../utils/helpers/nutrition");
 
 const mountRoute = (app) => {
@@ -31,6 +33,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/coupons", upload.none(), couponRoute);
   app.use("/api/v1/courses", courseRoute);
   app.use("/api/v1/lessons", lessonRoute);
+  app.use("/api/v1/quizzes", quizRoute);
 
   // API endpoint to upload and analyze an image
   app.post("/api/v1/nutrition", upload.single("image"), getNutritionDetails);
