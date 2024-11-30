@@ -81,13 +81,13 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 
   changeStream.on("change", (change) => {
     // Log the change to debug
-    // console.log("Change detected:", change);
+    console.log("Change detected:", change);
 
     const notification = change.fullDocument;
 
     // Log the notification details and user details
-    // console.log("Notification:", notification);
-    // console.log("Current User:", req.user._id.toString());
+    console.log("Notification:", notification);
+    console.log("Current User:", req.user._id.toString());
 
     // Check if the notification belongs to the current user
     if (
