@@ -74,6 +74,7 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
   // Connection established message
   res.write("event: connected\n");
   res.write("data: Connection established\n\n");
+  res.flush(); // Force the response to flush immediately
 
   // Start watching the Notification collection
   const changeStream = Notification.watch();
