@@ -78,6 +78,13 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 
   console.log("Waiting for notifications...");
 
+  // إرسال إشعار فارغ (heartbeat) كل 30 ثانية
+  const heartbeat = setInterval(() => {
+    res.write(`data: {}\n\n`); // إرسال إشعار فارغ
+    res.flush(); // التأكد من إرسال البيانات فورًا
+    console.log("Heartbeat sent to keep the connection alive.");
+  }, 30000); // كل 30 ثانية
+
   // Start watching the Notification collection
   const changeStream = Notification.watch();
 
@@ -105,9 +112,54 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
   // Handle connection closure
   req.on("close", () => {
     console.log(`Connection closed for user: ${req.user._id.toString()}`);
-    changeStream.close();
+    clearInterval(heartbeat); // إيقاف إرسال الإشعارات الفارغة
+    changeStream.close(); // إغلاق ChangeStream
   });
 });
+
+// exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
+//   // Set up the response headers for SSE
+//   res.setHeader("Content-Type", "text/event-stream");
+//   res.setHeader("Cache-Control", "no-cache");
+//   res.setHeader("Connection", "keep-alive");
+
+//   // Connection established message
+//   res.write("event: connected\n");
+//   res.write("data: Connection established\n\n");
+//   res.flush(); // Force the response to flush immediately
+
+//   console.log("Waiting for notifications...");
+
+//   // Start watching the Notification collection
+//   const changeStream = Notification.watch();
+
+//   changeStream.on("change", (change) => {
+//     console.log("Change detected:", change); // Log changes from MongoDB
+//     const notification = change.fullDocument;
+
+//     if (notification) {
+//       console.log("Notification data:", notification); // Log notification details
+//     }
+
+//     // Check if the notification belongs to the current user
+//     if (
+//       notification &&
+//       notification.user.toString() === req.user._id.toString()
+//     ) {
+//       console.log("Sending notification to client...");
+//       res.write(`data: ${JSON.stringify(notification)}\n\n`);
+//       res.flush(); // Make sure the data is sent immediately
+//     } else {
+//       console.log("Notification does not belong to the current user.");
+//     }
+//   });
+
+//   // Handle connection closure
+//   req.on("close", () => {
+//     console.log(`Connection closed for user: ${req.user._id.toString()}`);
+//     changeStream.close();
+//   });
+// });
 
 // exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 //   // Set up the response headers for SSE
