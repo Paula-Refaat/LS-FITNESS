@@ -78,9 +78,9 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 
   console.log("Waiting for notifications...");
 
-  // إرسال إشعار فارغ (heartbeat) كل 30 ثانية
+  // إرسال heartbeat كل 30 ثانية لإبقاء الاتصال مفتوحًا
   const heartbeat = setInterval(() => {
-    res.write(`data: {}\n\n`); // إرسال إشعار فارغ
+    res.write(`\n`); // حدث heartbeat مخصص
     res.flush(); // التأكد من إرسال البيانات فورًا
     console.log("Heartbeat sent to keep the connection alive.");
   }, 30000); // كل 30 ثانية
@@ -112,7 +112,7 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
   // Handle connection closure
   req.on("close", () => {
     console.log(`Connection closed for user: ${req.user._id.toString()}`);
-    clearInterval(heartbeat); // إيقاف إرسال الإشعارات الفارغة
+    clearInterval(heartbeat); // إيقاف إرسال heartbeats
     changeStream.close(); // إغلاق ChangeStream
   });
 });
