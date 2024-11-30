@@ -76,25 +76,29 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
   res.write("data: Connection established\n\n");
   res.flush(); // Force the response to flush immediately
 
+  console.log("Waiting for notifications...");
+
   // Start watching the Notification collection
   const changeStream = Notification.watch();
 
   changeStream.on("change", (change) => {
-    // Log the change to debug
-    console.log("Change detected:", change);
-
+    console.log("Change detected:", change); // Log changes from MongoDB
     const notification = change.fullDocument;
 
-    // Log the notification details and user details
-    console.log("Notification:", notification);
-    console.log("Current User:", req.user._id.toString());
+    if (notification) {
+      console.log("Notification data:", notification); // Log notification details
+    }
 
     // Check if the notification belongs to the current user
     if (
       notification &&
       notification.user.toString() === req.user._id.toString()
     ) {
+      console.log("Sending notification to client...");
       res.write(`data: ${JSON.stringify(notification)}\n\n`);
+      res.flush(); // Make sure the data is sent immediately
+    } else {
+      console.log("Notification does not belong to the current user.");
     }
   });
 
@@ -104,6 +108,46 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
     changeStream.close();
   });
 });
+
+// exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
+//   // Set up the response headers for SSE
+//   res.setHeader("Content-Type", "text/event-stream");
+//   res.setHeader("Cache-Control", "no-cache");
+//   res.setHeader("Connection", "keep-alive");
+
+//   // Connection established message
+//   res.write("event: connected\n");
+//   res.write("data: Connection established\n\n");
+//   res.flush(); // Force the response to flush immediately
+
+//   // Start watching the Notification collection
+//   const changeStream = Notification.watch();
+
+//   changeStream.on("change", (change) => {
+//     // Log the change to debug
+//     console.log("Change detected:", change);
+
+//     const notification = change.fullDocument;
+
+//     // Log the notification details and user details
+//     console.log("Notification:", notification);
+//     console.log("Current User:", req.user._id.toString());
+
+//     // Check if the notification belongs to the current user
+//     if (
+//       notification &&
+//       notification.user.toString() === req.user._id.toString()
+//     ) {
+//       res.write(`data: ${JSON.stringify(notification)}\n\n`);
+//     }
+//   });
+
+//   // Handle connection closure
+//   req.on("close", () => {
+//     console.log(`Connection closed for user: ${req.user._id.toString()}`);
+//     changeStream.close();
+//   });
+// });
 
 //@desc delete notification
 //@route DELETE /api/v1/notifications/:id
