@@ -19,7 +19,8 @@ dbConnection();
 
 // Express app
 const app = express();
-
+// Enable trust proxy to properly handle 'X-Forwarded-For'
+app.set("trust proxy", 1); // Trust the first proxy (Koyeb or similar platforms)
 // Parsers
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
