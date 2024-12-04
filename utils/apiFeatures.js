@@ -76,7 +76,7 @@ class ApiFeatures {
     // const limit = this.queryStr.limit * 1 || 50;
     this.queryStr.limit > countDocuments
       ? (limit = countDocuments)
-      : (limit = this.queryStr.limit * 1 || 50);
+      : (limit = this.queryStr.limit * 1 || 6);
     const skip = (page - 1) * limit;
     const endIndex = page * limit; // 2 *10  = 20  =>then the endIndex of Page 2 =20
 
