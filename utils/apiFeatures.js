@@ -67,36 +67,75 @@ class ApiFeatures {
     return this;
   }
 
-  paginate(countDocuments) {
-    const page = this.queryStr.page * 1 || 1;
-    let limit;
-    // if (this.queryStr.limit > countDocuments) {
-    //   const limit = this.queryStr.limit * 1 || 50;
-    // }
-    // const limit = this.queryStr.limit * 1 || 50;
-    this.queryStr.limit > countDocuments
-      ? (limit = countDocuments)
-      : (limit = this.queryStr.limit * 1 || 6);
-    const skip = (page - 1) * limit;
-    const endIndex = page * limit; // 2 *10  = 20  =>then the endIndex of Page 2 =20
+  paginate(totalDocuments) {
+    // استخراج الصفحة والحد من الاستعلام مع القيم الافتراضية
+    const page = Math.max(Number(this.queryStr.page) || 1, 1); // الصفحة الافتراضية 1
+    const limit = Math.min(Number(this.queryStr.limit) || 6, totalDocuments); // الحد الافتراضي 6
+    const skip = (page - 1) * limit; // حساب عدد الوثائق التي يجب تخطيها
+    const endIndex = page * limit; // نهاية الوثائق لهذه الصفحة
 
-    const pagination = {};
-    pagination.currentPage = page;
-    pagination.limit = limit;
-    pagination.numberOfPages = Math.ceil(countDocuments / limit);
+    // إعداد الـ pagination object
+    const pagination = {
+      currentPage: page,
+      limit,
+      numberOfPages: Math.ceil(totalDocuments / limit),
+    };
 
-    //next page
-    if (endIndex < countDocuments) {
+    // تحديد الصفحة التالية إذا كانت موجودة
+    if (endIndex < totalDocuments) {
       pagination.nextPage = page + 1;
     }
-    //previous
-    if (skip > 0) {
+
+    // تحديد الصفحة السابقة إذا كانت موجودة
+    if (page > 1) {
       pagination.previousPage = page - 1;
     }
 
-    this.mongooseeQuery = this.mongooseeQuery.skip(skip).limit(limit);
+    // التأكد من وجود query قبل التعديل عليه
+    if (!this.mongooseeQuery) {
+      throw new Error(
+        "Mongoose query not initialized. Ensure `this.mongooseQuery` is defined."
+      );
+    }
+
+    // إضافة الترتيب الثابت لمنع التكرار بين الصفحات
+    this.mongooseeQuery = this.mongooseeQuery
+      .sort({ _id: 1 }) // ترتيب ثابت بناءً على _id أو حقل آخر مثل createdAt
+      .skip(skip)
+      .limit(limit);
 
     this.paginationResult = pagination;
+    return this;
+  }
+
+  search(modelName) {
+    if (this.queryStr.keyword) {
+      let query = {};
+
+      if (modelName === "User") {
+        query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
+      } else if (modelName === "Event") {
+        query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
+      } else if (
+        modelName === "MealsCategory" ||
+        modelName === "MealsCalculation"
+      ) {
+        query = {
+          $or: [
+            { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
+            { Title_EN: { $regex: this.queryStr.keyword, $options: "i" } },
+          ],
+        };
+      } else {
+        query = {
+          title: { $regex: this.queryStr.keyword, $options: "i" },
+        };
+      }
+
+      // تعديل query بحيث يشمل التصفية
+      this.mongooseeQuery = this.mongooseeQuery.find(query);
+    }
+
     return this;
   }
 }

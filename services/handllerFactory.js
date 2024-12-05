@@ -7,75 +7,41 @@ exports.createOne = (Model) =>
     const document = await Model.create(req.body);
     res.status(201).json({ data: document });
   });
-// exports.getAll = (Model, modelName = "", populationOt) =>
-//   asyncHandler(async (req, res) => {
-//     let filter = {};
-//     if (req.filterObj) {
-//       filter = req.filterObj;
-//     }
 
-//     // Initialize query
-//     let query = Model.find(filter);
-//     if (populationOt) {
-//       query = query.populate(populationOt);
-//     }
-//     if (req.user.role) {
-//       console.log(req.user.role);
-//     }
-//     // Apply API Features
-//     let apiFeatures = new ApiFeatures(query, req.query)
-//       .filter()
-//       .search(modelName)
-//       .limitFields();
-
-//     // Count documents after applying filters
-//     const filteredQuery = apiFeatures.mongooseeQuery;
-//     const filteredDocumentsCount = await filteredQuery.clone().countDocuments();
-//     // Check role status to apply pagination
-//     if (req.user.role === "admin") {
-//       apiFeatures = apiFeatures.paginate(filteredDocumentsCount);
-//     }
-
-//     // Apply sort and execute query
-//     apiFeatures.sort();
-//     const { mongooseeQuery, paginationResult } = apiFeatures;
-//     const documents = await mongooseeQuery;
-
-//     // Respond with the results
-//     res.status(200).json({
-//       results: documents.length,
-//       totalCount: filteredDocumentsCount,
-//       paginationResult:
-//         req.user.role === "admin" ? paginationResult : undefined, // Include pagination only for admin
-//       data: documents,
-//     });
-//   });
-
-exports.getAll = (Model, modelName = "", populationOt) =>
+// دية الشغاله 100%
+exports.getAll = (Model, modelName = "", populationOpt) =>
   asyncHandler(async (req, res) => {
-    let filter = {};
-    if (req.filterObj) {
-      filter = req.filterObj;
-    }
+    // Initialize filter object
+    let filter = req.filterObj || {};
+
+    // Initialize query
     let query = Model.find(filter);
-    if (populationOt) {
-      query = query.populate(populationOt);
+
+    // Apply population if specified
+    if (populationOpt) {
+      query = query.populate(populationOpt);
     }
-    // const documentsCounts = await Model.countDocuments();
+
+    // Initialize ApiFeatures with the query and request query parameters
     const apiFeatures = new ApiFeatures(query, req.query)
-      // .paginate(documentsCounts)
       .filter()
       .search(modelName)
-      .limitFields();
-    // .sort();
-    const filteredQuery = apiFeatures.mongooseeQuery;
-    // Clone the query before counting documents
-    const filteredDocumentsCount = await filteredQuery.clone().countDocuments();
-    apiFeatures.sort().paginate(filteredDocumentsCount);
+      .limitFields()
+      .sort(); // Ensure sorting is applied before pagination
 
+    // Clone the filtered query to count documents
+    const filteredDocumentsCount = await apiFeatures.mongooseeQuery
+      .clone()
+      .countDocuments();
+
+    // Apply pagination (uses filteredDocumentsCount for page/limit logic)
+    apiFeatures.paginate(filteredDocumentsCount);
+
+    // Execute the final query with pagination
     const { mongooseeQuery, paginationResult } = apiFeatures;
     const documents = await mongooseeQuery;
 
+    // Send response
     res.status(200).json({
       results: documents.length,
       totalCount: filteredDocumentsCount,
@@ -83,6 +49,72 @@ exports.getAll = (Model, modelName = "", populationOt) =>
       data: documents,
     });
   });
+
+// اللي بتست بيها
+// exports.getAll = (Model, modelName = "", populationOptions) =>
+//   asyncHandler(async (req, res) => {
+//     try {
+//       // إعداد الفلتر إذا كان موجودًا
+//       let filter = {};
+//       if (req.filterObj) {
+//         filter = req.filterObj;
+//       }
+
+//       // إنشاء الاستعلام الأساسي
+//       let query = Model.find(filter);
+
+//       // إذا كان هناك population (ربط جداول)
+//       if (populationOptions) {
+//         query = query.populate(populationOptions);
+//       }
+
+//       // حساب العدد الإجمالي للوثائق
+//       const totalDocuments = await Model.countDocuments(filter);
+
+//       // **Pagination Logic**
+//       const page = Math.max(Number(req.query.page) || 1, 1); // الصفحة الافتراضية 1
+//       const limit = Math.min(Number(req.query.limit) || 6, totalDocuments); // الحد الافتراضي 6
+//       const skip = (page - 1) * limit;
+
+//       // **Ensure Consistent Sorting**: ترتيب ثابت حسب createdAt أو _id
+//       const sortingField = "_id"; // أو "_id" إذا لم يكن createdAt موجودًا
+//       query = query
+//         .sort({ [sortingField]: 1 })
+//         .skip(skip)
+//         .limit(limit); // ترتيب تصاعدي
+
+//       // تنفيذ الاستعلام
+//       const documents = await query;
+
+//       // إعداد بيانات الـ pagination
+//       const paginationResult = {
+//         currentPage: page,
+//         limit,
+//         numberOfPages: Math.ceil(totalDocuments / limit),
+//       };
+
+//       if (skip + limit < totalDocuments) {
+//         paginationResult.nextPage = page + 1;
+//       }
+//       if (page > 1) {
+//         paginationResult.previousPage = page - 1;
+//       }
+
+//       // إرسال الاستجابة
+//       res.status(200).json({
+//         results: documents.length,
+//         totalCount: totalDocuments,
+//         paginationResult,
+//         data: documents,
+//       });
+//     } catch (err) {
+//       console.error("Error in getAll:", err);
+//       res.status(500).json({
+//         status: "error",
+//         message: "Failed to fetch data",
+//       });
+//     }
+//   });
 
 exports.getOne = (Model, populationOpt) =>
   asyncHandler(async (req, res, next) => {
