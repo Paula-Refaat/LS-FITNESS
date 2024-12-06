@@ -14,7 +14,7 @@ const lessonRoute = require("./apis/lessonRoute");
 const quizRoute = require("./apis/quizRoute");
 const notificationRoute = require("./apis/notificationRoute");
 const orderRoute = require("./apis/orderRoute");
-
+const vimeoSignedUrlRoute = require("./apis/vimeoSignedUrlRoute");
 
 const { getNutritionDetails } = require("../utils/helpers/nutrition");
 
@@ -40,6 +40,8 @@ const mountRoute = (app) => {
   app.use("/api/v1/notifications", notificationRoute);
   app.use("/api/v1/orders", orderRoute);
 
+  // API endpoint to generate a signed URL for Vimeo video uploads
+  app.use("/api/v1/vimeo", vimeoSignedUrlRoute);
 
   // API endpoint to upload and analyze an image
   app.post("/api/v1/nutrition", upload.single("image"), getNutritionDetails);
