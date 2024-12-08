@@ -148,19 +148,41 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   delete req.body.isOAuthUser;
   delete req.body.emailVerified;
   delete req.body.active;
-
+  // console.log(req.body)
   // Update the user's data
-  const user = await User.findByIdAndUpdate(req.user._id, req.body, {
-    new: true,
-  });
-
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { goalsData: req.body },
+    {
+      new: true,
+    }
+  );
   // Create the MyGoals response object
   let myGoalsResponse = {
-    age: user.age || null,
-    gender: user.gender || null,
-    length: user.length || null,
-    weight: user.weight || null,
-    targetWeight: user.targetWeight || null,
+    age: user.goalsData.age || null,
+    gender: user.goalsData.gender || null,
+    height: user.goalsData.height || null,
+    weight: user.goalsData.weight || null,
+    targetWeight: user.goalsData.targetWeight || null,
+    address: user.goalsData.address || null,
+    nationality: user.goalsData.nationality || null,
+    walkDaily: user.goalsData.walkDaily || null,
+    workRoutine: user.goalsData.workRoutine || null,
+    bodyDimensions: user.goalsData.bodyDimensions || [],
+    fitnessLevel: user.goalsData.fitnessLevel || null,
+    mainGoal: user.goalsData.mainGoal || null,
+    allergicSubstances: user.goalsData.allergicSubstances || null,
+    injuries: user.goalsData.injuries || [],
+    exercisePreference: user.goalsData.exercisePreference || null,
+    trainingNumberDays: user.goalsData.trainingNumberDays || null,
+    trainingDays: user.goalsData.trainingDays || [],
+    diets: user.goalsData.diets || null,
+    fitnessEquipment: user.goalsData.fitnessEquipment || null,
+    trainingTime: user.goalsData.trainingTime || null,
+    hearUs: user.goalsData.hearUs || null,
+    locationOfTraining: user.goalsData.locationOfTraining || null,
+    experienceIssues: user.goalsData.experienceIssues || null,
+    trainingBreak: user.goalsData.trainingBreak || null,
   };
 
   // If the request is for MyGoals, send the MyGoals response and return

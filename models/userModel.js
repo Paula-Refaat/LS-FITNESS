@@ -30,25 +30,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: [true, "Phone number required"],
     },
-    gender: {
-      type: String,
-      enum: ["male", "female"],
-      lowercase: true,
-    },
-    age: {
-      type: Number,
-      min: 14,
-      max: 99,
-    },
-    length: {
-      type: String,
-    },
-    weight: {
-      type: String,
-    },
-    targetWeight: {
-      type: String,
-    },
+
     profileImg: String,
 
     google: {
@@ -83,6 +65,96 @@ const userSchema = new mongoose.Schema(
     passwordResetCode: String,
     passwordResetExpires: Date,
     passwordResetVerified: Boolean,
+
+    goalsData: {
+      age: {
+        type: Number,
+        min: 14,
+        max: 99,
+      },
+      gender: {
+        type: String,
+        enum: ["male", "female"],
+        lowercase: true,
+      },
+      weight: {
+        type: String,
+      },
+      height: {
+        type: String,
+      },
+      address: {
+        type: String,
+      },
+      nationality: {
+        type: String,
+      },
+      walkDaily: {
+        type: String,
+      },
+      workRoutine: {
+        type: String,
+      },
+      bodyDimensions: [
+        {
+          measurement: {
+            type: String,
+          },
+          value: {
+            type: String,
+          },
+        },
+      ],
+      fitnessLevel: {
+        type: String,
+      },
+      mainGoal: {
+        type: String,
+      },
+      allergicSubstances: {
+        type: String,
+      },
+      injuries: [
+        {
+          type: String,
+        },
+      ],
+      exercisePreference: {
+        type: String,
+      },
+      trainingNumberDays: {
+        type: String,
+      },
+      trainingDays: [
+        {
+          type: String,
+        },
+      ],
+      diets: {
+        type: String,
+      },
+      targetWeight: {
+        type: String,
+      },
+      fitnessEquipment: {
+        type: String,
+      },
+      trainingTime: {
+        type: String,
+      },
+      hearUs: {
+        type: String,
+      },
+      locationOfTraining: {
+        type: String,
+      },
+      experienceIssues: {
+        type: String,
+      },
+      trainingBreak: {
+        type: String,
+      },
+    },
   },
   {
     timestamps: true,
@@ -135,14 +207,7 @@ userSchema.methods.toJSON = function () {
   ]);
 
   // Setting optional user fields to null if they don't exist
-  const optionalFields = [
-    "age",
-    "gender",
-    "length",
-    "weight",
-    "targetWeight",
-    "profileImg",
-  ];
+  const optionalFields = ["profileImg"];
 
   optionalFields.forEach((field) => {
     obj[field] = obj[field] || null;
