@@ -5,6 +5,7 @@ const courseSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
@@ -26,6 +27,10 @@ const courseSchema = new mongoose.Schema(
       trim: true,
       max: [200000, "Too long Course price"],
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
     priceAfterDiscount: {
       type: Number,
     },
@@ -45,6 +50,11 @@ courseSchema.methods.toJSON = function () {
   delete obj.__v;
   return obj;
 };
+courseSchema.pre(/^find/, function (next) {
+  // this.populate({ path: "instructor", select: "name" });
+  this.populate({ path: "category", select: "title" });
+  next();
+});
 const setCourseImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
@@ -52,6 +62,7 @@ const setCourseImageURL = (doc) => {
     doc.image = CourseImageURL;
   }
 };
+
 //after initialize the doc in db
 // check if the document contains image
 // it work with findOne,findAll,update

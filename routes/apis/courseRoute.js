@@ -19,6 +19,7 @@ const {
   createFilterObjToGetMyCourses,
   uploadCourseImage,
   resizeImage,
+  setCategoryIdToBody,
 } = require("../../services/courseService");
 const authServices = require("../../services/authServices");
 // nested routes
@@ -52,12 +53,13 @@ router.post(
   authServices.allowTo("admin"),
   uploadCourseImage,
   resizeImage,
+  setCategoryIdToBody,
   createCourseValidator,
   createCourse
 );
 
 // Get all courses
-router.get("/", authServices.protect, getAllCourses);
+router.get("/", authServices.protect, createFilterObj, getAllCourses);
 
 // Get a specific course by ID
 router.get(

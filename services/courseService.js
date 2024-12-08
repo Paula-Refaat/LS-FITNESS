@@ -14,7 +14,23 @@ const User = require("../models/userModel");
 
 const { uploadSingleMedia } = require("../middlewares/uploadImageMiddleware");
 
+exports.setCategoryIdToBody = (req, res, next) => {
+  // Nested route
+  if (!req.body.category) req.body.category = req.params.categoryId;
+  console.log(req.body.category);
+  next();
+};
+
+//filter courses in specific category by categoryId => paula done
+exports.createFilterObj = (req, res, next) => {
+  let filterObject = {};
+  if (req.params.categoryId) filterObject = { category: req.params.categoryId };
+  req.filterObj = filterObject;
+  next();
+};
+
 // TODO: Replace the role of the filter to assigned to trainee
+
 //filter to get my courses as admin , user => paula done
 exports.createFilterObjToGetMyCourses = async (req, res, next) => {
   let filterObject = {};

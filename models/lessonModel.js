@@ -51,7 +51,7 @@ lessonSchema.methods.toJSON = function () {
   return obj;
 };
 lessonSchema.pre(/^find/, function (next) {
-  this.populate({ path: "course", select: "title" });
+  this.populate({ path: "course", select: "title -category" });
   next();
 });
 

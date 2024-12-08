@@ -2,6 +2,7 @@ const { check } = require("express-validator");
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const ApiError = require("../ApiError");
 const Course = require("../../models/courseModel");
+const Category = require("../../models/categoryModel");
 
 exports.createCourseValidator = [
   check("title")
@@ -44,6 +45,19 @@ exports.createCourseValidator = [
     }),
 
   check("image").notEmpty().withMessage("Course Image Required"),
+  check("category")
+    .notEmpty()
+    .withMessage("Course must be belong to a category")
+    .isMongoId()
+    .withMessage("Invalid ID format")
+    // before i add product to category i must check if category is in database
+    .custom((categoryId) =>
+      Category.findById(categoryId).then((category) => {
+        if (!category) {
+          return Promise.reject(new ApiError(`Category Not Found`, 404));
+        }
+      })
+    ),
   //catch error and return it as a response
   validatorMiddleware,
 ];
@@ -107,6 +121,17 @@ exports.updateCourseValidator = [
     }),
 
   check("image").optional().notEmpty().withMessage("Course Image Required"),
+  check("category")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid ID format")
+    .custom((categoryId) =>
+      Category.findById(categoryId).then((category) => {
+        if (!category) {
+          return Promise.reject(new ApiError(`Category Not Found`, 404));
+        }
+      })
+    ),
 
   validatorMiddleware,
 ];
