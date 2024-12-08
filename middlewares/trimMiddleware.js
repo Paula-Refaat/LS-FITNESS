@@ -1,6 +1,5 @@
 // Middleware to trim all string fields in the request body, query, and params
 const trimAll = (req, res, next) => {
-  // Trim string fields in request body
   if (req.body) {
     for (const key in req.body) {
       if (typeof req.body[key] === "string") {
@@ -9,7 +8,6 @@ const trimAll = (req, res, next) => {
     }
   }
 
-  // Trim string fields in request query
   if (req.query) {
     for (const key in req.query) {
       if (typeof req.query[key] === "string") {
@@ -18,7 +16,6 @@ const trimAll = (req, res, next) => {
     }
   }
 
-  // Trim string fields in request params
   if (req.params) {
     for (const key in req.params) {
       if (typeof req.params[key] === "string") {
@@ -26,6 +23,12 @@ const trimAll = (req, res, next) => {
       }
     }
   }
+
+  // console.log("Trimmed Request:", {
+  //   body: req.body,
+  //   query: req.query,
+  //   params: req.params,
+  // });
 
   next();
 };
