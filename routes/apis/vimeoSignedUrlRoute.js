@@ -11,37 +11,36 @@ router.post(
   async (req, res) => {
     const { name, description, size } = req.body || {};
 
-    // بيانات الفيديو الافتراضية
+    // Default Data
     const defaultName = "Default Video Name";
     const defaultDescription = "Uploaded via API";
-    const defaultSize = 5000000; // حجم افتراضي (5 ميجابايت على سبيل المثال)
+    const defaultSize = 5000000; // 5MB
 
     const videoData = {
       upload: {
-        approach: "tus", // استخدام TUS للرفع
-        size: size || defaultSize, // الحجم المرسل أو الافتراضي
+        approach: "tus",
+        size: size || defaultSize,
       },
       name: name || defaultName,
       description: description || defaultDescription,
     };
 
     try {
-      // إرسال طلب إلى Vimeo API
       const response = await axios.post(
-        "https://api.vimeo.com/me/videos", // مسار API
-        videoData, // بيانات الفيديو
+        "https://api.vimeo.com/me/videos",
+        videoData,
         {
           headers: {
-            Authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`, // توكن الوصول
+            Authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
             "Content-Type": "application/json",
           },
         }
       );
 
-      // الرد بالـ Signed URL
       res.json({
         uploadLink: response.data.upload.upload_link,
         videoUri: response.data.uri,
+        videoSize: size || defaultSize,
       });
     } catch (error) {
       console.error(
