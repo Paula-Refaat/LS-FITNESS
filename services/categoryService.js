@@ -13,7 +13,7 @@ const factory = require("./handllerFactory");
 //@desc get list of categories
 //@route GET /api/v1/categories
 //@access public
-exports.getCategories = factory.getAll(Category, "Category");
+exports.getCategories = factory.getAll(Category, "Category", "courses");
 
 //@desc get specific category by id
 //@route GET /api/v1/categories/:id

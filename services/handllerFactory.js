@@ -19,7 +19,15 @@ exports.getAll = (Model, modelName = "", populationOpt) =>
 
     // Apply population if specified
     if (populationOpt) {
-      query = query.populate(populationOpt);
+      if (populationOpt === "courses") {
+        query = query.populate({
+          path: populationOpt,
+          select: "-category -users ",
+          options: { limit: 3 , sort: { _id: -1 } },
+        });
+      } else {
+        query = query.populate(populationOpt);
+      }
     }
 
     // Initialize ApiFeatures with the query and request query parameters
