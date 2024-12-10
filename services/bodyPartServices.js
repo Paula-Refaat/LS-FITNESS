@@ -1,8 +1,10 @@
 // const mongoose = require("mongoose");
 // const asyncHandler = require("express-async-handler");
-// const ApiError = require("../utils/apiError");
 const BodyPart = require("../models/bodyPartModel");
 const factory = require("./handllerFactory");
+const asyncHandler = require("express-async-handler");
+const Exercise = require("../models/exerciseModel");
+const ApiError = require("../utils/ApiError");
 
 //@desc get list of bodyParts
 //@route GET /api/v1/bodyParts
@@ -29,3 +31,26 @@ exports.updateBodyPart = factory.updateOne(BodyPart);
 //@route DELETE /api/v1/bodyParts/:id
 //@access private
 exports.deleteBodyPart = factory.deleteOne(BodyPart);
+
+exports.getDeepAnatomiesFromExerciseByBodyPart = asyncHandler(
+  async (req, res, next) => {
+    const { bodyPartId } = req.params;
+
+    const exercises = await Exercise.find({
+      bodyPart: bodyPartId,
+    });
+    if (!exercises || exercises.length === 0) {
+      return next(
+        new ApiError(`No exercises found for body part: ${bodyPartId}`, 404)
+      );
+    }
+    let deepAnatomies = exercises.flatMap((exercise) => exercise.deepAnatomy);
+    deepAnatomies = deepAnatomies.filter(
+      (item, index, self) =>
+        self.findIndex(
+          (anatomy) => anatomy._id.toString() === item._id.toString()
+        ) === index
+    );
+    res.status(200).json({ data: deepAnatomies });
+  }
+);

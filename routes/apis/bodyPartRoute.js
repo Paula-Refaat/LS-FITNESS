@@ -15,6 +15,7 @@ const {
 } = require("../../services/bodyPartServices");
 
 const authServices = require("../../services/authServices");
+const { getDeepAnatomiesFromExerciseByBodyPart } = require("../../services/bodyPartServices");
 
 // const serviceRoute = require("./serviceRoute");
 
@@ -55,5 +56,8 @@ router
     deleteBodyPartValidator,
     deleteBodyPart
   );
-
+router.get(
+  "/:bodyPartId/deepAnatomies",
+  getDeepAnatomiesFromExerciseByBodyPart
+);
 module.exports = router;
