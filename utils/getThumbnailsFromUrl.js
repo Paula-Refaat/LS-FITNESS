@@ -1,76 +1,23 @@
-// const axios = require("axios");
-
-// // Function to get video ID from Vimeo URL
-// function getVideoIdFromUrl(vimeoUrl) {
-//   const regex = /vimeo\.com\/(\d+)/;
-//   const match = vimeoUrl.match(regex);
-//   return match ? match[1] : null;
-// }
-
-// // Function to get thumbnails using the video ID from Vimeo URL
-// async function getThumbnailsFromUrl(vimeo_video_Url) {
-//   if (!vimeo_video_Url.includes("vimeo.com")) {
-//     return {
-//       success: false,
-//       message: "Invalid Vimeo URL. Must be a valid Vimeo video URL.",
-//     };
-//   }
-
-//   const videoId = getVideoIdFromUrl(vimeo_video_Url);
-
-//   if (!videoId) {
-//     return {
-//       success: false,
-//       message: "Invalid Vimeo URL. Unable to extract video ID.",
-//     };
-//   }
-
-//   try {
-//     const response = await axios.get(`${process.env.VIMEO_API}/${videoId}`, {
-//       headers: {
-//         Authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
-//       },
-//     });
-
-//     const { pictures } = response.data;
-
-//     // Filter out default thumbnails (if needed) and print content-based thumbnails
-//     const thumbnails = pictures.sizes
-//       .map((size) => size.link)
-//       .filter((url) => !url.includes("default-"));
-
-//     const videoResponse = {
-//       url: vimeo_video_Url,
-//       public_id: videoId,
-//       thumbnail: thumbnails.pop(),
-//     };
-//     return videoResponse;
-//   } catch (error) {
-//     console.error(
-//       "Error fetching video thumbnails:",
-//       error.response?.data || error.message
-//     );
-//     return {
-//       success: false,
-//       message: "Error fetching video thumbnails",
-//       error: error.response?.data || error.message,
-//     };
-//   }
-// }
-
-// module.exports = { getThumbnailsFromUrl };
-
 const axios = require("axios");
 
-async function getThumbnailsFromUrl(vimeo_video_Url) {
-  const maxRetries = 5; // عدد المحاولات
-  const retryInterval = 3000; // وقت الانتظار بين المحاولات (بالميلي ثانية)
+// Function to get video ID from Vimeo URL
+function getVideoIdFromUrl(vimeoUrl) {
+  const regex = /vimeo\.com\/(\d+)/;
+  const match = vimeoUrl.match(regex);
+  return match ? match[1] : null;
+}
 
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+// Function to get thumbnails using the video ID from Vimeo URL
+async function getThumbnailsFromUrl(vimeo_video_Url) {
+  if (!vimeo_video_Url.includes("vimeo.com")) {
+    return {
+      success: false,
+      message: "Invalid Vimeo URL. Must be a valid Vimeo video URL.",
+    };
   }
 
-  const videoId = vimeo_video_Url.match(/vimeo\.com\/(\d+)/)?.[1];
+  const videoId = getVideoIdFromUrl(vimeo_video_Url);
+
   if (!videoId) {
     return {
       success: false,
@@ -78,44 +25,39 @@ async function getThumbnailsFromUrl(vimeo_video_Url) {
     };
   }
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await axios.get(`${process.env.VIMEO_API}/${videoId}`, {
-        headers: {
-          Authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
-        },
-      });
+  try {
+    const response = await axios.get(`${process.env.VIMEO_API}/${videoId}`, {
+      headers: {
+        Authorization: `Bearer ${process.env.VIMEO_ACCESS_TOKEN}`,
+      },
+    });
 
-      const { pictures } = response.data;
-      const thumbnails = pictures.sizes
-        .map((size) => size.link)
-        .filter((url) => !url.includes("default-"));
+    const { pictures } = response.data;
 
-      if (thumbnails.length > 0) {
-        return {
-          success: true,
-          videoId: videoId,
-          lastThumbnail: thumbnails[thumbnails.length - 1],
-        };
-      }
+    // Filter out default thumbnails (if needed) and print content-based thumbnails
+    const thumbnails = pictures.sizes
+      .map((size) => size.link)
+      .filter((url) => !url.includes("default-"));
 
-      console.log(
-        `Attempt ${attempt}: No thumbnails available yet. Retrying...`
-      );
-    } catch (error) {
-      console.error(
-        `Attempt ${attempt} failed:`,
-        error.response?.data || error.message
-      );
-    }
-
-    await sleep(retryInterval); // الانتظار قبل إعادة المحاولة
+    const videoResponse = {
+      url: vimeo_video_Url,
+      public_id: videoId,
+      thumbnail: thumbnails.pop(),
+    };
+    return videoResponse;
+  } catch (error) {
+    console.error(
+      "Error fetching video thumbnails:",
+      error.response?.data || error.message
+    );
+    return {
+      success: false,
+      message: "Error fetching video thumbnails",
+      error: error.response?.data || error.message,
+    };
   }
-
-  return {
-    success: false,
-    message: "Thumbnails not available after multiple attempts.",
-  };
 }
 
 module.exports = { getThumbnailsFromUrl };
+
+
