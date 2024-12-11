@@ -30,7 +30,7 @@ const lessonSchema = new mongoose.Schema(
       },
       thumbnail: {
         type: String,
-        required: [true, "video thumbnail required"],
+        // required: [true, "video thumbnail required"],
       },
     },
     attachment: {

@@ -50,7 +50,7 @@ const exerciseSchema = mongoose.Schema(
       },
       thumbnail: {
         type: String,
-        required: [true, "video thumbnail required"],
+        // required: [true, "video thumbnail required"],
       },
     },
     Description: {
@@ -97,7 +97,7 @@ exerciseSchema.methods.toJSON = function () {
     updatedAt: "2024-11-23T19:20:13.186Z",
   };
   delete exercise.__v;
-  
+
   // Merge missing fields with default values
   return { ...defaultFields, ...exercise };
 };
