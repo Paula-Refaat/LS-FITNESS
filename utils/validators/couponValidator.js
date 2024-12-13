@@ -28,13 +28,14 @@ exports.createCouponValidator = [
       }
       return true;
     }),
-  check("numberOfUsage")
-    .notEmpty()
-    .withMessage("Coupon number Of Usage required")
-    .isNumeric()
-    .withMessage("Coupon number Of Usage must be a number")
-    .isFloat({ min: 1 })
-    .withMessage("Coupon number Of Usage must be a positive number"),
+  // check("numberOfUsage")
+  //   .optional()
+  //   .notEmpty()
+  //   .withMessage("Coupon number Of Usage required")
+  //   .isNumeric()
+  //   .withMessage("Coupon number Of Usage must be a number"),
+  // // .isFloat({ min: 1 })
+  // // .withMessage("Coupon number Of Usage must be a positive number"),
   check("discount")
     .notEmpty()
     .withMessage("Coupon discount required")
@@ -78,14 +79,14 @@ exports.updateCouponValidator = [
       }
       return true;
     }),
-  check("numberOfUsage")
-    .optional()
-    .notEmpty()
-    .withMessage("Coupon number Of Usage required")
-    .isNumeric()
-    .withMessage("Coupon number Of Usage must be a number")
-    .isFloat({ min: 1 })
-    .withMessage("Coupon number Of Usage must be a positive number"),
+  // check("numberOfUsage")
+  //   .optional()
+  //   .notEmpty()
+  //   .withMessage("Coupon number Of Usage required")
+  //   .isNumeric()
+  //   .withMessage("Coupon number Of Usage must be a number"),
+  // // .isFloat({ min: 1 })
+  // // .withMessage("Coupon number Of Usage must be a positive number"),
   check("discount")
     .optional()
     .notEmpty()
