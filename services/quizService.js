@@ -19,21 +19,33 @@ exports.getQuizForCourse = asyncHandler(async (req, res, next) => {
   if (!course) {
     return next(new ApiError("Course not found", 404));
   }
+
+  // Check if user is admin or has purchased the course
   if (req.user.role !== "admin" && !course.users.includes(req.user.id)) {
     return next(
       new ApiError(
-        `You Are not bought this course please buy it, to access this quiz`,
+        `You are not bought this course, please buy it to access this quiz`,
         400
       )
     );
   }
-  // need to get course without correct answers
-  const quiz = await Quiz.findOne({ course: req.params.courseId }).select(
-    "-questions.correctAnswer"
-  );
+
+  // If the user is admin, return quiz with answers, else return quiz without answers
+  let quiz;
+  if (req.user.role === "admin") {
+    // Return the quiz with correct answers for admin
+    quiz = await Quiz.findOne({ course: req.params.courseId });
+  } else {
+    // Return the quiz without correct answers for non-admin users
+    quiz = await Quiz.findOne({ course: req.params.courseId }).select(
+      "-questions.correctAnswer"
+    );
+  }
+
   if (!quiz) {
     return next(new ApiError("Quiz not found", 404));
   }
+
   res.status(200).json({ data: quiz });
 });
 
