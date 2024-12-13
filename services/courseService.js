@@ -13,6 +13,7 @@ const Lessons = require("../models/lessonModel");
 const User = require("../models/userModel");
 
 const { uploadSingleMedia } = require("../middlewares/uploadImageMiddleware");
+const Coupon = require("../models/couponModel");
 
 exports.setCategoryIdToBody = (req, res, next) => {
   // Nested route
@@ -175,4 +176,46 @@ exports.getCourseUsers = asyncHandler(async (req, res) => {
     };
   })),
     res.status(200).json({ status: "success", users: userResponse });
+});
+
+// Applying coupon on the course
+exports.applyCouponOnCourse = asyncHandler(async (req, res, next) => {
+  const { courseId } = req.params;
+  const { coupon } = req.body;
+
+  // 1) Fetch the course by ID
+  const course = await Course.findById(courseId);
+  if (!course) {
+    return next(new ApiError(`No course found with ID: ${courseId}`, 404));
+  }
+  // 2) Calculate the course price (apply coupon if provided)
+
+  let coursePrice = course.priceAfterDiscount || course.price;
+  let couponDoc = null; // Define couponDoc here, so it can be used later
+
+  if (coupon) {
+    // Handle the coupon code only if provided
+    couponDoc = await Coupon.findOne({ name: coupon });
+    if (!couponDoc) {
+      return next(new ApiError("Invalid coupon code", 400));
+    }
+
+    if (couponDoc.expire < new Date()) {
+      return next(new ApiError("Coupon has expired", 400));
+    }
+
+    const discount = couponDoc.discount / 100;
+    coursePrice = coursePrice - coursePrice * discount;
+    // coursePrice = coursePrice.toFixed(2);
+    coursePrice = parseFloat(coursePrice.toFixed(2));
+  }
+  res.status(200).json({
+    data: {
+      status: "success",
+      coursePriceBeforeApplyingCoupon:
+        course.priceAfterDiscount || course.price,
+      coursePriceAfterApplyingCoupon: coursePrice,
+      discount: couponDoc ? couponDoc.discount : null,
+    },
+  });
 });

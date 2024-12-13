@@ -20,6 +20,7 @@ const {
   uploadCourseImage,
   resizeImage,
   setCategoryIdToBody,
+  applyCouponOnCourse,
 } = require("../../services/courseService");
 const authServices = require("../../services/authServices");
 // nested routes
@@ -97,5 +98,6 @@ router.post(
   addUserToCourseValidator,
   addUserToCourse
 );
-
+// Applying coupon on the course
+router.post("/:courseId/applyCoupon", applyCouponOnCourse);
 module.exports = router;
