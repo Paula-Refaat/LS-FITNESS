@@ -2,10 +2,10 @@ const axios = require("axios");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/ApiError");
 const Course = require("../models/courseModel");
-const Coupon = require("../models/couponModel");
 const Order = require("../models/orderModel");
 const factory = require("./handllerFactory");
 const mongoose = require("mongoose");
+const Coupon = require("../models/couponModel");
 
 const PAYPAL_BASE_URL = process.env.PAYPAL_BASE_URL;
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
@@ -42,6 +42,10 @@ exports.createCourseOrder = asyncHandler(async (req, res, next) => {
   const course = await Course.findById(courseId);
   if (!course) {
     return next(new ApiError(`No course found with ID: ${courseId}`, 404));
+  }
+  // Check if the user is already enrolled in the course
+  if (course.users.includes(req.user._id)) {
+    return next(new ApiError("You have already enrolled to this course", 400));
   }
 
   // 2) Calculate the course price (apply coupon if provided)
@@ -272,7 +276,20 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
       if (!order) {
         return next(new ApiError("Order not found or already paid", 404));
       }
-
+      if (order && order.coupon) {
+        // Get coupon and increment numberOfUsage by 1
+        let coupon = await Coupon.findOne({
+          name: order.coupon.name,
+        }).session(session);
+        if (!coupon) {
+          return next(new ApiError("Coupon not found", 404));
+        }
+        coupon = await Coupon.findByIdAndUpdate(
+          coupon._id,
+          { $inc: { numberOfUsage: 1 } },
+          { new: true }
+        ).session(session);
+      }
       order = await Order.findByIdAndUpdate(
         order._id,
         {
