@@ -1,6 +1,18 @@
 const Coupon = require("../models/couponModel");
 const factory = require("./handllerFactory");
 
+// Sanitize the coupon data from request data
+
+exports.sanitizeCouponData = (req, res, next) => {
+  if (req.body.discount) {
+    req.body.discount = parseFloat(req.body.discount).toFixed(2);
+  }
+  if (req.body.numberOfUsage) {
+    delete req.body.numberOfUsage;
+  }
+
+  next();
+};
 //@desc   Create Coupon
 //@route  POST  /api/v1/coupons
 //@access Private
