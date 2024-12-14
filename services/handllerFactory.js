@@ -23,7 +23,7 @@ exports.getAll = (Model, modelName = "", populationOpt) =>
         query = query.populate({
           path: populationOpt,
           select: "-category -users ",
-          options: { limit: 3 , sort: { _id: -1 } },
+          options: { limit: 3, sort: { _id: -1 } },
         });
       } else {
         query = query.populate(populationOpt);
@@ -152,6 +152,60 @@ exports.updateOne = (Model) =>
       );
     }
     res.status(200).json({ data: document });
+  });
+
+exports.moveToRecycleBin = (Model) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+
+    // تحديث المستند مباشرةً مع التحقق من وجوده
+    const result = await Model.updateOne(
+      {
+        _id: id,
+        $or: [
+          { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+          { isDeleted: false }, // المستندات التي isDeleted = false
+        ],
+      },
+      {
+        $set: { isDeleted: true, deletedAt: new Date() }, // تحديث الحقول المطلوبة
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return next(
+        new ApiError(
+          `No document found for this id ${id} or it is already deleted`,
+          404
+        )
+      );
+    }
+
+    res
+      .status(200)
+      .json({ message: "Document moved to recycle bin successfully" });
+  });
+
+exports.restoreFromRecycleBin = (Model) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+
+    // تحديث المستند مباشرةً مع التحقق من وجوده
+    const result = await Model.updateOne(
+      { _id: id, isDeleted: true }, // التأكد من أن العنصر محذوف
+      { $set: { isDeleted: false, deletedAt: null } } // تحديث الحقول المطلوبة
+    );
+
+    if (result.matchedCount === 0) {
+      return next(
+        new ApiError(
+          `No document found for this id ${id} or it is not deleted`,
+          404
+        )
+      );
+    }
+
+    res.status(200).json({ message: "Document restored successfully" });
   });
 
 exports.deleteOne = (Model) =>

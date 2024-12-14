@@ -14,6 +14,10 @@ const {
   deleteExercise,
   filterExercisesBasedOnGender,
   handlingVideoResponse,
+  moveToRecycleBin,
+  restoreFromRecycleBin,
+  filterOnExercisesNotInTrash,
+  filterOnExercisesInTrash,
 } = require("../../services/exerciseServices");
 
 const authServices = require("../../services/authServices");
@@ -22,14 +26,14 @@ const authServices = require("../../services/authServices");
 
 const router = express.Router();
 
-// router.use("/:ExerciseId/service", serviceRoute);
-
 router
   .route("/")
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin"),
+    // filterOnExercisesInTrash,
     filterExercisesBasedOnGender,
+    filterOnExercisesNotInTrash,
     getExercises
   )
   .post(
@@ -39,6 +43,7 @@ router
     createExerciseValidator,
     createExercise
   );
+
 router
   .route("/:id")
   .get(
@@ -60,5 +65,27 @@ router
     deleteExerciseValidator,
     deleteExercise
   );
-
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  // deleteLessonValidator,
+  moveToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  // deleteLessonValidator,
+  restoreFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("user", "admin"),
+  filterOnExercisesInTrash,
+  // filterExercisesBasedOnGender,
+  // filterOnExercisesNotInTrash,
+  getExercises
+);
 module.exports = router;

@@ -63,6 +63,8 @@ const exerciseSchema = mongoose.Schema(
       minlength: [10, "too short instructions "],
       maxlength: [1000, "too long instructions"],
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -97,6 +99,8 @@ exerciseSchema.methods.toJSON = function () {
     updatedAt: "2024-11-23T19:20:13.186Z",
   };
   delete exercise.__v;
+  delete exercise.isDeleted;
+  delete exercise.deletedAt;
 
   // Merge missing fields with default values
   return { ...defaultFields, ...exercise };

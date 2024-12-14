@@ -7,6 +7,10 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   if (!req.filterObj) {
     req.filterObj = {};
   }
+  // console.log(req.user.role)
+  // if (req.user.role === "admin") {
+  //    next();
+  // }
   if (req.user.gender === "male") {
     req.filterObj.targetGender = "men";
   } else if (req.user.gender === "female") {
@@ -14,7 +18,30 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   }
   next();
 };
+// Filter out exercises that are not in the trash
+exports.filterOnExercisesNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
 
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out exercises that are in the trash
+exports.filterOnExercisesInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
 // Function to get thumbnails using the video ID from Vimeo URL
 exports.handlingVideoResponse = async (req, res, next) => {
   const videoResponse = await getThumbnailsFromUrl(req.body.vimeo_video_Url);
@@ -41,6 +68,9 @@ exports.createExercise = factory.createOne(Exercise);
 //@route PUT /api/v1/exercises/:id
 //@access private
 exports.updateExercise = factory.updateOne(Exercise);
+
+exports.moveToRecycleBin = factory.moveToRecycleBin(Exercise);
+exports.restoreFromRecycleBin = factory.restoreFromRecycleBin(Exercise);
 
 //@desc delete specific exercise
 //@route DELETE /api/v1/exercises/:id
