@@ -3,15 +3,12 @@ const mongoose = require("mongoose");
 // 2. Training Plan Schema
 const trainingPlanSchema = new mongoose.Schema({
   name: { type: String, required: true }, // اسم الخطة
-  description: { type: String }, // وصف الخطة
   days: [
     {
       dayNumber: { type: Number, required: true }, // اليوم رقم
       exercises: [
         {
-          // TODO: 
-          // exercise: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" }, // التمرين
-          exercise: { type: String }, // التمرين
+          exercise: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" }, // التمرين
 
           sets: { type: Number, required: true }, // عدد المجموعات
           reps: { type: Number, required: true }, // عدد التكرارات
