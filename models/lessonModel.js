@@ -36,6 +36,8 @@ const lessonSchema = new mongoose.Schema(
     attachment: {
       type: String,
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -48,6 +50,8 @@ lessonSchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
+  delete exercise.isDeleted;
+  delete exercise.deletedAt;
   return obj;
 };
 lessonSchema.pre(/^find/, function (next) {

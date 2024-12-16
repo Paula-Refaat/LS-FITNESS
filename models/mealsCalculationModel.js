@@ -76,6 +76,8 @@ const mealsCalculationSchema = mongoose.Schema(
     Copper: createNutrientField("Copper"),
     Manganese: createNutrientField("Manganese"),
     Selenium: createNutrientField("Selenium"),
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -117,6 +119,8 @@ mealsCalculationSchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
+  delete obj.isDeleted;
+  delete obj.deletedAt;
   return obj;
 };
 //after initializ the doc in db

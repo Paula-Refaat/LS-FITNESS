@@ -22,6 +22,8 @@ const couponSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Coupon discount required"],
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -34,6 +36,8 @@ couponSchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
+  delete obj.isDeleted;
+  delete obj.deletedAt;
   return obj;
 };
 module.exports = mongoose.model("Coupon", couponSchema);

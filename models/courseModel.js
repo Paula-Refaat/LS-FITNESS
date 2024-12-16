@@ -34,6 +34,8 @@ const courseSchema = new mongoose.Schema(
     priceAfterDiscount: {
       type: Number,
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   {
     timeseries: true,
@@ -48,6 +50,8 @@ courseSchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
+  delete obj.isDeleted;
+  delete obj.deletedAt;
   return obj;
 };
 courseSchema.pre(/^find/, function (next) {

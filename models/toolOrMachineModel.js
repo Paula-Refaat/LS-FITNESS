@@ -10,6 +10,8 @@ const toolOrMachineSchema = mongoose.Schema(
       minlength: [3, "too short Tool or Machine  title "],
       maxlength: [32, "too long Tool or Machine title"],
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -23,6 +25,8 @@ toolOrMachineSchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
+  delete obj.isDeleted;
+  delete obj.deletedAt;
   return obj;
 };
 

@@ -10,6 +10,8 @@ const mealsCategorySchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide a title in english"],
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -22,6 +24,8 @@ mealsCategorySchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
+  delete obj.isDeleted;
+  delete obj.deletedAt;
   return obj;
 };
 module.exports = mongoose.model("MealCategory", mealsCategorySchema);
