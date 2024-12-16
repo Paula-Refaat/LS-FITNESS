@@ -12,10 +12,16 @@ const {
   getBodyPart,
   updateBodyPart,
   deleteBodyPart,
+  filterOnBodyPartsNotInTrash,
+  moveBodyPartToRecycleBin,
+  restoreBodyPartFromRecycleBin,
+  filterOnBodyPartsInTrash,
 } = require("../../services/bodyPartServices");
 
 const authServices = require("../../services/authServices");
-const { getDeepAnatomiesFromExerciseByBodyPart } = require("../../services/bodyPartServices");
+const {
+  getDeepAnatomiesFromExerciseByBodyPart,
+} = require("../../services/bodyPartServices");
 
 // const serviceRoute = require("./serviceRoute");
 
@@ -28,6 +34,7 @@ router
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin"),
+    filterOnBodyPartsNotInTrash,
     getBodyParts
   )
   .post(
@@ -59,5 +66,29 @@ router
 router.get(
   "/:bodyPartId/deepAnatomies",
   getDeepAnatomiesFromExerciseByBodyPart
+);
+
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  // deleteLessonValidator,
+  moveBodyPartToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  // deleteLessonValidator,
+  restoreBodyPartFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("user", "admin"),
+  filterOnBodyPartsInTrash,
+  // filterExercisesBasedOnGender,
+  // filterOnExercisesNotInTrash,
+  getBodyParts
 );
 module.exports = router;

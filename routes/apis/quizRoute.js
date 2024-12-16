@@ -9,6 +9,10 @@ const {
   getQuizForCourse,
   evaluateQuiz,
   getQuizzes,
+  moveQuizToRecycleBin,
+  restoreQuizFromRecycleBin,
+  filterOnQuizNotInTrash,
+  filterOnQuizInTrash,
 } = require("../../services/quizService");
 const {
   createQuizValidator,
@@ -25,7 +29,12 @@ router
     createQuizValidator,
     createQuiz
   )
-  .get(authServices.protect, authServices.allowTo("user", "admin"), getQuizzes);
+  .get(
+    authServices.protect,
+    authServices.allowTo("user", "admin"),
+    filterOnQuizNotInTrash,
+    getQuizzes
+  );
 router
   .route("/:id")
   .get(authServices.protect, authServices.allowTo("user", "admin"), getQuizById)
@@ -42,6 +51,7 @@ router.get(
   "/getQuizForCourse/:courseId",
   authServices.protect,
   authServices.allowTo("user", "admin"),
+  filterOnQuizNotInTrash,
   getQuizForCourse
 );
 
@@ -52,5 +62,25 @@ router.post(
   authServices.allowTo("user", "admin"),
   evaluateQuizValidator,
   evaluateQuiz
+);
+
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveQuizToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreQuizFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnQuizInTrash,
+  getQuizzes
 );
 module.exports = router;

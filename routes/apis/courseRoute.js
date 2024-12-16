@@ -21,6 +21,10 @@ const {
   resizeImage,
   setCategoryIdToBody,
   applyCouponOnCourse,
+  moveCourseToRecycleBin,
+  restoreCourseFromRecycleBin,
+  filterOnCoursesInTrash,
+  filterOnCoursesNotInTrash,
 } = require("../../services/courseService");
 const authServices = require("../../services/authServices");
 // nested routes
@@ -60,7 +64,13 @@ router.post(
 );
 
 // Get all courses
-router.get("/", authServices.protect, createFilterObj, getAllCourses);
+router.get(
+  "/",
+  authServices.protect,
+  createFilterObj,
+  filterOnCoursesNotInTrash,
+  getAllCourses
+);
 
 // Get a specific course by ID
 router.get(
@@ -100,4 +110,24 @@ router.post(
 );
 // Applying coupon on the course
 router.post("/:courseId/applyCoupon", applyCouponOnCourse);
+
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveCourseToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreCourseFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnCoursesInTrash,
+  getAllCourses
+);
 module.exports = router;

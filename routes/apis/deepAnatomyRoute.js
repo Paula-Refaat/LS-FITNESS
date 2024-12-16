@@ -6,6 +6,9 @@ const {
   createDeepAnatomy,
   updateDeepAnatomy,
   deleteDeepAnatomy,
+  moveDeepAnatomyToRecycleBin,
+  restoreDeepAnatomyFromRecycleBin,
+  filterOnDeepAnatomyInTrash,
   // deleteCategory,
 } = require("../../services/deepAnatomyService");
 
@@ -56,5 +59,25 @@ router
     deleteDeepAnatomyValidator,
     deleteDeepAnatomy
   );
+
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveDeepAnatomyToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreDeepAnatomyFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnDeepAnatomyInTrash,
+  getDeepAnatomies
+);
 
 module.exports = router;

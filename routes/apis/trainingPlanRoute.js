@@ -9,12 +9,17 @@ const {
   updateTrainingPlan,
   deleteTrainingPlan,
   getAllTrainingPlan,
+  moveTrainingPlanToRecycleBin,
+  restoreTrainingPlanFromRecycleBin,
+  filterOnTrainingPlanInTrash,
+  filterOnTrainingPlanNotInTrash,
 } = require("../../services/trainingPlanServices");
 
 router.get(
   "/",
   authServices.protect,
   authServices.allowTo("admin"),
+  filterOnTrainingPlanNotInTrash,
   getAllTrainingPlan
 );
 router.get(
@@ -40,5 +45,24 @@ router.delete(
   authServices.protect,
   authServices.allowTo("admin"),
   deleteTrainingPlan
+);
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveTrainingPlanToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreTrainingPlanFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnTrainingPlanInTrash,
+  getAllTrainingPlan
 );
 module.exports = router;

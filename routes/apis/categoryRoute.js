@@ -12,6 +12,10 @@ const {
   getCategory,
   updateCategory,
   deleteCategory,
+  filterOnCategoriesNotInTrash,
+  moveCategoryToRecycleBin,
+  restoreCategoryFromRecycleBin,
+  filterOnCategoriesInTrash,
 } = require("../../services/categoryService");
 
 const authServices = require("../../services/authServices");
@@ -24,7 +28,7 @@ router.use("/:categoryId/courses", courseRoute);
 
 router
   .route("/")
-  .get(getCategories)
+  .get(filterOnCategoriesNotInTrash, getCategories)
   .post(
     authServices.protect,
     authServices.allowTo("admin"),
@@ -47,4 +51,27 @@ router
     deleteCategory
   );
 
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  // deleteLessonValidator,
+  moveCategoryToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  // deleteLessonValidator,
+  restoreCategoryFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnCategoriesInTrash,
+  // filterExercisesBasedOnGender,
+  // filterOnExercisesNotInTrash,
+  getCategories
+);
 module.exports = router;

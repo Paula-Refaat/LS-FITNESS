@@ -19,6 +19,10 @@ const {
   accessLessonsOfMyCourses,
   accessOneLessonOfMyCourse,
   handlingVideoResponse,
+  moveLessonToRecycleBin,
+  restoreLessonFromRecycleBin,
+  filterOnLessonsInTrash,
+  filterOnLessonsNotInTrash,
   // eslint-disable-next-line import/newline-after-import
 } = require("../../services/lessonServices");
 const router = express.Router({ mergeParams: true });
@@ -39,6 +43,7 @@ router.get(
   "/courseLessons/:courseId",
   authServices.protect,
   authServices.allowTo("user", "admin"),
+  filterOnLessonsNotInTrash,
   accessLessonsOfMyCourses,
   createFilterObj,
   getLessons
@@ -73,6 +78,26 @@ router.delete(
   authServices.allowTo("admin"),
   deleteLessonValidator,
   deleteLesson
+);
+
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveLessonToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreLessonFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnLessonsInTrash,
+  getLessons
 );
 
 module.exports = router;

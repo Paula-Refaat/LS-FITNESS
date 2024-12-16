@@ -5,6 +5,10 @@ const {
   updateMealsCategory,
   deleteMealsCategory,
   createMealsCategory,
+  moveMealsCategoryToRecycleBin,
+  restoreMealsCategoryFromRecycleBin,
+  filterOnMealsCategoryInTrash,
+  filterOnMealsCategoryNotInTrash,
 } = require("../../services/mealsCategoryService");
 
 const router = express.Router();
@@ -25,7 +29,11 @@ router
     createMealCategoryValidator,
     createMealsCategory
   )
-  .get(authServices.protect, getMealsCategories);
+  .get(
+    authServices.protect,
+    filterOnMealsCategoryNotInTrash,
+    getMealsCategories
+  );
 
 router
   .route("/:id")
@@ -42,5 +50,25 @@ router
     deleteMealCategoryValidator,
     deleteMealsCategory
   );
+
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveMealsCategoryToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreMealsCategoryFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnMealsCategoryInTrash,
+  getMealsCategories
+);
 
 module.exports = router;
