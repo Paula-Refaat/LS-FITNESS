@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema(
 
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["admin", "sub-admin", "Ls-trainer", "trainer", "user"],
       default: "user",
     },
     active: {
@@ -155,6 +155,8 @@ const userSchema = new mongoose.Schema(
         type: String,
       },
     },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   {
     timestamps: true,
@@ -201,9 +203,11 @@ userSchema.methods.toJSON = function () {
     "passwordResetCode",
     "passwordResetExpires",
     "password",
+    "deletedAt",
+    "isDeleted",
     "__v",
-    "createdAt",
-    "updatedAt",
+    // "createdAt",
+    // "updatedAt",
   ]);
 
   // Setting optional user fields to null if they don't exist

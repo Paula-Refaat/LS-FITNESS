@@ -25,6 +25,10 @@ const {
   uploadProfileImage,
   resizeImage,
   deleteLoggedUser,
+  moveUserToRecycleBin,
+  restoreUserFromRecycleBin,
+  filterOnUsersInTrash,
+  filterOnUsersNotInTrash,
   // deleteLoggedUser,
   // activeLoggedUser,
 } = require("../../services/userService");
@@ -70,7 +74,12 @@ router.delete("/deleteMyAccount", authServices.protect, deleteLoggedUser);
 
 router
   .route("/")
-  .get(authServices.protect, authServices.allowTo("admin"), getUsers)
+  .get(
+    authServices.protect,
+    authServices.allowTo("admin"),
+    filterOnUsersNotInTrash,
+    getUsers
+  )
   .post(
     authServices.protect,
     authServices.allowTo("admin"),
@@ -79,7 +88,8 @@ router
     setRestrictionOnCreateUser,
     // convertInterestsToArray,
     createUserValidator,
-    authServices.signup
+    createUser
+    // authServices.signup
   );
 router
   .route("/:id")
@@ -103,5 +113,9 @@ router
     deleteUserValidator,
     deleteUser
   );
+
+router.delete("/:id/moveToTrash", moveUserToRecycleBin);
+router.put("/:id/restore", restoreUserFromRecycleBin);
+router.get("/deleted/trash", filterOnUsersInTrash, getUsers);
 
 module.exports = router;

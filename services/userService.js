@@ -49,6 +49,31 @@ exports.setRestrictionOnCreateUser = asyncHandler(async (req, res, next) => {
   next();
 });
 
+// Filter out Category that are not in the trash
+exports.filterOnUsersNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out Category that are in the trash
+exports.filterOnUsersInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
+
 //@desc get list of user
 //@route GET /api/v1/users
 //@access private
@@ -89,7 +114,7 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findByIdAndUpdate(
     req.params.id,
     {
-      password: await bcrypt.hash(req.body.password, 12),
+      password: await bcrypt.hash(req.body.newPassword, 12),
       passwordChangedAt: Date.now(),
     },
     {
@@ -101,6 +126,9 @@ exports.changeUserPassword = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ data: user });
 });
+
+exports.moveUserToRecycleBin = factory.moveToRecycleBin(User);
+exports.restoreUserFromRecycleBin = factory.restoreFromRecycleBin(User);
 
 //@desc delete User
 //@route DELETE /api/v1/user/:id
