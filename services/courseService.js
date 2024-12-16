@@ -42,6 +42,31 @@ exports.createFilterObjToGetMyCourses = async (req, res, next) => {
   next();
 };
 
+// Filter out Category that are not in the trash
+exports.filterOnCoursesNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out Category that are in the trash
+exports.filterOnCoursesInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
+
 //upload Single image
 exports.uploadCourseImage = uploadSingleMedia("image", "image");
 
@@ -74,6 +99,9 @@ exports.getCourseById = factory.getOne(Course);
 
 // Update a course by ID  => paula done
 exports.updateCourse = factory.updateOne(Course);
+
+exports.moveCourseToRecycleBin = factory.moveToRecycleBin(Course);
+exports.restoreCourseFromRecycleBin = factory.restoreFromRecycleBin(Course);
 
 // Delete a course by ID  => paula done
 exports.deleteCourse = asyncHandler(async (req, res, next) => {

@@ -18,9 +18,35 @@ exports.handlingVideoResponse = async (req, res, next) => {
   req.body.video = videoResponse;
   next();
 };
+
 exports.setCourseIdToBody = (req, res, next) => {
   // Nested route
   if (!req.body.course) req.body.course = req.params.courseId;
+  next();
+};
+
+// Filter out Lessons that are not in the trash
+exports.filterOnLessonsNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out Lessons that are in the trash
+exports.filterOnLessonsInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
   next();
 };
 
@@ -95,6 +121,9 @@ exports.getLessonById = factory.getOne(Lesson);
 
 // Update a lesson by ID
 exports.updateLesson = factory.updateOne(Lesson);
+
+exports.moveLessonToRecycleBin = factory.moveToRecycleBin(Lesson);
+exports.restoreLessonFromRecycleBin = factory.restoreFromRecycleBin(Lesson);
 
 // Delete a lesson by ID
 exports.deleteLesson = factory.deleteOne(Lesson);

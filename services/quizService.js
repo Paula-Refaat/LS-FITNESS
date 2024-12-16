@@ -4,6 +4,32 @@ const ApiError = require("../utils/ApiError");
 const Course = require("../models/courseModel");
 const factory = require("./handllerFactory");
 
+// Filter out Quiz that are not in the trash
+exports.filterOnQuizNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+
+// Filter out Quiz that are in the trash
+exports.filterOnQuizInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
+
 exports.createQuiz = factory.createOne(Quiz);
 
 exports.getQuizzes = factory.getAll(Quiz, "Quiz");
@@ -13,6 +39,9 @@ exports.getQuizById = factory.getOne(Quiz);
 exports.updateQuiz = factory.updateOne(Quiz);
 
 exports.deleteQuiz = factory.deleteOne(Quiz);
+
+exports.moveQuizToRecycleBin = factory.moveToRecycleBin(Quiz);
+exports.restoreQuizFromRecycleBin = factory.restoreFromRecycleBin(Quiz);
 
 exports.getQuizForCourse = asyncHandler(async (req, res, next) => {
   const course = await Course.findById(req.params.courseId);

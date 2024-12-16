@@ -6,6 +6,31 @@ const asyncHandler = require("express-async-handler");
 const Exercise = require("../models/exerciseModel");
 const ApiError = require("../utils/ApiError");
 
+// Filter out BodyParts that are not in the trash
+exports.filterOnBodyPartsNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out BodyParts that are in the trash
+exports.filterOnBodyPartsInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
+
 //@desc get list of bodyParts
 //@route GET /api/v1/bodyParts
 //@access public
@@ -25,6 +50,9 @@ exports.createBodyPart = factory.createOne(BodyPart);
 //@route PUT /api/v1/bodyParts/:id
 //@access private
 exports.updateBodyPart = factory.updateOne(BodyPart);
+
+exports.moveBodyPartToRecycleBin = factory.moveToRecycleBin(BodyPart);
+exports.restoreBodyPartFromRecycleBin = factory.restoreFromRecycleBin(BodyPart);
 
 // TODO:
 //@desc delete bodyPart

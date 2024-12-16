@@ -9,6 +9,30 @@ const Lessons = require("../models/lessonModel");
 const Category = require("../models/categoryModel");
 
 const factory = require("./handllerFactory");
+// Filter out Category that are not in the trash
+exports.filterOnCategoriesNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out Category that are in the trash
+exports.filterOnCategoriesInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
 
 //@desc get list of categories
 //@route GET /api/v1/categories
@@ -29,6 +53,9 @@ exports.createCategory = factory.createOne(Category);
 //@route PUT /api/v1/categories/:id
 //@access private
 exports.updateCategory = factory.updateOne(Category);
+
+exports.moveCategoryToRecycleBin = factory.moveToRecycleBin(Category);
+exports.restoreCategoryFromRecycleBin = factory.restoreFromRecycleBin(Category);
 
 //@desc delete category
 //@route DELETE /api/v1/categories/:id

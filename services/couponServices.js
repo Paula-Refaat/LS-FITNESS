@@ -13,6 +13,30 @@ exports.sanitizeCouponData = (req, res, next) => {
 
   next();
 };
+// Filter out Category that are not in the trash
+exports.filterOnCouponsNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+// Filter out Category that are in the trash
+exports.filterOnCouponsInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
 //@desc   Create Coupon
 //@route  POST  /api/v1/coupons
 //@access Private
@@ -32,6 +56,9 @@ exports.getCoupon = factory.getOne(Coupon);
 //@route  PUT  /api/v1/Coupons/:id
 //@access Private
 exports.updateCoupon = factory.updateOne(Coupon);
+
+exports.moveCouponToRecycleBin = factory.moveToRecycleBin(Coupon);
+exports.restoreCouponFromRecycleBin = factory.restoreFromRecycleBin(Coupon);
 
 //@desc   Delete specific Coupon
 //@route  DELETE  /api/v1/Coupons/:id

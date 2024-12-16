@@ -33,6 +33,32 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
   next();
 });
 
+// Filter out mealsCalculation that are not in the trash
+exports.filterOnMealsCalculationNotInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
+  req.filterObj.$or = [
+    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+    { isDeleted: false }, // المستندات التي isDeleted = false
+  ];
+
+  next();
+};
+
+// Filter out mealsCalculation that are in the trash
+exports.filterOnMealsCalculationInTrash = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.isDeleted = true;
+
+  next();
+};
+
 //@desc create meals calculation
 //@route POST /api/v1/mealsCalculation
 //@access protected
@@ -225,6 +251,11 @@ exports.calculateMeal = asyncHandler(async (req, res, next) => {
 //@route PUT /api/v1/mealsCalculation/:id
 //@access protected
 exports.updateMealsCalculation = factory.updateOne(mealsCalculation);
+
+exports.moveMealsCalculationToRecycleBin =
+  factory.moveToRecycleBin(mealsCalculation);
+exports.restoreMealsCalculationFromRecycleBin =
+  factory.restoreFromRecycleBin(mealsCalculation);
 
 //@desc delete meals calculation
 //@route DELETE /api/v1/mealsCalculation/:id
