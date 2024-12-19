@@ -297,7 +297,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   }
 
   // Hash the new password before updating
-  const hashedPassword = await bcrypt.hash(req.body.password, 12);
+  const hashedPassword = await bcrypt.hash(req.body.newPassword, 12);
 
   // Update the user with the hashed password using `findByIdAndUpdate`
   const updatedUser = await User.findByIdAndUpdate(
