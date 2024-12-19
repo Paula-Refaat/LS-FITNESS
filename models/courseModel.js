@@ -56,8 +56,15 @@ courseSchema.methods.toJSON = function () {
 };
 courseSchema.pre(/^find/, function (next) {
   // this.populate({ path: "instructor", select: "name" });
-  this.populate({ path: "category", select: "title" });
+  this.populate({ path: "category", select: "title _id" });
   next();
+});
+
+courseSchema.set("toObject", {
+  transform: (doc, ret) => {
+    delete ret.category.id; 
+    return ret;
+  },
 });
 const setCourseImageURL = (doc) => {
   //return image base url + iamge name
