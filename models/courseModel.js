@@ -62,7 +62,12 @@ courseSchema.pre(/^find/, function (next) {
 
 courseSchema.set("toObject", {
   transform: (doc, ret) => {
-    delete ret.category.id; 
+    if (ret.category) {
+      delete ret.category.id;
+    }
+    delete ret.isDeleted;
+    delete ret.deletedAt;
+    delete ret.__v
     return ret;
   },
 });
