@@ -8,6 +8,7 @@ const {
   forgotPassword,
   verifyPassResetCode,
   resetPassword,
+  userLogin,
 } = require("../../services/authServices");
 
 const {
@@ -16,6 +17,7 @@ const {
   forgotPasswordValidator,
   verifyPassResetCodeValidator,
   resetPasswordValidator,
+  userLoginValidator,
 } = require("../../utils/validators/authValidator");
 
 // Create a limiter for login requests
@@ -82,6 +84,8 @@ router.get(
 
 router.post("/signup", signupValidator, signup);
 router.post("/login", loginValidator, loginLimiter, login);
+router.post("/login/userLogin", userLoginValidator, loginLimiter, userLogin);
+
 router.post(
   "/forgotpassword",
   forgotPasswordLimiter,

@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: [true, "Phone number required"],
     },
+    deviceIds: [{ type: String }], // مصفوفة لتخزين معرفات الأجهزة
 
     profileImg: String,
 

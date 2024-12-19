@@ -12,6 +12,8 @@ exports.signupValidator = [
     .isLength({ min: 3 })
     .withMessage("Too short user name"),
 
+  check("deviceId").notEmpty().withMessage("deviceId Required"),
+
   check("email")
     .notEmpty()
     .withMessage("email Required")
@@ -58,7 +60,7 @@ exports.signupValidator = [
 exports.loginValidator = [
   check("email")
     .notEmpty()
-    .withMessage("email reauired")
+    .withMessage("email required")
     .isEmail()
     .withMessage("invalid email address"),
   check("password")
@@ -68,10 +70,26 @@ exports.loginValidator = [
     .withMessage("Too short password"),
   validatorMiddleware,
 ];
+
+exports.userLoginValidator = [
+  check("email")
+    .notEmpty()
+    .withMessage("email required")
+    .isEmail()
+    .withMessage("invalid email address"),
+  check("password")
+    .notEmpty()
+    .withMessage("Password required")
+    .isLength({ min: 8 })
+    .withMessage("Too short password"),
+  check("deviceId").notEmpty().withMessage("deviceId Required"),
+  validatorMiddleware,
+];
+
 exports.forgotPasswordValidator = [
   check("email")
     .notEmpty()
-    .withMessage("Email Reauired")
+    .withMessage("Email Required")
     .isEmail()
     .withMessage("Please enter a valid email address"),
   validatorMiddleware,

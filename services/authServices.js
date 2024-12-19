@@ -13,6 +13,7 @@ const createToken = require("../utils/createToken");
 const User = require("../models/userModel");
 const { LoginResponseDTO } = require("../utils/dtos/LoginResponseDTO");
 const { RegisterResponseDTO } = require("../utils/dtos/RegisterResponseDTO");
+const Settings = require("../models/settingsModels");
 
 // @desc    User Register,login with Google
 // @route   POST /api/v1/auth/google
@@ -129,16 +130,29 @@ passport.use(
 // @route   POST /api/v1/auth/signup
 // @access  Public
 exports.signup = asyncHandler(async (req, res, next) => {
-  // 1- create user
+  const { username, email, password, phone, deviceId } = req.body;
+
+  // 1- التحقق من وجود البريد الإلكتروني في قاعدة البيانات
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    return next(new ApiError("Email already in use", 400));
+  }
+
   const user = await User.create({
-    username: req.body.username,
-    email: req.body.email,
+    username,
+    email,
     password: req.body.password,
-    phone: req.body.phone,
+    phone,
+    deviceIds: [deviceId],
   });
+
+  // 4- إعداد استجابة تسجيل المستخدم
   const signupResponse = new RegisterResponseDTO(user);
-  // 2- Creat token
+
+  // 5- إنشاء توكن JWT
   const token = createToken(user._id);
+
+  // 6- إرسال الاستجابة
   res.status(201).json({ data: signupResponse, token });
 });
 
@@ -167,6 +181,56 @@ exports.login = asyncHandler(async (req, res, next) => {
   const token = createToken(user._id);
 
   // Send response
+  res.status(200).json({ data: loginResponse, token });
+});
+
+exports.userLogin = asyncHandler(async (req, res, next) => {
+  const { email, password, deviceId } = req.body; // الحصول على deviceId من الـ body
+
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    return next(new ApiError("Incorrect email or password", 401));
+  }
+  // Compare password asynchronously
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    return next(new ApiError("Incorrect email or password", 401));
+  }
+
+  // تحقق إذا كان deviceId موجودًا في الـ body
+  if (deviceId) {
+    const settings = await Settings.findOne();
+    if (!settings) {
+      return res
+        .status(500)
+        .json({ message: "Application settings not configured" });
+    }
+
+    const MAX_LOGINS_PER_DEVICE = settings.MAX_LOGINS_PER_DEVICE;
+
+    // تحقق إذا كان عدد الأجهزة قد تم تجاوزه
+    if (
+      user.deviceIds.length >= MAX_LOGINS_PER_DEVICE &&
+      !user.deviceIds.includes(deviceId)
+    ) {
+      return res.status(403).json({
+        message: `Maximum number of devices (${MAX_LOGINS_PER_DEVICE}) exceeded.`,
+      });
+    }
+
+    // إضافة deviceId إلى قائمة الأجهزة الخاصة بالمستخدم فقط إذا لم يكن موجودًا
+    await User.updateOne(
+      { _id: user._id },
+      { $addToSet: { deviceIds: deviceId } } // $addToSet يمنع التكرار
+    );
+  }
+
+  // إعداد استجابة تسجيل الدخول
+  const loginResponse = new LoginResponseDTO(user);
+  const token = createToken(user._id);
+
+  // إرسال الاستجابة
   res.status(200).json({ data: loginResponse, token });
 });
 
