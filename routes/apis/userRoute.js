@@ -29,6 +29,11 @@ const {
   restoreUserFromRecycleBin,
   filterOnUsersInTrash,
   filterOnUsersNotInTrash,
+  filterOnAdminUsers,
+  filterOnSubAdminUsers,
+  filterOnTrainerUsers,
+  filterOnLsTrainerUsers,
+  filterOnUsersRole,
   // deleteLoggedUser,
   // activeLoggedUser,
 } = require("../../services/userService");
@@ -114,8 +119,60 @@ router
     deleteUser
   );
 
-router.delete("/:id/moveToTrash", moveUserToRecycleBin);
-router.put("/:id/restore", restoreUserFromRecycleBin);
-router.get("/deleted/trash", filterOnUsersInTrash, getUsers);
+router.delete(
+  "/:id/moveToTrash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  moveUserToRecycleBin
+);
+router.put(
+  "/:id/restore",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  restoreUserFromRecycleBin
+);
+router.get(
+  "/deleted/trash",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnUsersInTrash,
+  getUsers
+);
+
+router.get(
+  "/getAll/admins",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnAdminUsers,
+  getUsers
+);
+router.get(
+  "/getAll/sub-admins",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnSubAdminUsers,
+  getUsers
+);
+router.get(
+  "/getAll/trainers",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnTrainerUsers,
+  getUsers
+);
+router.get(
+  "/getAll/ls-trainers",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnLsTrainerUsers,
+  getUsers
+);
+router.get(
+  "/getAll/trainees",
+  authServices.protect,
+  authServices.allowTo("admin"),
+  filterOnUsersRole,
+  getUsers
+);
 
 module.exports = router;

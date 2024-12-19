@@ -49,7 +49,7 @@ exports.setRestrictionOnCreateUser = asyncHandler(async (req, res, next) => {
   next();
 });
 
-// Filter out Category that are not in the trash
+// Filter out User that are not in the trash
 exports.filterOnUsersNotInTrash = (req, res, next) => {
   if (!req.filterObj) {
     req.filterObj = {};
@@ -63,7 +63,8 @@ exports.filterOnUsersNotInTrash = (req, res, next) => {
 
   next();
 };
-// Filter out Category that are in the trash
+
+// Filter out User that are in the trash
 exports.filterOnUsersInTrash = (req, res, next) => {
   if (!req.filterObj) {
     req.filterObj = {};
@@ -71,6 +72,51 @@ exports.filterOnUsersInTrash = (req, res, next) => {
 
   req.filterObj.isDeleted = true;
 
+  next();
+};
+
+// Filter out users with the admin role.
+exports.filterOnAdminUsers = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  req.filterObj.role = "admin";
+  next();
+};
+
+// Filter out users with the sub-admin role.
+exports.filterOnSubAdminUsers = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  req.filterObj.role = "sub-admin";
+  next();
+};
+
+// Filter out users with the trainer role.
+exports.filterOnTrainerUsers = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  req.filterObj.role = "trainer";
+  next();
+};
+
+// Filter out users with the user role.
+exports.filterOnUsersRole = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  req.filterObj.role = "user";
+  next();
+};
+
+// Filter out users with the Ls-trainer role.
+exports.filterOnLsTrainerUsers = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  req.filterObj.role = "Ls-trainer";
   next();
 };
 
