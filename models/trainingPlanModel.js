@@ -19,10 +19,18 @@ const trainingPlanSchema = new mongoose.Schema(
         ],
       },
     ],
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
   },
   { timestamps: true }
 );
-
+trainingPlanSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "days.exercises.exercise",
+    select: "-isDeleted -deletedAt",
+  });
+  next();
+});
 trainingPlanSchema.methods.toJSON = function () {
   const obj = this.toObject();
   if (!obj.createdAt) {
