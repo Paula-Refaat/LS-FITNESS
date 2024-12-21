@@ -385,6 +385,9 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   }
 });
 
+// @desc    logout
+// @route   PUT /api/v1/auth/logout
+// @access  Public
 exports.logout = asyncHandler(async (req, res, next) => {
   const userAuthorization = new UserAuthorization();
 
