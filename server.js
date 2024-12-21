@@ -14,6 +14,8 @@ const globalError = require("./middlewares/errorMiddleware");
 const mountRoute = require("./routes");
 const trimAll = require("./middlewares/trimMiddleware");
 
+const cleanupTokens = require("./utils/cronJobs/cleanupTokens");
+
 // DB Connection
 dbConnection();
 
@@ -51,6 +53,9 @@ if (process.env.NODE_ENV === "development") {
 
 //Mount Routes
 mountRoute(app);
+
+// تشغيل Cron Job
+cleanupTokens; // Node-Cron يبدأ تلقائيًا
 
 // Initialize Passport
 app.use(passport.initialize());

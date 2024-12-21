@@ -14,6 +14,7 @@ const User = require("../models/userModel");
 const { LoginResponseDTO } = require("../utils/dtos/LoginResponseDTO");
 const { RegisterResponseDTO } = require("../utils/dtos/RegisterResponseDTO");
 const Settings = require("../models/settingsModels");
+const BlacklistedToken = require("../models/blacklistedTokenModel");
 
 // @desc    User Register,login with Google
 // @route   POST /api/v1/auth/google
@@ -239,7 +240,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   const userAuthorization = new UserAuthorization();
 
   const token = userAuthorization.getToken(req.headers.authorization);
-  const decoded = userAuthorization.tokenVerifcation(token);
+  const decoded = await userAuthorization.tokenVerification(token);
   const currentUser = await userAuthorization.checkCurrentUserExist(decoded);
   userAuthorization.checkCurrentUserIsActive(currentUser);
   userAuthorization.checkUserChangeHisPasswordAfterTokenCreated(
@@ -381,5 +382,25 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
     res.status(200).json({ token });
   } else {
     return next(new ApiError("Password update failed", 500));
+  }
+});
+
+exports.logout = asyncHandler(async (req, res, next) => {
+  const userAuthorization = new UserAuthorization();
+
+  const token = userAuthorization.getToken(req.headers.authorization);
+  if (token) {
+    const decoded = await userAuthorization.tokenVerification(token);
+
+    await BlacklistedToken.create({
+      token,
+      expiresAt: new Date(decoded.exp * 1000), // تاريخ انتهاء التوكن
+    });
+    res.json({
+      status: "success",
+      message: "You are logged out successfully",
+    });
+  } else {
+    res.status(400).json({ message: "You are already logged out" });
   }
 });

@@ -9,6 +9,8 @@ const {
   verifyPassResetCode,
   resetPassword,
   userLogin,
+  protect,
+  logout,
 } = require("../../services/authServices");
 
 const {
@@ -98,5 +100,5 @@ router.post(
   verifyPassResetCode
 );
 router.post("/resetPassword", resetPasswordValidator, resetPassword);
-
+router.post("/logout", protect, logout);
 module.exports = router;

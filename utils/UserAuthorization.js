@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const ApiError = require("./ApiError");
 const User = require("../models/userModel");
+const BlacklistedToken = require("../models/blacklistedTokenModel");
 
 class UserAuthorization {
   //  1) check if token exists, if exists get it
@@ -20,7 +21,13 @@ class UserAuthorization {
   }
 
   //  2) Verify token (no changes happend, expired token)
-  tokenVerifcation(token) {
+  async tokenVerification(token) {
+    const isBlacklisted = await BlacklistedToken.findOne({ token });
+    if (isBlacklisted)
+      throw new ApiError(
+        "You are not login, Please login to get access this route ..",
+        401
+      );
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     return decoded;
   }
