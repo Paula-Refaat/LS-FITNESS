@@ -22,7 +22,7 @@ class ApiFeatures {
       const sortBy = this.queryStr.sort.split(".").join(" ");
       this.mongooseeQuery = this.mongooseeQuery.sort(sortBy);
     } else {
-      this.mongooseeQuery = this.mongooseeQuery.sort("-createAt");
+      this.mongooseeQuery = this.mongooseeQuery.sort("createdAt");
     }
     return this;
   }
@@ -108,36 +108,36 @@ class ApiFeatures {
     return this;
   }
 
-  search(modelName) {
-    if (this.queryStr.keyword) {
-      let query = {};
+  // search(modelName) {
+  //   if (this.queryStr.keyword) {
+  //     let query = {};
 
-      if (modelName === "User") {
-        query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
-      } else if (modelName === "Event") {
-        query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
-      } else if (
-        modelName === "MealsCategory" ||
-        modelName === "MealsCalculation"
-      ) {
-        query = {
-          $or: [
-            { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
-            { Title_EN: { $regex: this.queryStr.keyword, $options: "i" } },
-          ],
-        };
-      } else {
-        query = {
-          title: { $regex: this.queryStr.keyword, $options: "i" },
-        };
-      }
+  //     if (modelName === "User") {
+  //       query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
+  //     } else if (modelName === "Event") {
+  //       query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
+  //     } else if (
+  //       modelName === "MealsCategory" ||
+  //       modelName === "MealsCalculation"
+  //     ) {
+  //       query = {
+  //         $or: [
+  //           { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
+  //           { Title_EN: { $regex: this.queryStr.keyword, $options: "i" } },
+  //         ],
+  //       };
+  //     } else {
+  //       query = {
+  //         title: { $regex: this.queryStr.keyword, $options: "i" },
+  //       };
+  //     }
 
-      // تعديل query بحيث يشمل التصفية
-      this.mongooseeQuery = this.mongooseeQuery.find(query);
-    }
+  //     // تعديل query بحيث يشمل التصفية
+  //     this.mongooseeQuery = this.mongooseeQuery.find(query);
+  //   }
 
-    return this;
-  }
+  //   return this;
+  // }
 }
 
 module.exports = ApiFeatures;

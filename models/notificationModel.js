@@ -43,6 +43,10 @@ NotificationSchema.methods.toJSON = function () {
   delete obj.__v;
   return obj;
 };
+NotificationSchema.pre(/^find/, function (next) {
+  this.sort({ createdAt: -1 });
+  next();
+});
 // // ^find => it mean if part of of teh word contains find
 // NotificationSchema.pre(/^find/, function (next) {
 //   // this => query
