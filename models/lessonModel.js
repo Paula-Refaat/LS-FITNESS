@@ -50,8 +50,8 @@ lessonSchema.methods.toJSON = function () {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
   delete obj.__v;
-  delete exercise.isDeleted;
-  delete exercise.deletedAt;
+  delete obj.isDeleted;
+  delete obj.deletedAt;
   return obj;
 };
 lessonSchema.pre(/^find/, function (next) {
