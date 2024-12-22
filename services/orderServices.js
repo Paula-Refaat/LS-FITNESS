@@ -276,7 +276,7 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
       if (!order) {
         return next(new ApiError("Order not found or already paid", 404));
       }
-      if (order && order.coupon) {
+      if (order && order.coupon && order.coupon.name) {
         // Get coupon and increment numberOfUsage by 1
         let coupon = await Coupon.findOne({
           name: order.coupon.name,
