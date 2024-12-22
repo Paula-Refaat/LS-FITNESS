@@ -228,7 +228,7 @@ exports.applyCouponOnCourse = asyncHandler(async (req, res, next) => {
       return next(new ApiError("Invalid coupon code", 400));
     }
 
-    if (couponDoc.expire < new Date()) {
+    if (couponDoc.expire >= new Date()) {
       return next(new ApiError("Coupon has expired", 400));
     }
 
