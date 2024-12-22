@@ -23,7 +23,7 @@ exports.getAll = (Model, modelName = "", populationOpt) =>
         query = query.populate({
           path: populationOpt,
           select: "-category -users ",
-          options: { limit: 3, sort: { _id: -1 } },
+          options: { limit: 4, sort: { _id: -1 } },
         });
       } else {
         query = query.populate(populationOpt);
