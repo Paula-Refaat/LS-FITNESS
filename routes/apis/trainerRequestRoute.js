@@ -13,6 +13,8 @@ const {
   uploadinfo,
   handleMarketingReqsPdfs,
   updateTrainerRequest,
+  acceptTrainerRequest,
+  rejectTrainerRequest,
   // requestToBeTrainer,
 } = require("../../services/trainerRequestService");
 
@@ -48,5 +50,7 @@ router
     // updateTrainerRequestValidator,
     updateTrainerRequest
   );
+router.put("/:id/accept", acceptTrainerRequest);
+router.put("/:id/reject", rejectTrainerRequest);
 
 module.exports = router;

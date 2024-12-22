@@ -55,6 +55,11 @@ const trainerRequestSchema = mongoose.Schema(
     },
     note: {
       type: String,
+      default: null,
+    },
+    reasonOfRejection: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }

@@ -6,6 +6,8 @@ const TrainerRequest = require("../models/trainerRequestModel");
 const factory = require("./handllerFactory");
 const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
 
+const ApiError = require("../utils/ApiError");
+
 // إعداد رفع الملفات
 exports.uploadinfo = uploadMixOfMedia(
   [
@@ -62,6 +64,16 @@ exports.requestToBeTrainer = asyncHandler(async (req, res, next) => {
   } = req.body;
 
   try {
+    const isExistsTrainerRequest = await TrainerRequest.findOne({
+      user: req.user.id,
+      status: "pending" || "approved",
+    });
+    if (isExistsTrainerRequest) {
+      return res.status(400).json({
+        status: "error",
+        message: "You have already requested to be a trainer",
+      });
+    }
     // Create a new LawyerRequest document
     const trainerRequest = await TrainerRequest.create({
       name,
@@ -119,4 +131,58 @@ exports.updateTrainerRequest = asyncHandler(async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+//@desc Accept TrainerRequest
+//@route PUT /api/v1/TrainerRequests/:id/accept
+//@access Private/Admin
+exports.acceptTrainerRequest = asyncHandler(async (req, res, next) => {
+  const trainerRequest = await TrainerRequest.findById(req.params.id);
+  if (!trainerRequest) {
+    return next(new ApiError("trainer not found", 404));
+  }
+  if (trainerRequest && trainerRequest.status === "approved") {
+    return next(new ApiError("this trainer is already approved", 400));
+  }
+  await TrainerRequest.updateOne(
+    { _id: req.params.id },
+    {
+      status: "approved",
+      note: req.body.note ? req.body.note : null,
+    }
+  );
+  res.status(200).json({
+    status: "success",
+    message: "trainer request accepted successfully",
+    trainerNote: req.body.note ? req.body.note : null,
+  });
+});
+
+//@desc Reject TrainerRequest
+//@route PUT /api/v1/TrainerRequests/:id/accept
+//@access Private/Admin
+exports.rejectTrainerRequest = asyncHandler(async (req, res, next) => {
+  const { reasonOfRejection } = req.body;
+  const trainerRequest = await TrainerRequest.findById(req.params.id);
+  if (!trainerRequest) {
+    return next(new ApiError("trainer not found", 404));
+  }
+  if (trainerRequest && trainerRequest.status === "rejected") {
+    return next(new ApiError("this trainer is already rejected", 400));
+  }
+  if (!reasonOfRejection) {
+    return next(new ApiError("reason of rejection is required", 400));
+  }
+  await TrainerRequest.updateOne(
+    { _id: req.params.id },
+    {
+      status: "rejected",
+      reasonOfRejection: reasonOfRejection,
+    }
+  );
+  res.status(200).json({
+    status: "success",
+    message: "trainer request rejected successfully",
+    "reason of rejection": reasonOfRejection,
+  });
 });
