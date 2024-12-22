@@ -65,6 +65,11 @@ const trainerRequestSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+trainerRequestSchema.pre(/^find/, function (next) {
+  this.populate({ path: "user", select: "username email" });
+  next();
+});
+
 const setImageURL = (doc) => {
   if (doc.certificates && Array.isArray(doc.certificates)) {
     // تحديث كل شهادة في المصفوفة

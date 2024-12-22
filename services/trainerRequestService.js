@@ -8,6 +8,13 @@ const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
 
 const ApiError = require("../utils/ApiError");
 
+exports.createFilterObj = (req, res, next) => {
+  let filterObject = {};
+  if (req.user.role === "user" || req.user.role === "trainer")
+    filterObject = { user: req.user.id };
+  req.filterObj = filterObject;
+  next();
+};
 // إعداد رفع الملفات
 exports.uploadinfo = uploadMixOfMedia(
   [

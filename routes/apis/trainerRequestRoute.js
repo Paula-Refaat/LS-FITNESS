@@ -15,6 +15,7 @@ const {
   updateTrainerRequest,
   acceptTrainerRequest,
   rejectTrainerRequest,
+  createFilterObj,
   // requestToBeTrainer,
 } = require("../../services/trainerRequestService");
 
@@ -29,9 +30,16 @@ router.post(
   // requestToBeTrainerValidator,
   requestToBeTrainer
 );
-router.use(authServices.protect, authServices.allowTo("admin"));
+router
+  .route("/")
+  .get(
+    authServices.protect,
+    authServices.allowTo("admin", "user", "trainer"),
+    createFilterObj,
+    getTrainerRequests
+  );
 
-router.route("/").get(getTrainerRequests);
+router.use(authServices.protect, authServices.allowTo("admin"));
 
 router
   .route("/:id")
