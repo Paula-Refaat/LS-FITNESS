@@ -8,6 +8,7 @@ const {
 const {
   AddToProgress,
   getMyProgressByExerciseId,
+  createFilterObj,
 } = require("../../services/progressServices");
 
 const router = express.Router();
@@ -25,6 +26,7 @@ router
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin"),
+    createFilterObj,
     getProgressByExerciseIdValidator,
     getMyProgressByExerciseId
   );

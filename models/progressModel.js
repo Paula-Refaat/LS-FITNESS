@@ -14,8 +14,14 @@ const progressSchema = mongoose.Schema(
     },
     volumes: [
       {
-        type: Number,
-        required: true,
+        volume: {
+          type: Number,
+          required: true,
+        },
+        date: {
+          type: Date,
+          default: Date.now(),
+        },
       },
     ],
   },
@@ -35,5 +41,26 @@ progressSchema.pre(/^find/, function (next) {
   next();
 });
 
+progressSchema.methods.toJSON = function () {
+  const progress = this;
+  const progressObject = progress.toObject();
+
+  // استبدال `exerciseId` بـ `exercise` يحتوي على `_id` و `title`
+  if (
+    progress.exerciseId &&
+    progress.exerciseId._id &&
+    progress.exerciseId.title
+  ) {
+    progressObject.exercise = {
+      _id: progress.exerciseId._id,
+      title: progress.exerciseId.title,
+    };
+  }
+
+  // إزالة الحقل الأصلي `exerciseId`
+  delete progressObject.exerciseId;
+
+  return progressObject;
+};
 const ProgressModel = mongoose.model("Progress", progressSchema);
 module.exports = ProgressModel;

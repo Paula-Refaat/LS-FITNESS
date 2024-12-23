@@ -17,6 +17,28 @@ class ApiFeatures {
     return this;
   }
 
+  // filter() {
+  //   // نسخ الاستعلام الأصلي مع استبعاد الحقول غير المرغوبة
+  //   const queryStringObj = { ...this.queryStr };
+  //   const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
+  //   excludesFields.forEach((field) => delete queryStringObj[field]);
+
+  //   let queryStr = JSON.stringify(queryStringObj);
+  //   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  //   // التحقق إذا كان هناك فلترة على volumes.date
+  //   if (queryStringObj["volumes.date"]) {
+  //     const dateFilter = JSON.parse(queryStr)["volumes.date"];
+  //     this.mongooseeQuery = this.mongooseeQuery.find({
+  //       volumes: { $elemMatch: { date: dateFilter } },
+  //     });
+  //   } else {
+  //     this.mongooseeQuery = this.mongooseeQuery.find(JSON.parse(queryStr));
+  //   }
+
+  //   return this;
+  // }
+
   sort() {
     if (this.queryStr.sort) {
       const sortBy = this.queryStr.sort.split(".").join(" ");
