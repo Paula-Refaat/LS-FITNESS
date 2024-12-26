@@ -21,12 +21,12 @@ const advertiseSchema = new mongoose.Schema(
         "Supplement",
         "Vitamin",
       ],
-      //   required: true,
+        required: true,
     },
     targetModelId: {
       type: mongoose.Schema.Types.ObjectId,
       refPath: "targetModel",
-      //   required: true,
+        required: true,
     },
   },
   { timestamps: true }

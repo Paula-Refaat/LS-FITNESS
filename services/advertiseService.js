@@ -32,34 +32,38 @@ exports.createAdvertise = asyncHandler(async (req, res, next) => {
   const { title, image, targetModel, targetModelId } = req.body;
 
   // تحقق من وجود targetModel و targetModelId
-  if (targetModel && targetModelId) {
-    // تحقق إذا كان targetModel موجودًا في قائمة المودلز المعرفة
-    const validModels = mongoose.modelNames();
-    if (!validModels.includes(targetModel)) {
-      return res.status(400).json({
-        status: "error",
-        message: `Invalid targetModel: ${targetModel}`,
-      });
-    }
+  if (!targetModel || !targetModelId) {
+    return res.status(400).json({
+      status: "error",
+      message: "Target model and ID are required",
+    });
+  }
+  // تحقق إذا كان targetModel موجودًا في قائمة المودلز المعرفة
+  const validModels = mongoose.modelNames();
+  if (!validModels.includes(targetModel)) {
+    return res.status(400).json({
+      status: "error",
+      message: `Invalid targetModel: ${targetModel}`,
+    });
+  }
 
-    // البحث عن الـ targetModelId في الموديل المناسب
-    const TargetModel = mongoose.model(targetModel);
-    const targetDoc = await TargetModel.findById(targetModelId);
+  // البحث عن الـ targetModelId في الموديل المناسب
+  const TargetModel = mongoose.model(targetModel);
+  const targetDoc = await TargetModel.findById(targetModelId);
 
-    if (!targetDoc) {
-      return res.status(404).json({
-        status: "error",
-        message: `No document found with ID: ${targetModelId} in model: ${targetModel}`,
-      });
-    }
+  if (!targetDoc) {
+    return res.status(404).json({
+      status: "error",
+      message: `No document found with ID: ${targetModelId} in model: ${targetModel}`,
+    });
   }
 
   // إنشاء الإعلان بعد التحقق
   const newAdvertise = await Advertise.create({
     title,
     image,
-    targetModel: targetModel || null,
-    targetModelId: targetModelId || null,
+    targetModel: targetModel,
+    targetModelId: targetModelId,
   });
 
   res.status(201).json({
