@@ -22,7 +22,7 @@ exports.getAll = (Model, modelName = "", populationOpt) =>
       if (populationOpt === "courses") {
         query = query.populate({
           path: populationOpt,
-          select: "-category -users ",
+          select: "-category ",
           options: { limit: 4, sort: { _id: -1 } },
         });
       } else {
