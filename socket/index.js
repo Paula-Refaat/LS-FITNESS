@@ -40,16 +40,6 @@ const sendGroupMessage = (socket, { senderId, roomId, payload, action }) => {
   socket.to(roomId).emit("receiveMessage", { senderId, payload, action });
 };
 
-const sendNotification = (userId, notificationData) => {
-  const userSocketId = getUserSocketId(userId);
-  if (userSocketId) {
-    io.to(userSocketId).emit("notification", notificationData);
-  } else {
-    console.log(`User ${userId} is offline.`);
-    // Optionally handle offline user case here
-  }
-};
-
 function initSocket(server) {
   io = socketIO(server, {
     cors: {
@@ -83,16 +73,14 @@ function initSocket(server) {
     });
 
     socket.on("disconnect", () => {
-      removeUser(socket.id);
+      removeUser(removeUser);
       console.log(`User disconnected: ${socket.id}`);
     });
   });
 
   console.log("Socket.IO server is running.");
-  // Export sendNotification function
 }
 
 module.exports = {
   initSocket,
-  sendNotification,
 };
