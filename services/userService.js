@@ -269,6 +269,10 @@ exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteLoggedUser = asyncHandler(async (req, res, next) => {
+  const adminId = process.env.PERENNATE_ADMIN_ID;
+  if (adminId.toString() === req.user._id.toString()) {
+    return next(new ApiError("This admin can't be deleted", 400));
+  }
   await User.findByIdAndDelete(req.user._id);
   res.status(204).send();
 });

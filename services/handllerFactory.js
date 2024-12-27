@@ -210,7 +210,11 @@ exports.restoreFromRecycleBin = (Model) =>
 
 exports.deleteOne = (Model) =>
   asyncHandler(async (req, res, next) => {
+    const adminId = process.env.PERENNATE_ADMIN_ID;
     const { id } = req.params;
+    if (adminId === id) {
+      return next(new ApiError("This admin can't be deleted", 400));
+    }
     const document = await Model.findByIdAndDelete(id);
     if (!document) {
       return next(new ApiError(`No document for this id ${id}`, 404));
