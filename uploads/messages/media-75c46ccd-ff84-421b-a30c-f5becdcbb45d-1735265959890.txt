@@ -1,0 +1,78 @@
+[4:33 PM, 6/25/2024] Eng Paula Refaat: On 5/7/2024  => This functionality exceed 30%
+
+admin: 
+* get all users
+* create one user
+* update specific user
+* delete specific user
+* change user password
+* send notification to any user (using restfull api. Socket to be in another stage).
+* create category
+* get all categories
+* get one category
+* update specific category
+* delete specific category (delete all services that belong to this category).
+
+user : 
+* get my account data
+* change my password
+* forget password (email, until you book sms service)
+* update my profile (data)
+* get my notifications 
+* add post and notify every lawer(using restfull api. Socket to be in another stage).
+
+Note: All this functionality to be an restfull api not socket server, 
+the socket server is be future stages.
+And any notification sen…
+[4:46 PM, 6/25/2024] Eng Paula Refaat: On 5/7/2024 => This functionality exceeds 30%
+
+admin: 
+* get all users
+- create one user
+- update specific user
+- delete specific user
+- change user password
+- send notification to any user (using restful Api. Socket to be in another stage).
+- create category
+- get all categories
+- get one category
+- update specific category
+- delete specific category (delete all services that belong to this category).
+- review all services 
+- approve services 
+- reject services 
+
+
+user: 
+- get my account data
+- change my password
+- forget password (email, until you book SMS service)
+- update my profile (data)
+- get my notifications 
+- add post and notify every Lawer (using restful Api. Socket to be in another stage).
+
+
+Lawer: 
+- create services, sent request to admin to review these services
+- add offer on user's posts
+- notify Lawer with his service approved or not
+
+Note: All this functionality to be a restful Api does not socket server, 
+the socket server be future stages.
+And any notification send outside the application will be in the future stages such as SMS.
+
+
+
+On 16/7/2024  => The Second Phase: 20%
+- Make changes that we approved on the previous stage.
+- Guests can send request to be a lawyer.
+- admin can get all requests.
+- admin can get a specific request. 
+- admin can accept or reject the request.
+- admin can add lawyer from manwally from Dashboard.
+- Buy host and deploy on it test version of code.
+- make an request to sms gateway and the functionality to be in the last stage. 
+
+
+
+https://signup.smsala.com/

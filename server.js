@@ -74,6 +74,10 @@ const server = app.listen(PORT, () => {
   console.log(`App Running on port ${PORT}`);
 });
 
+// Initialize Socket.IO server and integrate with Express
+const { initSocket } = require("./socket/index");
+initSocket(server);
+
 // Handle unhandled promise rejection
 process.on("unhandledRejection", (error) => {
   console.log(`unhandledRejection Error : ${error.name} | ${error.message}`);
