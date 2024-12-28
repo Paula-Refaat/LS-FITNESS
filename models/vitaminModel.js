@@ -24,6 +24,10 @@ const vitaminSchema = mongoose.Schema(
       required: [true, "vitamin image required"],
       trim: true,
     },
+    benefits: {
+      type: String,
+      required: [true, "vitamin benefits required"],
+    },
     video: {
       url: {
         type: String,

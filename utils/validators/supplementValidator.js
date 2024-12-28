@@ -41,6 +41,7 @@ exports.createSupplementValidator = [
     .isLength({ max: 1000 })
     .withMessage("too long description"),
   check("image").notEmpty().withMessage("image required"),
+  check("benefits").notEmpty().withMessage("benefits required"),
 
   check("vimeo_video_Url")
     .notEmpty()
@@ -99,6 +100,8 @@ exports.updateSupplementValidator = [
     .isLength({ max: 1000 })
     .withMessage("too long Description, max must be 1000 character"),
   check("image").optional().notEmpty().withMessage("image required"),
+  check("benefits").optional().notEmpty().withMessage("benefits required"),
+
   check("vimeo_video_Url")
     .optional()
     .notEmpty()

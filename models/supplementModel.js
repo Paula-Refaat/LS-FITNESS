@@ -14,7 +14,7 @@ const supplementSchema = mongoose.Schema(
     description: {
       type: String,
       required: [true, "supplement description required"],
-    //   unique: [true, "supplement description must be unique"],
+      //   unique: [true, "supplement description must be unique"],
       minlength: [10, "too short supplement  description "],
       maxlength: [1000, "too long supplement description"],
       trim: true,
@@ -23,6 +23,10 @@ const supplementSchema = mongoose.Schema(
       type: String,
       required: [true, "supplement image required"],
       trim: true,
+    },
+    benefits: {
+      type: String,
+      required: [true, "vitamin benefits required"],
     },
     video: {
       url: {
