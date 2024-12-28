@@ -3,22 +3,25 @@ const mongoose = require("mongoose");
 // 2. Training Plan Schema
 const trainingPlanSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true }, // اسم الخطة
-    days: [
-      {
-        dayNumber: { type: Number, required: true }, // اليوم رقم
-        exercises: [
-          {
-            exercise: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" }, // التمرين
+    title: { type: String, required: true }, // اسم الخطة
+    description: { type: String, required: true }, // الوصف
+    image: { type: String, required: true }, // الصورة
+    // days: [
+    //   {
+    //     dayNumber: { type: Number, required: true }, // اليوم رقم
+    //     exercises: [
+    //       {
+    //         exercise: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" }, // التمرين
 
-            sets: { type: Number, required: true }, // عدد المجموعات
-            reps: { type: Number, required: true }, // عدد التكرارات
-            restBetweenSets: { type: Number, required: true }, // الراحة بين المجموعات (بالثواني)
-            restBetweenExercises: { type: Number, required: true }, // الراحة بين التمارين (بالثواني)
-          },
-        ],
-      },
-    ],
+    //         sets: { type: Number, required: true }, // عدد المجموعات
+    //         reps: { type: Number, required: true }, // عدد التكرارات
+    //         restBetweenSets: { type: Number, required: true }, // الراحة بين المجموعات (بالثواني)
+    //         restBetweenExercises: { type: Number, required: true }, // الراحة بين التمارين (بالثواني)
+    //       },
+    //     ],
+    //   },
+    // ],
+
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
   },
@@ -44,7 +47,23 @@ trainingPlanSchema.methods.toJSON = function () {
   delete obj.deletedAt;
   return obj;
 };
-
+const setImageURL = (doc) => {
+  //return image base url + iamge name
+  if (doc.image) {
+    const ImageUrl = `${process.env.BASE_URL}/trainingPlan/${doc.image}`;
+    doc.image = ImageUrl;
+  }
+};
+//after initializ the doc in db
+// check if the document contains image
+// it work with findOne,findAll,update
+trainingPlanSchema.post("init", (doc) => {
+  setImageURL(doc);
+});
+// it work with create
+trainingPlanSchema.post("save", (doc) => {
+  setImageURL(doc);
+});
 // Models
 const TrainingPlan = mongoose.model("TrainingPlan", trainingPlanSchema);
 

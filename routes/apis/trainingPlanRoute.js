@@ -13,6 +13,8 @@ const {
   restoreTrainingPlanFromRecycleBin,
   filterOnTrainingPlanInTrash,
   filterOnTrainingPlanNotInTrash,
+  uploadTrainingPlanImg,
+  resizeImage,
 } = require("../../services/trainingPlanServices");
 
 router.get(
@@ -32,12 +34,16 @@ router.post(
   "/",
   authServices.protect,
   authServices.allowTo("admin"),
+  uploadTrainingPlanImg,
+  resizeImage,
   createTrainingPlan
 );
 router.put(
   "/:id",
   authServices.protect,
   authServices.allowTo("admin"),
+  uploadTrainingPlanImg,
+  resizeImage,
   updateTrainingPlan
 );
 router.delete(
