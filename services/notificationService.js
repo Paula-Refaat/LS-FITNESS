@@ -1,8 +1,10 @@
+const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/ApiError");
 const Notification = require("../models/notificationModel");
 const factory = require("./handllerFactory");
 const User = require("../models/userModel");
+
 exports.createFilterObj = (req, res, next) => {
   const filterObject = { user: req.user.id };
   req.filterObj = filterObject;
@@ -23,7 +25,26 @@ exports.convertToArray = (req, res, next) => {
 //@route Post /api/v1/notifications
 //@access private
 exports.sendSystemNotificationToUsers = asyncHandler(async (req, res, next) => {
-  const { users, message } = req.body; // array of users
+  const { users, message, targetModel, targetModelId } = req.body; // array of users
+
+  if (targetModel && targetModelId) {
+    const validModels = mongoose.modelNames();
+    if (!validModels.includes(targetModel)) {
+      return res.status(400).json({
+        status: "error",
+        message: `Invalid targetModel: ${targetModel}`,
+      });
+    }
+    // البحث عن الـ targetModelId في الموديل المناسب
+    const TargetModel = mongoose.model(targetModel);
+    const targetDoc = await TargetModel.findById(targetModelId);
+    if (!targetDoc) {
+      return res.status(404).json({
+        status: "error",
+        message: `No document found with ID: ${targetModelId} in model: ${targetModel}`,
+      });
+    }
+  }
 
   // Check if all users exist in the database
   const existingUsers = await User.find({ _id: { $in: users } }).select("_id");
@@ -48,6 +69,8 @@ exports.sendSystemNotificationToUsers = asyncHandler(async (req, res, next) => {
         user,
         message,
         type: "system",
+        targetModel: targetModel || null,
+        targetModelId: targetModelId || null,
       });
     })
   );

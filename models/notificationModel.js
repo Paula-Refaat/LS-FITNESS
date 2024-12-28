@@ -12,6 +12,25 @@ const NotificationSchema = new mongoose.Schema(
       type: String,
       required: [true, "Message required"],
     },
+    targetModel: {
+      type: String,
+      enum: [
+        "Chat",
+        "Advertise",
+        "Course",
+        "Package",
+        "Exercise",
+        "Category",
+        "Supplement",
+        "Vitamin",
+      ],
+      // required: true,
+    },
+    targetModelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: "targetModel",
+      // required: true,
+    },
     // post: {
     //   type: mongoose.Schema.Types.ObjectId,
     //   ref: "Post",
