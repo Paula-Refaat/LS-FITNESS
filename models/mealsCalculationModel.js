@@ -21,18 +21,38 @@ const createNutrientField = (fieldName) => ({
 
 const mealsCalculationSchema = mongoose.Schema(
   {
-    title_AR: {
-      type: String,
-      required: [true, validationMessages.required("Meal Arabic title")],
-      minlength: [3, validationMessages.minLength("Meal Arabic title", 3)],
-      maxlength: [32, validationMessages.maxLength("Meal Arabic title", 32)],
+    title: {
+      ar: {
+        type: String,
+        required: [true, validationMessages.required("Meal Arabic title")],
+        minlength: [3, validationMessages.minLength("Meal Arabic title", 3)],
+        maxlength: [32, validationMessages.maxLength("Meal Arabic title", 32)],
+      },
+      en: {
+        type: String,
+        required: [true, validationMessages.required("Meal English title")],
+        minlength: [3, validationMessages.minLength("Meal English title", 3)],
+        maxlength: [32, validationMessages.maxLength("Meal English title", 32)],
+      },
+      fr: {
+        type: String,
+        // required: [true, validationMessages.required("Meal English title")],
+        minlength: [3, validationMessages.minLength("Meal french title", 3)],
+        maxlength: [32, validationMessages.maxLength("Meal french title", 32)],
+      },
+      de: {
+        type: String,
+        // required: [true, validationMessages.required("Meal german title")],
+        minlength: [3, validationMessages.minLength("Meal german title", 3)],
+        maxlength: [32, validationMessages.maxLength("Meal german title", 32)],
+      },
     },
-    title_EN: {
-      type: String,
-      required: [true, validationMessages.required("Meal English title")],
-      minlength: [3, validationMessages.minLength("Meal English title", 3)],
-      maxlength: [32, validationMessages.maxLength("Meal English title", 32)],
-    },
+    // title_EN: {
+    //   type: String,
+    //   required: [true, validationMessages.required("Meal English title")],
+    //   minlength: [3, validationMessages.minLength("Meal English title", 3)],
+    //   maxlength: [32, validationMessages.maxLength("Meal English title", 32)],
+    // },
     mealCategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "MealCategory",
@@ -87,9 +107,31 @@ const mealsCalculationSchema = mongoose.Schema(
 // mealsCalculationSchema.index({ title_EN: 1 }, { unique: true });
 
 mealsCalculationSchema.pre(/^find/, function (next) {
-  this.populate("mealCategory");
+  const lang = this.options.lang || "en";
+
+  const populationField =
+    lang === "en" ? "Title_EN" : lang === "ar" ? "Title_AR" : "Title_EN";
+
+  this.populate({
+    path: "mealCategory",
+    select: `${populationField}`,
+  });
+
+  // تعديل الحقل بعد جلب البيانات
+  this.transform = (doc) => {
+    if (doc.mealCategory) {
+      doc.mealCategory.Title = doc.mealCategory[populationField];
+      delete doc.mealCategory[populationField]; // حذف الحقل الأصلي
+    }
+    return doc;
+  };
+
   next();
 });
+
+
+
+
 
 const setCalculationImageURL = (doc) => {
   //return image base url + iamge name
