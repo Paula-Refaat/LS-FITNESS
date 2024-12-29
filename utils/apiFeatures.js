@@ -4,10 +4,31 @@ class ApiFeatures {
     this.queryStr = queryStr;
   }
 
+  // filter() {
+  //   // take copy from req.query and delete the page and limit and..... from the copy req.body to use in filter
+  //   const queryStringObj = { ...this.queryStr };
+  //   const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
+  //   excludesFields.forEach((field) => delete queryStringObj[field]);
+
+  //   let queryStr = JSON.stringify(queryStringObj);
+  //   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  //   this.mongooseeQuery = this.mongooseeQuery.find(JSON.parse(queryStr));
+  //   return this;
+  // }
+
+  // Filter Based On Language
+  // الفلترة حسب اللغة
   filter() {
-    // take copy from req.query and delete the page and limit and..... from the copy req.body to use in filter
     const queryStringObj = { ...this.queryStr };
-    const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
+    const excludesFields = [
+      "page",
+      "sort",
+      "limit",
+      "fields",
+      "keyword",
+      "lang",
+    ];
     excludesFields.forEach((field) => delete queryStringObj[field]);
 
     let queryStr = JSON.stringify(queryStringObj);
@@ -16,28 +37,6 @@ class ApiFeatures {
     this.mongooseeQuery = this.mongooseeQuery.find(JSON.parse(queryStr));
     return this;
   }
-
-  // filter() {
-  //   // نسخ الاستعلام الأصلي مع استبعاد الحقول غير المرغوبة
-  //   const queryStringObj = { ...this.queryStr };
-  //   const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
-  //   excludesFields.forEach((field) => delete queryStringObj[field]);
-
-  //   let queryStr = JSON.stringify(queryStringObj);
-  //   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-  //   // التحقق إذا كان هناك فلترة على volumes.date
-  //   if (queryStringObj["volumes.date"]) {
-  //     const dateFilter = JSON.parse(queryStr)["volumes.date"];
-  //     this.mongooseeQuery = this.mongooseeQuery.find({
-  //       volumes: { $elemMatch: { date: dateFilter } },
-  //     });
-  //   } else {
-  //     this.mongooseeQuery = this.mongooseeQuery.find(JSON.parse(queryStr));
-  //   }
-
-  //   return this;
-  // }
 
   sort() {
     if (this.queryStr.sort) {
@@ -59,23 +58,71 @@ class ApiFeatures {
     return this;
   }
 
+  // search(modelName) {
+  //   if (this.queryStr.keyword) {
+  //     let query = {};
+
+  //     if (modelName === "User") {
+  //       query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
+  //     } else if (modelName === "Event") {
+  //       query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
+  //     } else if (
+  //       modelName === "MealsCategory" ||
+  //       modelName === "MealsCalculation"
+  //     ) {
+  //       query = {
+  //         $or: [
+  //           {
+  //             Title_EN: { $regex: this.queryStr.keyword, $options: "i" },
+  //           },
+  //           { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
+  //         ],
+  //       };
+  //     } else {
+  //       query = {
+  //         title: { $regex: this.queryStr.keyword, $options: "i" },
+  //       };
+  //     }
+
+  //     this.mongooseeQuery = this.mongooseeQuery.find(query);
+  //   }
+
+  //   return this;
+  // }
+
+  // البحث حسب اللغة
+
   search(modelName) {
     if (this.queryStr.keyword) {
       let query = {};
+      const lang = this.queryStr.lang || "en"; // تحديد اللغة، الافتراضي "en"
 
       if (modelName === "User") {
         query = { name: { $regex: this.queryStr.keyword, $options: "i" } };
       } else if (modelName === "Event") {
         query = { eventName: { $regex: this.queryStr.keyword, $options: "i" } };
       } else if (
-        modelName === "MealsCategory" ||
+        // modelName === "MealsCategory" ||
         modelName === "MealsCalculation"
       ) {
+        console.log("true");
         query = {
-          $or: [
-            { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
-            { Title_EN: { $regex: this.queryStr.keyword, $options: "i" } },
-          ],
+          [`title.${lang}`]: { $regex: this.queryStr.keyword, $options: "i" },
+        };
+        //       query = {
+        //         $or: [
+        //           {
+        //             Title_EN: { $regex: this.queryStr.keyword, $options: "i" },
+        //           },
+        //           { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
+        //         ],
+        //       };
+      } else if (modelName === "MealsCategory") {
+        console.log("true");
+        query = {
+          Title_EN: { $regex: this.queryStr.keyword, $options: "i" },
+
+          // { Title_AR: { $regex: this.queryStr.keyword, $options: "i" } },
         };
       } else {
         query = {
@@ -83,7 +130,13 @@ class ApiFeatures {
         };
       }
 
+      // console.log("MongoDB query:", query); // تسجيل الاستعلام المرسل إلى MongoDB
+
+      // تطبيق الاستعلام
       this.mongooseeQuery = this.mongooseeQuery.find(query);
+
+      // لتأكد من أن الاستعلام يعمل بشكل صحيح:
+      // this.mongooseeQuery = this.mongooseeQuery.limit(1); // لتحديد عدد النتائج المبدئي
     }
 
     return this;
