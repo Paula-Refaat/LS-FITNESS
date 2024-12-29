@@ -43,17 +43,17 @@ const nutrientValidation = (field) => [
 ];
 
 exports.createMealsCalculationValidator = [
-  body("title_AR")
+  body("title")
     .notEmpty()
     .withMessage(validationMessages.required("Meal Arabic title"))
     .isLength({ min: 3, max: 32 })
     .withMessage(validationMessages.minLength("Meal Arabic title", 3)),
 
-  body("title_EN")
-    .notEmpty()
-    .withMessage(validationMessages.required("Meal English title"))
-    .isLength({ min: 3, max: 32 })
-    .withMessage(validationMessages.minLength("Meal English title", 3)),
+  // body("title_EN")
+  //   .notEmpty()
+  //   .withMessage(validationMessages.required("Meal English title"))
+  //   .isLength({ min: 3, max: 32 })
+  //   .withMessage(validationMessages.minLength("Meal English title", 3)),
 
   body("mealCategory")
     .notEmpty()
@@ -115,15 +115,15 @@ const nutrientValidationForUpdate = (field) => [
 exports.updateMealsCalculationValidator = [
   check("id").isMongoId().withMessage("Invalid Exercise id format"),
 
-  body("title_AR")
+  body("title")
     .optional()
     .isLength({ min: 3, max: 32 })
     .withMessage(validationMessages.minLength("Meal Arabic title", 3)),
 
-  body("title_EN")
-    .optional()
-    .isLength({ min: 3, max: 32 })
-    .withMessage(validationMessages.minLength("Meal English title", 3)),
+  // body("title_EN")
+  //   .optional()
+  //   .isLength({ min: 3, max: 32 })
+  //   .withMessage(validationMessages.minLength("Meal English title", 3)),
 
   body("mealCategory")
     .optional()
