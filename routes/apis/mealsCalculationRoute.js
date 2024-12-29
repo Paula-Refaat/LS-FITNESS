@@ -17,6 +17,7 @@ const {
   makeCalculationValidator,
   updateMealsCalculationValidator,
   deleteMealsCalculationValidator,
+  createMealsCalculationValidator,
 } = require("../../utils/validators/mealsCalculationValidator");
 
 const router = express.Router();
@@ -38,7 +39,7 @@ router
     authServices.allowTo("user", "admin"),
     uploadMealCalculationImage,
     resizeImage,
-    createMealCategoryValidator,
+    createMealsCalculationValidator,
     createMealsCalculation
   );
 router
