@@ -7,6 +7,7 @@ const factory = require("./handllerFactory");
 const User = require("../models/userModel");
 const createToken = require("../utils/createToken");
 const { uploadSingleMedia } = require("../middlewares/uploadImageMiddleware");
+const Permission = require("../models/permissionModel");
 
 //upload Single image
 exports.uploadProfileImage = uploadSingleMedia("profileImg", "image");
@@ -133,7 +134,16 @@ exports.getUser = factory.getOne(User);
 //@desc create user
 //@route POST /api/v1/users
 //@access private
-exports.createUser = factory.createOne(User);
+exports.createUser = asyncHandler(async (req, res, next) => {
+  const document = await User.create(req.body);
+  if (!document) {
+    return next(new ApiError("Error creating user", 500));
+  }
+  if (req.body && req.body.role === "sub-admin") {
+    await Permission.create({ userId: document._id });
+  }
+  res.status(201).json({ data: document });
+});
 
 //@desc update specific user
 //@route PUT /api/v1/user/:id
@@ -143,14 +153,36 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   if (req.body.password) {
     delete req.body.password;
   }
-  const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return next(new ApiError("User not found", 404));
+  }
+  if (
+    req.body &&
+    req.body.role &&
+    req.body.role === "sub-admin" &&
+    user.role &&
+    user.role !== "sub-admin"
+  ) {
+    await Permission.create({ userId: user._id });
+  }
+  if (
+    req.body &&
+    req.body.role &&
+    req.body.role !== "sub-admin" &&
+    user.role &&
+    user.role === "sub-admin"
+  ) {
+    await Permission.findByIdAndDelete({ userId: user._id });
+  }
+  const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
   if (!user) {
     return next(new ApiError(`No document For this id ${req.params.id}`, 404));
   }
 
-  res.status(200).json({ data: user });
+  res.status(200).json({ data: updatedUser });
 });
 
 //@desc admin change user password
