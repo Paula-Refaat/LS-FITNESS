@@ -24,6 +24,7 @@ const settingsRoute = require("./apis/settingsRoute");
 const advertiseRoute = require("./apis/advertiseRoute");
 const ChatRoute = require("./apis/ChatRoute");
 const MessageRoute = require("./apis/MessageRoute");
+const permissionRoute = require("./apis/permissionRoute");
 
 const { getNutritionDetails } = require("../utils/helpers/nutrition");
 const trimAll = require("../middlewares/trimMiddleware");
@@ -58,6 +59,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/advertise", advertiseRoute);
   app.use("/api/v1/chats", ChatRoute);
   app.use("/api/v1/messages", MessageRoute);
+  app.use("/api/v1/permissions", permissionRoute);
 
   // API endpoint to generate a signed URL for Vimeo video uploads
   app.use("/api/v1/vimeo", vimeoSignedUrlRoute);
