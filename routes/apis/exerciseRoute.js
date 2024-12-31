@@ -30,10 +30,9 @@ const router = express.Router();
 router
   .route("/")
   .get(
-    // authServices.protect,
-    // authServices.allowTo("user", "admin", "sub-admin"),
-    // checkPermission("Exercise", "read"),
-    // filterOnExercisesInTrash,
+    authServices.protect,
+    authServices.allowTo("user", "admin", "sub-admin", "Ls-trainer", "trainer"),
+    checkPermission("Exercise", "read"),
     filterExercisesBasedOnGender,
     filterOnExercisesNotInTrash,
     getExercises
