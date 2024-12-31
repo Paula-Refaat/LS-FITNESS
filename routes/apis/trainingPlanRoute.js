@@ -15,6 +15,7 @@ const {
   filterOnTrainingPlanNotInTrash,
   uploadTrainingPlanImg,
   resizeImage,
+  makeParsingToDays,
 } = require("../../services/trainingPlanServices");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
@@ -40,6 +41,7 @@ router.post(
   checkPermission("TrainingPlan", "create"),
   uploadTrainingPlanImg,
   resizeImage,
+  makeParsingToDays,
   createTrainingPlan
 );
 router.put(

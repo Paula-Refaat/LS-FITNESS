@@ -48,6 +48,35 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
   }
   next();
 });
+exports.makeParsingToDays = asyncHandler(async (req, res, next) => {
+  if (req.body.days) {
+    try {
+      // إذا كان الحقل بالفعل Object، لا حاجة لتحويله
+      if (typeof req.body.days === "string") {
+        req.body.days = JSON.parse(req.body.days); // الحقل نصي ويحتاج إلى تحويل
+      } else if (Array.isArray(req.body.days)) {
+        // الحقل عبارة عن Array حقيقي، نقبله كما هو
+        req.body.days = req.body.days;
+      } else {
+        return res.status(400).json({
+          message:
+            "Invalid days format: Expected JSON string or Array of objects",
+          receivedType: typeof req.body.days,
+        });
+      }
+    } catch (error) {
+      return res.status(400).json({
+        message: "Invalid JSON format in days field",
+        error: error.message,
+        receivedValue: req.body.days,
+      });
+    }
+  } else {
+    return res.status(400).json({ message: "Missing days field" });
+  }
+  next();
+});
+
 exports.getAllTrainingPlan = factory.getAll(trainingPlan, "trainingPlan");
 exports.getOneTrainingPlan = factory.getOne(trainingPlan);
 exports.createTrainingPlan = factory.createOne(trainingPlan);
