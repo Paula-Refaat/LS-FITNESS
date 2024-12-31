@@ -22,8 +22,8 @@ router
   .route("/")
   .get(
     authServices.protect,
-    authServices.allowTo("admin", "sub-admin"),
-    checkPermission("SocialMediaLinks", "read"),
+    // authServices.allowTo("admin", "sub-admin"),
+    // checkPermission("SocialMediaLinks", "read"),
     getSocialMediaLinks
   )
   .post(
@@ -37,8 +37,8 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("admin", "sub-admin"),
-    checkPermission("SocialMediaLinks", "read"),
+    // authServices.allowTo("admin", "sub-admin"),
+    // checkPermission("SocialMediaLinks", "read"),
     getSocialMediaLinkValidator,
     getSingleSocialMediaLink
   )
