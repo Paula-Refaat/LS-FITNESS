@@ -28,6 +28,7 @@ const allowedModels = [
   "Message",
   "DeepAnatomy",
   "ToolOrMachine",
+  "SocialMediaLinks",
 ];
 
 exports.createPermissionValidator = [
