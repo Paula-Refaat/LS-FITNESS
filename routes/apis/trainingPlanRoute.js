@@ -51,6 +51,7 @@ router.put(
   checkPermission("TrainingPlan", "update"),
   uploadTrainingPlanImg,
   resizeImage,
+  makeParsingToDays,
   updateTrainingPlan
 );
 router.delete(
