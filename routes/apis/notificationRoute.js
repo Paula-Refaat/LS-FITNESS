@@ -3,6 +3,7 @@ const express = require("express");
 const notificationService = require("../../services/notificationService");
 
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 
@@ -15,14 +16,20 @@ router
   )
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Notification", "create"),
     notificationService.convertToArray,
     notificationService.sendSystemNotificationToUsers
   ) //send notification to users
   .put(authServices.protect, notificationService.readAllNotification); //read all
 router
   .route("/:id")
-  .put(authServices.protect, notificationService.readNotification)
+  .put(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Notification", "update"),
+    notificationService.readNotification
+  )
   .delete(authServices.protect, notificationService.deleteNotification);
 
 router.get(

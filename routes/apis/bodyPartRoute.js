@@ -22,6 +22,7 @@ const authServices = require("../../services/authServices");
 const {
   getDeepAnatomiesFromExerciseByBodyPart,
 } = require("../../services/bodyPartServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 // const serviceRoute = require("./serviceRoute");
 
@@ -32,34 +33,37 @@ const router = express.Router();
 router
   .route("/")
   .get(
-    authServices.protect,
-    authServices.allowTo("user", "admin"),
+    // authServices.protect,
+    // authServices.allowTo("user", "admin"),
     filterOnBodyPartsNotInTrash,
     getBodyParts
   )
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("BodyPart", "create"),
     createBodyPartValidator,
     createBodyPart
   );
 router
   .route("/:id")
   .get(
-    authServices.protect,
-    authServices.allowTo("user", "admin"),
+    // authServices.protect,
+    // authServices.allowTo("user", "admin"),
     getBodyPartValidator,
     getBodyPart
   )
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("BodyPart", "update"),
     updateBodyPartValidator,
     updateBodyPart
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("BodyPart", "delete"),
     deleteBodyPartValidator,
     deleteBodyPart
   );
@@ -71,21 +75,24 @@ router.get(
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("BodyPart", "delete"),
   // deleteLessonValidator,
   moveBodyPartToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("BodyPart", "delete"),
   // deleteLessonValidator,
   restoreBodyPartFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("user", "admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("BodyPart", "delete"),
   filterOnBodyPartsInTrash,
   // filterExercisesBasedOnGender,
   // filterOnExercisesNotInTrash,

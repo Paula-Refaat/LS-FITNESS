@@ -22,6 +22,7 @@ const {
 } = require("../../services/vitaminService");
 
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 
@@ -32,7 +33,8 @@ router
   .get(filterOnVitaminsNotInTrash, getVitamins)
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Vitamin", "create"),
     uploadVitaminImage,
     resizeImage,
     handlingVideoResponse,
@@ -44,7 +46,8 @@ router
   .get(getVitaminValidator, getVitamin)
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Vitamin", "update"),
     uploadVitaminImage,
     resizeImage,
     handlingVideoResponse,
@@ -53,7 +56,8 @@ router
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Vitamin", "delete"),
     deleteVitaminValidator,
     deleteVitamin
   );
@@ -61,21 +65,24 @@ router
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Vitamin", "delete"),
   // deleteLessonValidator,
   moveVitaminToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Vitamin", "delete"),
   // deleteLessonValidator,
   restoreVitaminFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Vitamin", "delete"),
   filterOnVitaminsInTrash,
   // filterExercisesBasedOnGender,
   // filterOnExercisesNotInTrash,

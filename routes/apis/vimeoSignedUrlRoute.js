@@ -7,7 +7,7 @@ const router = express.Router();
 router.post(
   "/signed-url",
   authServices.protect,
-  authServices.allowTo("admin"),
+  // authServices.allowTo("admin"),
   async (req, res) => {
     const { name, description, size } = req.body || {};
 

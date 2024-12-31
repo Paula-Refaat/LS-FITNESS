@@ -139,9 +139,9 @@ exports.createUser = asyncHandler(async (req, res, next) => {
   if (!document) {
     return next(new ApiError("Error creating user", 500));
   }
-  if (req.body && req.body.role === "sub-admin") {
-    await Permission.create({ userId: document._id });
-  }
+  // if (req.body && req.body.role === "sub-admin") {
+  //   await Permission.create({ userId: document._id });
+  // }
   res.status(201).json({ data: document });
 });
 
@@ -157,15 +157,15 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new ApiError("User not found", 404));
   }
-  if (
-    req.body &&
-    req.body.role &&
-    req.body.role === "sub-admin" &&
-    user.role &&
-    user.role !== "sub-admin"
-  ) {
-    await Permission.create({ userId: user._id });
-  }
+  // if (
+  //   req.body &&
+  //   req.body.role &&
+  //   req.body.role === "sub-admin" &&
+  //   user.role &&
+  //   user.role !== "sub-admin"
+  // ) {
+  //   await Permission.create({ userId: user._id });
+  // }
   if (
     req.body &&
     req.body.role &&

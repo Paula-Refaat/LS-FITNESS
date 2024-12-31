@@ -25,13 +25,16 @@ const {
   filterOnLessonsNotInTrash,
   // eslint-disable-next-line import/newline-after-import
 } = require("../../services/lessonServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
+
 const router = express.Router({ mergeParams: true });
 
 // Create a new lesson
 router.post(
   "/",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Lesson", "create"),
   uploadLessonMedia,
   resizeMedia,
   setCourseIdToBody,
@@ -42,7 +45,8 @@ router.post(
 router.get(
   "/courseLessons/:courseId",
   authServices.protect,
-  authServices.allowTo("user", "admin"),
+  authServices.allowTo("user", "admin", "sub-admin"),
+  checkPermission("Lesson", "read"),
   filterOnLessonsNotInTrash,
   accessLessonsOfMyCourses,
   createFilterObj,
@@ -53,7 +57,8 @@ router.get(
 router.get(
   "/:id",
   authServices.protect,
-  authServices.allowTo("user", "admin"),
+  authServices.allowTo("user", "admin", "sub-admin"),
+  checkPermission("Lesson", "read"),
   getLessonValidator,
   accessOneLessonOfMyCourse,
   getLessonById
@@ -63,7 +68,8 @@ router.get(
 router.put(
   "/:id",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Lesson", "update"),
   uploadLessonMedia,
   resizeMedia,
   handlingVideoResponse,
@@ -75,7 +81,8 @@ router.put(
 router.delete(
   "/:id",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Lesson", "delete"),
   deleteLessonValidator,
   deleteLesson
 );
@@ -83,19 +90,22 @@ router.delete(
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Lesson", "delete"),
   moveLessonToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Lesson", "delete"),
   restoreLessonFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Lesson", "delete"),
   filterOnLessonsInTrash,
   getLessons
 );

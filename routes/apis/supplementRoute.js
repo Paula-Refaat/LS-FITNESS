@@ -22,6 +22,7 @@ const {
 } = require("../../services/supplementServices");
 
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 
@@ -32,7 +33,8 @@ router
   .get(filterOnSupplementsNotInTrash, getSupplements)
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Supplement", "create"),
     uploadSupplementImage,
     resizeImage,
     handlingVideoResponse,
@@ -44,7 +46,8 @@ router
   .get(getSupplementValidator, getSupplement)
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Supplement", "update"),
     uploadSupplementImage,
     resizeImage,
     handlingVideoResponse,
@@ -53,7 +56,8 @@ router
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Supplement", "delete"),
     deleteSupplementValidator,
     deleteSupplement
   );
@@ -61,21 +65,24 @@ router
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Supplement", "delete"),
   // deleteLessonValidator,
   moveSupplementToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Supplement", "delete"),
   // deleteLessonValidator,
   restoreSupplementFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Supplement", "delete"),
   filterOnSupplementsInTrash,
   // filterExercisesBasedOnGender,
   // filterOnExercisesNotInTrash,

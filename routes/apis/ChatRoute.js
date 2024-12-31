@@ -15,12 +15,14 @@ const {
   resizeImage,
 } = require("../../services/ChatServices");
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 router.get(
   "/",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Chat", "read"),
   getAllChats
 );
 
@@ -44,7 +46,8 @@ router.get("/find/:secondPersonId", authServices.protect, findChat);
 router.delete(
   "/:chatId",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Chat", "read"),
   deleteChat
 );
 router.post("/:chatId/pin/:messageId", authServices.protect, pinMessageInChat);

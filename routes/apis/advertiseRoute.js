@@ -10,6 +10,7 @@ const {
   deleteAdvertise,
   resizeImage,
 } = require("../../services/advertiseService");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 
@@ -20,7 +21,8 @@ router
   .get(getAllAdvertises)
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("Advertise", "create"),
     uploadAdvertiseImage,
     resizeImage,
     createAdvertise
@@ -30,12 +32,18 @@ router
   .get(getOneAdvertise)
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("Advertise", "update"),
     uploadAdvertiseImage,
     resizeImage,
     updateAdvertise
   )
-  .delete(authServices.protect, authServices.allowTo("admin"), deleteAdvertise);
+  .delete(
+    authServices.protect,
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("Advertise", "delete"),
+    deleteAdvertise
+  );
 
 // router.delete(
 //   "/:id/moveToTrash",

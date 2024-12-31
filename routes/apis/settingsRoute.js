@@ -7,17 +7,33 @@ const {
   getSingleSettings,
   updateSettings,
 } = require("../../services/settingsService");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 
 router
   .route("/")
-  .get(authServices.protect, authServices.allowTo("admin"), getSettings)
+  .get(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Settings", "read"),
+    getSettings
+  );
 //   .post(authServices.protect, authServices.allowTo("admin"), createSettings);
 router
   .route("/:id")
-  .get(authServices.protect, authServices.allowTo("admin"), getSingleSettings)
-  .put(authServices.protect, authServices.allowTo("admin"), updateSettings);
+  .get(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Settings", "read"),
+    getSingleSettings
+  )
+  .put(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Settings", "update"),
+    updateSettings
+  );
 //   .delete(
 //     authServices.protect,
 //     authServices.allowTo("admin"),

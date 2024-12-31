@@ -19,6 +19,7 @@ const {
   filterOnExercisesNotInTrash,
   filterOnExercisesInTrash,
 } = require("../../services/exerciseServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const authServices = require("../../services/authServices");
 
@@ -29,8 +30,9 @@ const router = express.Router();
 router
   .route("/")
   .get(
-    authServices.protect,
-    authServices.allowTo("user", "admin"),
+    // authServices.protect,
+    // authServices.allowTo("user", "admin", "sub-admin"),
+    // checkPermission("Exercise", "read"),
     // filterOnExercisesInTrash,
     filterExercisesBasedOnGender,
     filterOnExercisesNotInTrash,
@@ -38,7 +40,8 @@ router
   )
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Exercise", "create"),
     handlingVideoResponse,
     createExerciseValidator,
     createExercise
@@ -48,41 +51,47 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("user", "admin"),
+    authServices.allowTo("user", "admin", "sub-admin"),
+    checkPermission("Exercise", "read"),
     getExerciseValidator,
     getExercise
   )
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Exercise", "update"),
     handlingVideoResponse,
     updateExerciseValidator,
     updateExercise
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("Exercise", "delete"),
     deleteExerciseValidator,
     deleteExercise
   );
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Exercise", "delete"),
   // deleteLessonValidator,
   moveToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Exercise", "delete"),
   // deleteLessonValidator,
   restoreFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("user", "admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Exercise", "delete"),
   filterOnExercisesInTrash,
   // filterExercisesBasedOnGender,
   // filterOnExercisesNotInTrash,

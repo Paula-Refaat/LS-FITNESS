@@ -19,6 +19,7 @@ const {
 } = require("../../services/categoryService");
 
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const courseRoute = require("./courseRoute");
 
@@ -31,7 +32,8 @@ router
   .get(filterOnCategoriesNotInTrash, getCategories)
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("Category", "create"),
     createCategoryValidator,
     createCategory
   );
@@ -40,13 +42,15 @@ router
   .get(getCategoryValidator, getCategory)
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("Category", "update"),
     updateCategoryValidator,
     updateCategory
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("Category", "delete"),
     deleteCategoryValidator,
     deleteCategory
   );
@@ -54,21 +58,24 @@ router
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Category", "delete"),
   // deleteLessonValidator,
   moveCategoryToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Category", "delete"),
   // deleteLessonValidator,
   restoreCategoryFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Category", "delete"),
   filterOnCategoriesInTrash,
   // filterExercisesBasedOnGender,
   // filterOnExercisesNotInTrash,

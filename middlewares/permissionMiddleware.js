@@ -1,6 +1,6 @@
 const Permission = require("../models/permissionModel");
 
-const checkPermission = (action) => {
+const checkPermission = (modelName, action) => {
   return async (req, res, next) => {
     try {
       const userRole = req.user.role; // افترض أن الدور يتم تخزينه في req.user
@@ -11,7 +11,7 @@ const checkPermission = (action) => {
       }
 
       // التحقق من الصلاحيات إذا كان الدور Sub-Admin
-      const userId = req.user._id; // استخراج userId من بيانات المستخدم
+      const userId = req.user._id;
       const permissions = await Permission.findOne({ userId });
 
       if (!permissions) {
@@ -20,13 +20,13 @@ const checkPermission = (action) => {
           .json({ message: "Permissions not found for this user" });
       }
 
-      // استخدام hasPermission للتحقق من الإذن
-      const hasPermission = permissions.hasPermission(action);
+      // استخدام hasPermission للتحقق من الإذن للمودل والعملية
+      const hasPermission = permissions.hasPermission(modelName, action);
 
       if (!hasPermission) {
-        return res
-          .status(403)
-          .json({ message: "Access denied: insufficient permissions" });
+        return res.status(403).json({
+          message: `Access denied: insufficient permissions for ${modelName}`,
+        });
       }
 
       next(); // السماح بالوصول إذا كانت الصلاحيات متوفرة

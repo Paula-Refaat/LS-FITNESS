@@ -37,6 +37,8 @@ const {
   // deleteLoggedUser,
   // activeLoggedUser,
 } = require("../../services/userService");
+const checkPermission = require("../../middlewares/permissionMiddleware");
+
 const multer = require("multer"); // Import multer
 
 const router = express.Router();
@@ -71,7 +73,8 @@ router.post(
 router.put(
   "/changePassword/:id",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "update"),
   changeUserPasswordValidator,
   changeUserPassword
 );
@@ -81,13 +84,15 @@ router
   .route("/")
   .get(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("User", "read"),
     filterOnUsersNotInTrash,
     getUsers
   )
   .post(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("User", "create"),
     uploadProfileImage,
     resizeImage,
     setRestrictionOnCreateUser,
@@ -100,13 +105,15 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("User", "read"),
     getUserValidator,
     getUser
   )
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("User", "update"),
     uploadProfileImage,
     resizeImage,
     updateUserValidator,
@@ -114,7 +121,8 @@ router
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("sub-admin", "admin"),
+    checkPermission("User", "delete"),
     deleteUserValidator,
     deleteUser
   );
@@ -122,19 +130,22 @@ router
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "delete"),
   moveUserToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "delete"),
   restoreUserFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "delete"),
   filterOnUsersInTrash,
   getUsers
 );
@@ -142,35 +153,40 @@ router.get(
 router.get(
   "/getAll/admins",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "read"),
   filterOnAdminUsers,
   getUsers
 );
 router.get(
   "/getAll/sub-admins",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "read"),
   filterOnSubAdminUsers,
   getUsers
 );
 router.get(
   "/getAll/trainers",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "read"),
   filterOnTrainerUsers,
   getUsers
 );
 router.get(
   "/getAll/ls-trainers",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "read"),
   filterOnLsTrainerUsers,
   getUsers
 );
 router.get(
   "/getAll/trainees",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("User", "read"),
   filterOnUsersRole,
   getUsers
 );

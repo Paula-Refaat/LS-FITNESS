@@ -27,6 +27,8 @@ const {
   filterOnCoursesNotInTrash,
 } = require("../../services/courseService");
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
+
 // nested routes
 const lessonRoute = require("./lessonRoute");
 
@@ -37,7 +39,8 @@ router.use("/:courseId/lessons", lessonRoute);
 router.get(
   "/MyCourses",
   authServices.protect,
-  authServices.allowTo("admin", "user"),
+  authServices.allowTo("admin", "user", "sub-admin", "Ls-trainer", "trainer"),
+  checkPermission("Course", "read"),
   createFilterObjToGetMyCourses,
   getAllCourses
 );
@@ -46,7 +49,8 @@ router.get(
 router.get(
   "/:id/courseUsers",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "read"),
   checkCourseOwnership,
   getCourseUsers
 );
@@ -55,7 +59,8 @@ router.get(
 router.post(
   "/",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "create"),
   uploadCourseImage,
   resizeImage,
   setCategoryIdToBody,
@@ -84,7 +89,8 @@ router.get(
 router.put(
   "/:id",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "update"),
   uploadCourseImage,
   resizeImage,
   updateCourseValidator,
@@ -95,7 +101,8 @@ router.put(
 router.delete(
   "/:id",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "delete"),
   checkCourseIdParamValidator,
   deleteCourse
 );
@@ -104,7 +111,8 @@ router.delete(
 router.post(
   "/:id/addUserToCourse",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "create"),
   addUserToCourseValidator,
   addUserToCourse
 );
@@ -114,19 +122,22 @@ router.post("/:courseId/applyCoupon", applyCouponOnCourse);
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "delete"),
   moveCourseToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "delete"),
   restoreCourseFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("sub-admin", "admin"),
+  checkPermission("Course", "delete"),
   filterOnCoursesInTrash,
   getAllCourses
 );

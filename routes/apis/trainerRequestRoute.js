@@ -18,6 +18,7 @@ const {
   createFilterObj,
   // requestToBeTrainer,
 } = require("../../services/trainerRequestService");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const authServices = require("../../services/authServices");
 
@@ -34,31 +35,43 @@ router
   .route("/")
   .get(
     authServices.protect,
-    authServices.allowTo("admin", "user", "trainer"),
+    authServices.allowTo("admin", "user", "trainer", "sub-admin"),
+    checkPermission("TrainerRequest", "read"),
     createFilterObj,
     getTrainerRequests
   );
 
-router.use(authServices.protect, authServices.allowTo("admin"));
+router.use(authServices.protect, authServices.allowTo("admin", "sub-admin"));
 
 router
   .route("/:id")
   .get(
     // idCheckValidator,
+    checkPermission("TrainerRequest", "read"),
     getTrainerRequest
   )
   .delete(
     // idCheckValidator,
+    checkPermission("TrainerRequest", "delete"),
     deleteTrainerRequest
   )
   .put(
+    checkPermission("TrainerRequest", "update"),
     uploadinfo,
     handleMarketingReqsPdfs,
     // idCheckValidator,
     // updateTrainerRequestValidator,
     updateTrainerRequest
   );
-router.put("/:id/accept", acceptTrainerRequest);
-router.put("/:id/reject", rejectTrainerRequest);
+router.put(
+  "/:id/accept",
+  checkPermission("TrainerRequest", "update"),
+  acceptTrainerRequest
+);
+router.put(
+  "/:id/reject",
+  checkPermission("TrainerRequest", "update"),
+  rejectTrainerRequest
+);
 
 module.exports = router;

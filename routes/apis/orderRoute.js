@@ -1,6 +1,7 @@
 const paypal = require("../../services/orderServices");
 
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = require("express").Router();
 
@@ -17,7 +18,8 @@ router.get("/cancel-order", async (req, res) => {
 router.get(
   "/",
   authServices.protect,
-  authServices.allowTo("admin", "user"),
+  authServices.allowTo("admin", "sub-admin", "user"),
+  checkPermission("Order", "read"),
   paypal.filterOrdersForLoggedUser,
   paypal.findAllOrders
 );
@@ -32,7 +34,8 @@ router.get(
 router.put(
   "/:id/pay",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("Order", "update"),
   paypal.updateOrderToPay
 );
 

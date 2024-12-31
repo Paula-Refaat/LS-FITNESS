@@ -19,6 +19,7 @@ const {
   deleteMealsCalculationValidator,
   createMealsCalculationValidator,
 } = require("../../utils/validators/mealsCalculationValidator");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 const authServices = require("../../services/authServices");
@@ -29,14 +30,16 @@ const {
 router
   .route("/")
   .get(
-    authServices.protect,
-    authServices.allowTo("user", "admin"),
+    // authServices.protect,
+    // authServices.allowTo("user", "admin", "sub-admin"),
+    // checkPermission("MealsCalculation", "read"),
     filterOnMealsCalculationNotInTrash,
     getMealsCalculation
   )
   .post(
     authServices.protect,
-    authServices.allowTo("user", "admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("MealsCalculation", "create"),
     uploadMealCalculationImage,
     resizeImage,
     createMealsCalculationValidator,
@@ -46,12 +49,14 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("user", "admin"),
+    authServices.allowTo("user", "admin", "sub-admin"),
+    checkPermission("MealsCalculation", "read"),
     getSpecificMealCalculation
   )
   .put(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("MealsCalculation", "update"),
     uploadMealCalculationImage,
     resizeImage,
     updateMealsCalculationValidator,
@@ -59,14 +64,16 @@ router
   )
   .delete(
     authServices.protect,
-    authServices.allowTo("admin"),
+    authServices.allowTo("admin", "sub-admin"),
+    checkPermission("MealsCalculation", "delete"),
     deleteMealsCalculationValidator,
     deleteMealsCalculation
   );
 router.post(
   "/calc",
   authServices.protect,
-  authServices.allowTo("user", "admin"),
+  authServices.allowTo("user", "admin", "sub-admin"),
+  checkPermission("MealsCalculation", "create"),
   uploadMealCalculationImage,
   makeCalculationValidator,
   calculateMeal
@@ -75,19 +82,22 @@ router.post(
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("MealsCalculation", "delete"),
   moveMealsCalculationToRecycleBin
 );
 router.put(
   "/:id/restore",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("MealsCalculation", "delete"),
   restoreMealsCalculationFromRecycleBin
 );
 router.get(
   "/deleted/trash",
   authServices.protect,
-  authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin"),
+  checkPermission("MealsCalculation", "delete"),
   filterOnMealsCalculationInTrash,
   getMealsCalculation
 );

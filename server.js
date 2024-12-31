@@ -64,7 +64,9 @@ app.use(passport.initialize());
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't found this Route : ${req.originalUrl}`, 400));
 });
-
+// const mongoose = require("mongoose");
+// const validModels = mongoose.modelNames();
+// console.log(validModels);
 // Global error handling middleware
 app.use(globalError);
 
