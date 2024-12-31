@@ -4,6 +4,16 @@ const factory = require("./handllerFactory");
 const Permission = require("../models/permissionModel");
 const User = require("../models/userModel");
 
+exports.createFilterObj = asyncHandler(async (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  if (req.params.userId) {
+    req.filterObj.userId = req.params.userId;
+  }
+  next();
+});
+
 exports.createPermission = asyncHandler(async (req, res, next) => {
   const { userId } = req.params;
   const { models } = req.body;
@@ -75,3 +85,8 @@ exports.createPermission = asyncHandler(async (req, res, next) => {
     res.status(500).json({ message: "Error updating permissions", error });
   }
 });
+exports.getAllPermission = factory.getAll(Permission, "Permission");
+exports.getOnePermission = factory.getOne(Permission);
+exports.updatePermission = factory.updateOne(Permission);
+
+// get Permissions based on userId
