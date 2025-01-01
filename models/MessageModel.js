@@ -55,7 +55,7 @@ MessageSchema.pre(/^find/, function (next) {
       select: "username profileImg",
     },
   })
-
+  this.sort({ createdAt: -1 });
   next();
 });
 const setImageURL = (doc) => {
