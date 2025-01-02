@@ -18,7 +18,11 @@ exports.getMessagesValidator = asyncHandler(async (req, res, next) => {
     (participant) => String(participant.user ? participant.user._id : null) // Handle case where participant.user might be null
   );
 
-  if (!participantIds.includes(String(userId))) {
+  if (
+    !participantIds.includes(String(userId)) &&
+    req.user.role !== "admin" &&
+    req.user.role !== "sub-admin"
+  ) {
     return next(
       new ApiError(
         "Unauthorized access: You are not a participant of this chat",

@@ -29,34 +29,75 @@ router.get(
 router.post(
   "/:receiverId",
   authServices.protect,
-  // authServices.allowTo("admin"),
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "create"),
   createSingleChat
 );
 router.post(
   "/group/groupChat",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "create"),
   uploadChatImg,
   resizeImage,
   createGroupChat
 );
 
-router.get("/myChats", authServices.protect, getMyChats);
-router.get("/:chatId/details", authServices.protect, getChatDetails);
-router.get("/find/:secondPersonId", authServices.protect, findChat);
+router.get(
+  "/myChats",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "read"),
+  getMyChats
+);
+router.get(
+  "/:chatId/details",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "read"),
+  getChatDetails
+);
+router.get(
+  "/find/:secondPersonId",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "read"),
+  findChat
+);
 router.delete(
   "/:chatId",
   authServices.protect,
   authServices.allowTo("sub-admin", "admin"),
-  checkPermission("Chat", "read"),
+  checkPermission("Chat", "delete"),
   deleteChat
 );
-router.post("/:chatId/pin/:messageId", authServices.protect, pinMessageInChat);
+router.post(
+  "/:chatId/pin/:messageId",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "create"),
+  pinMessageInChat
+);
 router.delete(
   "/:chatId/unpin/:messageId",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "delete"),
   unpinMessageInChat
 );
-router.put("/:chatId/archive", authServices.protect, archiveChat);
-router.put("/:chatId/unarchive", authServices.protect, unarchiveChat);
+router.put(
+  "/:chatId/archive",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "update"),
+  archiveChat
+);
+router.put(
+  "/:chatId/unarchive",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Chat", "update"),
+  unarchiveChat
+);
 
 module.exports = router;

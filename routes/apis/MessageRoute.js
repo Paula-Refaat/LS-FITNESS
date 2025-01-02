@@ -17,12 +17,15 @@ const {
   getReactionsToMessage,
 } = require("../../services/MessageServices");
 const authServices = require("../../services/authServices");
+const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 
 router.post(
   "/:chatId",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "create"),
   uploadMedia,
   resize,
   isMutedChat,
@@ -31,6 +34,8 @@ router.post(
 router.get(
   "/:chatId",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "read"),
   getMessagesValidator,
   createFilterObj,
   getMessages
@@ -39,6 +44,8 @@ router.get(
 router.put(
   "/:messageId",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "update"),
   uploadMedia,
   resize,
   isMutedChat,
@@ -47,21 +54,40 @@ router.put(
 router.post(
   "/:messageId/reply",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "create"),
   uploadMedia,
   resize,
   isMutedChat,
   replyToMessage
 );
-router.get("/:messageId/replies", authServices.protect, getRepliesToMessage);
-router.delete("/:messageId", authServices.protect, isMutedChat, deleteMessage);
+router.get(
+  "/:messageId/replies",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "read"),
+  getRepliesToMessage
+);
+router.delete(
+  "/:messageId",
+  authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "delete"),
+  isMutedChat,
+  deleteMessage
+);
 router.post(
   "/:messageId/reactions",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "create"),
   toggleReactionToMessage
 );
 router.get(
   "/:messageId/reactions",
   authServices.protect,
+  authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
+  checkPermission("Message", "read"),
   getReactionsToMessage
 );
 module.exports = router;
