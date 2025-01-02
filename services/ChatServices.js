@@ -401,6 +401,7 @@ exports.getChatDetails = asyncHandler(async (req, res, next) => {
           "participants.userDetails.username": 1,
           "participants.userDetails.profileImg": 1,
           "participants.isAdmin": 1,
+          isGroupChat: 1,
           image: 1,
           description: 1,
           archived: 1,
