@@ -9,6 +9,7 @@ const trainingPlanSchema = new mongoose.Schema(
     days: [
       {
         dayNumber: { type: Number, required: true }, // اليوم رقم
+        dayTitle: { type: String, required: true }, // اليوم عنوان
         exercises: [
           {
             exercise: { type: mongoose.Schema.Types.ObjectId, ref: "Exercise" }, // التمرين
