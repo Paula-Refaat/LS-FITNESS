@@ -29,6 +29,7 @@ const allowedModels = [
   "DeepAnatomy",
   "ToolOrMachine",
   "SocialMediaLinks",
+  "TrainerProfile",
 ];
 
 exports.createPermissionValidator = [

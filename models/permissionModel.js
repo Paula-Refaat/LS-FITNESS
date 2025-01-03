@@ -27,6 +27,7 @@ const allowedModels = [
   "DeepAnatomy",
   "ToolOrMachine",
   "SocialMediaLinks",
+  "TrainerProfile",
 ];
 
 const permissionSchema = new mongoose.Schema({
