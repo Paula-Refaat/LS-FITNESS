@@ -16,7 +16,7 @@ const vitaminSchema = mongoose.Schema(
       required: [true, "vitamin description required"],
       //   unique: [true, "vitamin description must be unique"],
       minlength: [10, "too short vitamin  description "],
-      maxlength: [1000, "too long vitamin description"],
+      maxlength: [5000, "too long vitamin description"],
       trim: true,
     },
     image: {

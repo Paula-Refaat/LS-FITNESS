@@ -97,8 +97,8 @@ exports.updateVitaminValidator = [
     .withMessage("Description required")
     .isLength({ min: 10 })
     .withMessage("too short Description, min must be 10 character")
-    .isLength({ max: 1000 })
-    .withMessage("too long Description, max must be 1000 character"),
+    .isLength({ max: 5000 })
+    .withMessage("too long Description, max must be 5000 character"),
   check("image").optional().notEmpty().withMessage("image required"),
   check("benefits").optional().notEmpty().withMessage("benefits required"),
 
