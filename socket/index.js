@@ -23,12 +23,34 @@ const removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
 };
 
-const sendPrivateMessage = (socket, { senderId, receiverId, text }) => {
+const sendPrivateMessage = (
+  socket,
+  { senderId, receiverId, ownMessageName, text }
+) => {
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
     io.to(receiverSocketId).emit("receiveMessage", {
       senderId,
+      ownMessageName,
       text,
+      private: true,
+    });
+  } else {
+    socket.emit("errorMessage", "User not found or offline.");
+  }
+};
+
+const sendPrivateReplyMessage = (
+  socket,
+  { senderId, receiverId, ownMessageName, repliedToMessageData, text }
+) => {
+  const receiverSocketId = getUserSocketId(receiverId);
+  if (receiverSocketId) {
+    io.to(receiverSocketId).emit("receiveRepliedMessage", {
+      senderId,
+      text,
+      ownMessageName,
+      repliedToMessageData,
       private: true,
     });
   } else {
@@ -67,6 +89,8 @@ function initSocket(server) {
     socket.on("sendMessage", (messageData) => {
       if (messageData.roomId) {
         sendGroupMessage(socket, messageData);
+      } else if (messageData.repliedToMessageData) {
+        sendPrivateReplyMessage(socket, messageData);
       } else {
         sendPrivateMessage(socket, messageData);
       }

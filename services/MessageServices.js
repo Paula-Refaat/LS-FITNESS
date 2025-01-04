@@ -306,7 +306,7 @@ exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
       // If the new reaction is the same as the existing one, do nothing
       message = await Message.findById(messageId).populate({
         path: "reactions.user",
-        select: "username profileImg"
+        select: "username profileImg",
       });
       return res.status(200).json({ data: message });
     } else {
@@ -329,7 +329,7 @@ exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
   // Fetch the updated message after toggling the reaction
   const updatedMessage = await Message.findById(messageId).populate({
     path: "reactions.user",
-    select: "username profileImg"
+    select: "username profileImg",
   });
 
   res.status(200).json({ data: updatedMessage });
@@ -345,7 +345,7 @@ exports.getReactionsToMessage = asyncHandler(async (req, res, next) => {
   const message = await Message.findById(messageId).populate({
     path: "reactions.user",
     select: "username profileImg",
-  });;
+  });
 
   if (!message) {
     return next(new ApiError("Message not found", 404));
