@@ -10,10 +10,34 @@ const factory = require("./handllerFactory");
 const ApiError = require("../utils/ApiError");
 // const sendEmail = require("../utils/sendEmail");
 const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
-const sendEmail = require("../utils/sendEmail");
 const allowedMimeTypes =
   process.env.ALLOWED_MIME_TYPES ||
   "image/jpeg|image/png|image/gif|application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|video/mp4|video/mpeg|audio/mpeg|audio/wav";
+
+const ALLOWED_MIME_TYPES = {
+  "image/jpeg": "image",
+  "image/png": "image",
+  "image/gif": "image",
+  "application/pdf": "pdf",
+  "application/msword": "document",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    "document",
+  "video/mp4": "video",
+  "video/mpeg": "video",
+  "audio/mpeg": "audio",
+  "audio/wav": "audio",
+  "application/zip": "archive",
+  "application/x-zip-compressed": "archive",
+  "application/octet-stream": "archive",
+  "application/x-rar-compressed": "archive",
+  "application/x-tar": "archive",
+  "application/x-7z-compressed": "archive",
+  "text/plain": "text",
+  "text/csv": "text",
+  "application/vnd.ms-excel": "spreadsheet",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    "spreadsheet",
+};
 
 exports.uploadMedia = uploadMixOfMedia(
   [
@@ -27,29 +51,27 @@ exports.uploadMedia = uploadMixOfMedia(
 
 exports.resize = asyncHandler(async (req, res, next) => {
   if (req.files && req.files.media && req.files.media.length) {
-    // Initialize an array to store the names of uploaded files
     req.body.media = [];
-
-    // Ensure the uploads directory exists
     const uploadDir = path.join("uploads", "messages");
     await fs.mkdir(uploadDir, { recursive: true });
 
-    // Loop through all files in the 'media' array
     for (const file of req.files.media) {
-      const fileExtension = path.extname(file.originalname);
+      const fileExtension = path.extname(file.originalname).toLowerCase();
       const newFileName = `media-${uuidv4()}-${Date.now()}${fileExtension}`;
+      const fileType = ALLOWED_MIME_TYPES[file.mimetype] || `${fileExtension}`;
 
-      // Save each file to the uploads directory
       await fs.writeFile(path.join(uploadDir, newFileName), file.buffer);
-      req.body.media.push(newFileName); // Append the new file name to the media array
+
+      req.body.media.push({
+        url: newFileName,
+        type: fileType,
+      });
     }
 
-    // If no files were saved and all were skipped due to unsupported types, handle it
     if (!req.body.media.length) {
       return next(new ApiError("No files were uploaded.", 400));
     }
   }
-
   next();
 });
 
@@ -79,9 +101,6 @@ exports.isMutedChat = asyncHandler(async (req, res, next) => {
   }
 });
 
-//@desc add a message to chat
-//@route POST /api/v1/message/:chatId
-//@access protected
 exports.addMessage = asyncHandler(async (req, res, next) => {
   try {
     const { chatId } = req.params;
@@ -96,14 +115,11 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
       return res.status(404).json({ error: "Chat not found" });
     }
 
-    console.log("chat", chat);
     // Check if the logged-in user is a participant of the chat
-    const participantIds = chat.participants.map(
-      (participant) => String(participant.user ? participant.user._id : null) // Handle case where participant.user might be null
+    const participantIds = chat.participants.map((participant) =>
+      String(participant.user ? participant.user._id : null)
     );
 
-    console.log("participantIds", participantIds);
-    console.log("sender", sender);
     if (!participantIds.includes(String(sender))) {
       return next(
         new ApiError(
@@ -111,39 +127,6 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
           403
         )
       );
-    }
-
-    // send email to the receiver(s) if the last message was sent more than 6 hours ago or its the first message in the chat
-    // Check the timestamp of the last message
-    const lastMessage = await Message.findOne({ chat: chatId }).sort({
-      createdAt: -1,
-    });
-
-    const delayHoursInMillis = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
-    const now = new Date();
-    if (
-      (lastMessage && now - lastMessage.createdAt > delayHoursInMillis) ||
-      !lastMessage
-    ) {
-      // Find the receiver(s) in the chat (excluding the sender)
-
-      console.log("chat", chat.participants);
-
-      const receivers = chat.participants
-        .filter(
-          (participant) => String(participant.user._id) !== String(sender)
-        )
-        .map((participant) => participant.user);
-
-      console.log("receivers", receivers);
-      // Send email to each receiver
-      receivers.forEach(async (receiver) => {
-        await sendEmail({
-          to: receiver.email,
-          subject: "New message in chat",
-          text: `You have a new message in the chat from ${req.user.username}.`,
-        });
-      });
     }
 
     // Create a new message
@@ -157,9 +140,7 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
       messageData.media = media;
     }
 
-    // Create a new message
     const msg = await Message.create(messageData);
-
     const newMessage = await Message.findById(msg._id);
     res.status(201).json(newMessage);
   } catch (error) {

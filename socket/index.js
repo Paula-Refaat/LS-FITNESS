@@ -25,14 +25,21 @@ const removeUser = (socketId) => {
 
 const sendPrivateMessage = (
   socket,
-  { senderId, receiverId, ownMessageName, text }
+  { senderId, receiverId, ownMessageName, text, media = [] }
 ) => {
+  if ((!text || text.trim() === "") && media.length === 0) {
+    return socket.emit(
+      "errorMessage",
+      "Message must contain either text or media."
+    );
+  }
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
     io.to(receiverSocketId).emit("receiveMessage", {
       senderId,
       ownMessageName,
       text,
+      media,
       private: true,
     });
   } else {
@@ -42,8 +49,22 @@ const sendPrivateMessage = (
 
 const sendPrivateReplyMessage = (
   socket,
-  { senderId, receiverId, ownMessageName, repliedToMessageData, text }
+  {
+    senderId,
+    receiverId,
+    ownMessageName,
+    repliedToMessageData,
+    repliedToMessageId,
+    text,
+    media = [],
+  }
 ) => {
+  if ((!text || text.trim() === "") && media.length === 0) {
+    return socket.emit(
+      "errorMessage",
+      "Message must contain either text or media."
+    );
+  }
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
     io.to(receiverSocketId).emit("receiveRepliedMessage", {
@@ -51,6 +72,8 @@ const sendPrivateReplyMessage = (
       text,
       ownMessageName,
       repliedToMessageData,
+      repliedToMessageId,
+      media,
       private: true,
     });
   } else {
@@ -58,8 +81,82 @@ const sendPrivateReplyMessage = (
   }
 };
 
-const sendGroupMessage = (socket, { senderId, roomId, payload, action }) => {
-  socket.to(roomId).emit("receiveMessage", { senderId, payload, action });
+const toggleReactionToPrivateMessage = (
+  socket,
+  { receiverId, senderId, messageId, emoji }
+) => {
+  if (!emoji || emoji.trim() === "") {
+    return socket.emit("errorMessage", "Reaction must contain a valid emoji.");
+  }
+  const receiverSocketId = getUserSocketId(receiverId);
+
+  io.to(receiverSocketId).emit("receiveReactionToMessage", {
+    senderId,
+    messageId,
+    emoji,
+  });
+};
+
+const sendGroupMessage = (
+  socket,
+  { senderId, roomId, payload, media = [], action }
+) => {
+  if ((!payload || payload.trim() === "") && media.length === 0) {
+    return socket.emit(
+      "errorMessage",
+      "Message must contain either text or media."
+    );
+  }
+  if (!roomId || !senderId) {
+    return socket.emit("errorMessage", "Invalid sender or room.");
+  }
+  socket
+    .to(roomId)
+    .emit("receiveMessage", { senderId, payload, action, media });
+};
+
+const sendGroupReplyMessage = (
+  socket,
+  {
+    senderId,
+    roomId,
+    payload,
+    ownMessageName,
+    repliedToMessageData,
+    repliedToMessageId,
+    media = [],
+    action,
+  }
+) => {
+  if ((!payload || payload.trim() === "") && media.length === 0) {
+    return socket.emit(
+      "errorMessage",
+      "Message must contain either text or media."
+    );
+  }
+  if (!roomId || !senderId) {
+    return socket.emit("errorMessage", "Invalid sender or room.");
+  }
+  socket.to(roomId).emit("receiveRepliedMessage", {
+    senderId,
+    payload,
+    ownMessageName,
+    repliedToMessageData,
+    repliedToMessageId,
+    action,
+    media,
+  });
+};
+const toggleReactionToGroupMessage = (
+  socket,
+  { senderId, messageId, roomId, emoji }
+) => {
+  if (!emoji || emoji.trim() === "") {
+    return socket.emit("errorMessage", "Reaction must contain a valid emoji.");
+  }
+  socket
+    .to(roomId)
+    .emit("receiveReactionToMessage", { senderId, messageId, emoji });
 };
 
 function initSocket(server) {
@@ -91,11 +188,19 @@ function initSocket(server) {
         sendGroupMessage(socket, messageData);
       } else if (messageData.repliedToMessageData) {
         sendPrivateReplyMessage(socket, messageData);
+      } else if (messageData.repliedToMessageData && messageData.roomId) {
+        sendGroupReplyMessage(socket, messageData);
       } else {
         sendPrivateMessage(socket, messageData);
       }
     });
-
+    socket.on("toggleReaction", (reactionData) => {
+      if (reactionData.roomId) {
+        toggleReactionToGroupMessage(socket, reactionData);
+      } else {
+        toggleReactionToPrivateMessage(socket, reactionData);
+      }
+    });
     socket.on("disconnect", () => {
       removeUser(removeUser);
       console.log(`User disconnected: ${socket.id}`);

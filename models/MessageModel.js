@@ -13,10 +13,17 @@ const MessageSchema = new mongoose.Schema(
     text: {
       type: String,
     },
-    media: {
-      // For storing links to media files or attachments
-      type: [String],
-    },
+    media: [
+      {
+        _id: false,
+        url: {
+          type: String,
+        },
+        type: {
+          type: String,
+        },
+      },
+    ],
     isRead: {
       type: Boolean,
       default: false,
@@ -54,31 +61,33 @@ MessageSchema.pre(/^find/, function (next) {
       path: "sender", // Populate sender within repliedTo field
       select: "username profileImg",
     },
-  })
+  });
   this.sort({ createdAt: -1 });
   next();
 });
-const setImageURL = (doc) => {
-  //return image base url + iamge name
-  if (doc.media) {
+const setMediaURL = (doc) => {
+  if (doc.media && doc.media.length) {
     const mediaListWithUrl = [];
     doc.media.forEach((m) => {
-      const mediaUrl = `${process.env.BASE_URL}/messages/${m}`;
-      mediaListWithUrl.push(mediaUrl);
+      const mediaUrl = `${process.env.BASE_URL}/messages/${m.url}`;
+      mediaListWithUrl.push({
+        url: mediaUrl,
+        type: m.type,
+      });
     });
     doc.media = mediaListWithUrl;
   }
 };
 
-//after initializ the doc in db
-// check if the document contains image
-// it work with findOne,findAll,update
+// بعد تهيئة المستند في قاعدة البيانات
 MessageSchema.post("init", (doc) => {
-  setImageURL(doc);
+  setMediaURL(doc);
 });
-// it work with create
+
+// بعد الحفظ في قاعدة البيانات
 MessageSchema.post("save", (doc) => {
-  setImageURL(doc);
+  setMediaURL(doc);
 });
+
 const Message = mongoose.model("Message", MessageSchema);
 module.exports = Message;
