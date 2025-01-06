@@ -23,6 +23,8 @@ const NotificationSchema = new mongoose.Schema(
         "Category",
         "Supplement",
         "Vitamin",
+        "TrainerRequest",
+        "TrainerProfile",
       ],
       // required: true,
     },

@@ -11,6 +11,25 @@ exports.createFilterObj = (req, res, next) => {
   next();
 };
 
+exports.createFilterObjToGetChatNotification = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+  const filterObject = { targetModel: "Chat" };
+  req.filterObj = filterObject;
+  next();
+};
+
+exports.createFilterObjToGetBasicNotifications = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  req.filterObj.targetModel = { $ne: "Chat" };
+
+  next();
+};
+
 exports.convertToArray = (req, res, next) => {
   if (req.body.users) {
     // If it's not an array, convert it to an array
@@ -88,58 +107,6 @@ exports.getMyNotifications = factory.getAll(Notification, "Notification");
 //@desc get list of notifications
 //@route GET /api/v1/notifications
 //@access private
-exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
-  // Set up the response headers for SSE
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
-
-  // Connection established message
-  res.write("event: connected\n");
-  res.write("data: Connection established\n\n");
-  res.flush(); // Force the response to flush immediately
-
-  console.log("Waiting for notifications...");
-
-  // إرسال heartbeat كل 30 ثانية لإبقاء الاتصال مفتوحًا
-  const heartbeat = setInterval(() => {
-    res.write(`\n`); // حدث heartbeat مخصص
-    res.flush(); // التأكد من إرسال البيانات فورًا
-    console.log("Heartbeat sent to keep the connection alive.");
-  }, 30000); // كل 30 ثانية
-
-  // Start watching the Notification collection
-  const changeStream = Notification.watch();
-
-  changeStream.on("change", (change) => {
-    console.log("Change detected:", change); // Log changes from MongoDB
-    const notification = change.fullDocument;
-
-    if (notification) {
-      console.log("Notification data:", notification); // Log notification details
-    }
-
-    // Check if the notification belongs to the current user
-    if (
-      notification &&
-      notification.user.toString() === req.user._id.toString()
-    ) {
-      console.log("Sending notification to client...");
-      res.write(`data: ${JSON.stringify(notification)}\n\n`);
-      res.flush(); // Make sure the data is sent immediately
-    } else {
-      console.log("Notification does not belong to the current user.");
-    }
-  });
-
-  // Handle connection closure
-  req.on("close", () => {
-    console.log(`Connection closed for user: ${req.user._id.toString()}`);
-    clearInterval(heartbeat); // إيقاف إرسال heartbeats
-    changeStream.close(); // إغلاق ChangeStream
-  });
-});
-
 // exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 //   // Set up the response headers for SSE
 //   res.setHeader("Content-Type", "text/event-stream");
@@ -152,6 +119,13 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 //   res.flush(); // Force the response to flush immediately
 
 //   console.log("Waiting for notifications...");
+
+//   // إرسال heartbeat كل 30 ثانية لإبقاء الاتصال مفتوحًا
+//   const heartbeat = setInterval(() => {
+//     res.write(`\n`); // حدث heartbeat مخصص
+//     res.flush(); // التأكد من إرسال البيانات فورًا
+//     console.log("Heartbeat sent to keep the connection alive.");
+//   }, 30000); // كل 30 ثانية
 
 //   // Start watching the Notification collection
 //   const changeStream = Notification.watch();
@@ -180,49 +154,94 @@ exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
 //   // Handle connection closure
 //   req.on("close", () => {
 //     console.log(`Connection closed for user: ${req.user._id.toString()}`);
-//     changeStream.close();
+//     clearInterval(heartbeat); // إيقاف إرسال heartbeats
+//     changeStream.close(); // إغلاق ChangeStream
 //   });
 // });
 
-// exports.listenOnMyNotification = asyncHandler(async (req, res, next) => {
-//   // Set up the response headers for SSE
-//   res.setHeader("Content-Type", "text/event-stream");
-//   res.setHeader("Cache-Control", "no-cache");
-//   res.setHeader("Connection", "keep-alive");
+exports.listenOnNotificationsExceptChat = asyncHandler(
+  async (req, res, next) => {
+    // Set up the response headers for SSE
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
 
-//   // Connection established message
-//   res.write("event: connected\n");
-//   res.write("data: Connection established\n\n");
-//   res.flush(); // Force the response to flush immediately
+    res.write("event: connected\n");
+    res.write("data: Connection established\n\n");
+    res.flush();
 
-//   // Start watching the Notification collection
-//   const changeStream = Notification.watch();
+    console.log("Waiting for notifications (excluding Chat)...");
 
-//   changeStream.on("change", (change) => {
-//     // Log the change to debug
-//     console.log("Change detected:", change);
+    const heartbeat = setInterval(() => {
+      res.write(`\n`);
+      res.flush();
+      console.log("Heartbeat sent to keep the connection alive.");
+    }, 30000);
 
-//     const notification = change.fullDocument;
+    const changeStream = Notification.watch();
 
-//     // Log the notification details and user details
-//     console.log("Notification:", notification);
-//     console.log("Current User:", req.user._id.toString());
+    changeStream.on("change", (change) => {
+      const notification = change.fullDocument;
 
-//     // Check if the notification belongs to the current user
-//     if (
-//       notification &&
-//       notification.user.toString() === req.user._id.toString()
-//     ) {
-//       res.write(`data: ${JSON.stringify(notification)}\n\n`);
-//     }
-//   });
+      if (
+        notification &&
+        notification.user.toString() === req.user._id.toString() &&
+        notification.targetModel !== "Chat"
+      ) {
+        console.log("Sending notification (excluding Chat) to client...");
+        res.write(`data: ${JSON.stringify(notification)}\n\n`);
+        res.flush();
+      }
+    });
 
-//   // Handle connection closure
-//   req.on("close", () => {
-//     console.log(`Connection closed for user: ${req.user._id.toString()}`);
-//     changeStream.close();
-//   });
-// });
+    req.on("close", () => {
+      console.log(`Connection closed for user: ${req.user._id.toString()}`);
+      clearInterval(heartbeat);
+      changeStream.close();
+    });
+  }
+);
+
+exports.listenOnChatNotifications = asyncHandler(async (req, res, next) => {
+  // Set up the response headers for SSE
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+
+  res.write("event: connected\n");
+  res.write("data: Connection established\n\n");
+  res.flush();
+
+  console.log("Waiting for Chat notifications...");
+
+  const heartbeat = setInterval(() => {
+    res.write(`\n`);
+    res.flush();
+    console.log("Heartbeat sent to keep the connection alive.");
+  }, 30000);
+
+  const changeStream = Notification.watch();
+
+  changeStream.on("change", (change) => {
+    const notification = change.fullDocument;
+
+    if (
+      notification &&
+      notification.user.toString() === req.user._id.toString() &&
+      notification.targetModel === "Chat"
+    ) {
+      console.log("Sending Chat notification to client...");
+      res.write(`data: ${JSON.stringify(notification)}\n\n`);
+      res.flush();
+    }
+  });
+
+  req.on("close", () => {
+    console.log(`Connection closed for user: ${req.user._id.toString()}`);
+    clearInterval(heartbeat);
+    changeStream.close();
+  });
+});
 
 //@desc delete notification
 //@route DELETE /api/v1/notifications/:id
@@ -232,9 +251,28 @@ exports.deleteNotification = factory.deleteOne(Notification);
 //@desc read notification
 //@route Put /api/v1/notifications/:id
 //@access private
-exports.readNotification = asyncHandler(async (req, res, next) => {
-  const notification = await Notification.findByIdAndUpdate(
-    req.params.id,
+exports.readBasicNotification = asyncHandler(async (req, res, next) => {
+  const notification = await Notification.findOneAndUpdate(
+    { _id: req.params.id, targetModel: { $ne: "Chat" } },
+    { read: true },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  if (!notification) {
+    return next(new ApiError("Notification not found", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    message: "notification read",
+  });
+});
+
+exports.readChatNotification = asyncHandler(async (req, res, next) => {
+  const notification = await Notification.findOneAndUpdate(
+    { _id: req.params.id, targetModel: "Chat" },
     { read: true },
     {
       new: true,
@@ -254,8 +292,22 @@ exports.readNotification = asyncHandler(async (req, res, next) => {
 //@desc read all notification
 //@route Put /api/v1/notifications/readAll
 //@access private
-exports.readAllNotification = asyncHandler(async (req, res, next) => {
-  await Notification.updateMany({ user: req.user.id }, { read: true });
+exports.readAllBasicNotification = asyncHandler(async (req, res, next) => {
+  await Notification.updateMany(
+    { user: req.user.id, targetModel: { $ne: "Chat" } },
+    { read: true }
+  );
+  res.status(200).json({
+    status: "success",
+    message: "All notification read",
+  });
+});
+
+exports.readAllChatNotification = asyncHandler(async (req, res, next) => {
+  await Notification.updateMany(
+    { user: req.user.id, targetModel: "Chat" },
+    { read: true }
+  );
   res.status(200).json({
     status: "success",
     message: "All notification read",
@@ -265,12 +317,28 @@ exports.readAllNotification = asyncHandler(async (req, res, next) => {
 //@desc get unread notification count
 //@route Put /api/v1/notifications/unreadCount
 //@access private
-exports.getUnreadNotificationCount = asyncHandler(async (req, res, next) => {
-  const count = await Notification.countDocuments({
-    user: req.user._id,
-    read: false,
-  });
-  res.status(200).json({
-    count,
-  });
-});
+exports.getUnreadBasicNotificationCount = asyncHandler(
+  async (req, res, next) => {
+    const count = await Notification.countDocuments({
+      user: req.user._id,
+      targetModel: { $ne: "Chat" },
+      read: false,
+    });
+    res.status(200).json({
+      count,
+    });
+  }
+);
+
+exports.getUnreadChatNotificationCount = asyncHandler(
+  async (req, res, next) => {
+    const count = await Notification.countDocuments({
+      user: req.user._id,
+      targetModel: "Chat",
+      read: false,
+    });
+    res.status(200).json({
+      count,
+    });
+  }
+);

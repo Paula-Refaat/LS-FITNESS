@@ -12,6 +12,7 @@ router
   .get(
     authServices.protect,
     notificationService.createFilterObj,
+    notificationService.createFilterObjToGetBasicNotifications,
     notificationService.getMyNotifications
   )
   .post(
@@ -21,24 +22,66 @@ router
     notificationService.convertToArray,
     notificationService.sendSystemNotificationToUsers
   ) //send notification to users
-  .put(authServices.protect, notificationService.readAllNotification); //read all
+  .put(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin", "user", "trainer", "Ls-trainer"),
+    notificationService.readAllBasicNotification
+  ); //read all
+router
+  .route("/chat")
+  .put(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin", "user", "trainer", "Ls-trainer"),
+    notificationService.readAllChatNotification
+  );
 router
   .route("/:id")
   .put(
     authServices.protect,
-    authServices.allowTo("admin", "sub-admin"),
+    authServices.allowTo("admin", "sub-admin", "user", "trainer", "Ls-trainer"),
     checkPermission("Notification", "update"),
-    notificationService.readNotification
+    notificationService.readBasicNotification
   )
   .delete(authServices.protect, notificationService.deleteNotification);
-
+router
+  .route("/:id/chat")
+  .put(
+    authServices.protect,
+    authServices.allowTo("admin", "sub-admin", "user", "trainer", "Ls-trainer"),
+    notificationService.readChatNotification
+  );
 router.get(
   "/event",
   authServices.protect,
-  notificationService.listenOnMyNotification
+  notificationService.listenOnNotificationsExceptChat
+);
+
+router.get(
+  "/event/chat",
+  authServices.protect,
+  notificationService.listenOnChatNotifications
 );
 
 router
   .route("/unreadCount")
-  .get(authServices.protect, notificationService.getUnreadNotificationCount);
+  .get(
+    authServices.protect,
+    notificationService.getUnreadBasicNotificationCount
+  );
+
+router
+  .route("/unreadCount/chat")
+  .get(
+    authServices.protect,
+    notificationService.getUnreadChatNotificationCount
+  );
+
+router
+  .route("/chat")
+  .get(
+    authServices.protect,
+    notificationService.createFilterObj,
+    notificationService.createFilterObjToGetChatNotification,
+    notificationService.getMyNotifications
+  );
 module.exports = router;
