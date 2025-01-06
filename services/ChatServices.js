@@ -66,8 +66,8 @@ exports.createSingleChat = asyncHandler(async (req, res, next) => {
     await Notification.create({
       user: receiverId,
       message: `${req.user.username} has started a chat with you`,
-      // chat: newChat._id,
-      // type: "chat",
+      targetModelId: newChat._id,
+      targetModel: "Chat",
     });
 
     res.status(201).json({ data: newChat });
@@ -131,8 +131,8 @@ exports.createGroupChat = asyncHandler(async (req, res, next) => {
         await Notification.create({
           user: userId,
           message: `You have been added to the group chat "${name}"`,
-          // chat: newGroupChat._id,
-          // type: "chat",
+          targetModelId: newChat._id,
+          targetModel: "Chat",
         });
       })
     );
@@ -180,7 +180,7 @@ exports.getMyChats = async (req, res, next) => {
                   $map: {
                     input: "$media",
                     as: "file",
-                    in: { $concat: [baseUrl, "/messages/", "$$file"] }, // Adjust the path as necessary
+                    in: { $concat: [baseUrl, "/messages/", "$$file.url"] }, // Adjust the path as necessary
                   },
                 },
               },
@@ -324,7 +324,7 @@ exports.getChatDetails = asyncHandler(async (req, res, next) => {
                   $map: {
                     input: "$media",
                     as: "file",
-                    in: { $concat: [baseUrl, "/messages/", "$$file"] },
+                    in: { $concat: [baseUrl, "/messages/", "$$file.url"] },
                   },
                 },
               },
