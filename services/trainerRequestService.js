@@ -5,8 +5,9 @@ const fs = require("fs");
 const TrainerRequest = require("../models/trainerRequestModel");
 const factory = require("./handllerFactory");
 const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
-
+const Notification = require("../models/notificationModel");
 const ApiError = require("../utils/ApiError");
+const TrainerProfile = require("../models/TrainerProfileModel");
 
 exports.createFilterObj = (req, res, next) => {
   let filterObject = {};
@@ -144,24 +145,53 @@ exports.updateTrainerRequest = asyncHandler(async (req, res, next) => {
 //@route PUT /api/v1/TrainerRequests/:id/accept
 //@access Private/Admin
 exports.acceptTrainerRequest = asyncHandler(async (req, res, next) => {
+  // 1️⃣ البحث عن طلب المدرب
   const trainerRequest = await TrainerRequest.findById(req.params.id);
   if (!trainerRequest) {
-    return next(new ApiError("trainer not found", 404));
+    return next(new ApiError("Trainer request not found", 404));
   }
-  if (trainerRequest && trainerRequest.status === "approved") {
-    return next(new ApiError("this trainer is already approved", 400));
+
+  // 2️⃣ التحقق من حالة الطلب
+  if (trainerRequest.status === "approved") {
+    return next(new ApiError("This trainer is already approved", 400));
   }
+
+  // 3️⃣ تحديث حالة الطلب إلى "approved"
   await TrainerRequest.updateOne(
     { _id: req.params.id },
     {
       status: "approved",
-      note: req.body.note ? req.body.note : null,
+      note: req.body.note || null,
     }
   );
+
+  // 4️⃣ إنشاء ملف المدرب في TrainerProfile
+  const newTrainerProfile = await TrainerProfile.create({
+    user: trainerRequest.user,
+    name: trainerRequest.name,
+    bio: trainerRequest.introduceYourSelf,
+    yearsOfExperience: trainerRequest.yearsOfExperience,
+    // phone: trainerRequest.phone,
+    location: trainerRequest.location,
+    certificates: trainerRequest.certificates || [],
+    // profileImage:
+    //   trainerRequest.profileImage ||
+    //   `${process.env.BASE_URL}//default_profile.jpg`,
+  });
+  await Notification.create({
+    user: trainerRequest.user,
+    message:
+      "Your trainer request accepted successfully, and creating trainer profile for you",
+    targetModel: "TrainerProfile",
+    targetModelId: newTrainerProfile._id,
+  });
+
+  // 5️⃣ إرسال الاستجابة
   res.status(200).json({
     status: "success",
-    message: "trainer request accepted successfully",
-    trainerNote: req.body.note ? req.body.note : null,
+    message:
+      "Trainer request accepted successfully, and trainer profile created.",
+    trainerNote: req.body.note || null,
   });
 });
 
@@ -187,6 +217,13 @@ exports.rejectTrainerRequest = asyncHandler(async (req, res, next) => {
       reasonOfRejection: reasonOfRejection,
     }
   );
+  await Notification.create({
+    user: trainerRequest.user,
+    message: `Your trainer request rejected, reason of rejection:${reasonOfRejection}`,
+    targetModel: "TrainerRequest",
+    targetModelId: trainerRequest._id,
+  });
+
   res.status(200).json({
     status: "success",
     message: "trainer request rejected successfully",
