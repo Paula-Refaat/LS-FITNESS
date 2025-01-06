@@ -381,8 +381,8 @@ exports.replyToMessage = asyncHandler(async (req, res, next) => {
     await Notification.create({
       user: sender._id,
       message: notificationMessage,
-      // chat: repliedMessage.chat,
-      // type: "chat",
+      targetModelId: repliedMessage.chat,
+      targetModel: "Chat",
     });
 
     //send email to the sender of the replied message
