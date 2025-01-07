@@ -7,9 +7,17 @@ const router = require("express").Router();
 
 router.post("/pay/:courseId", authServices.protect, paypal.createCourseOrder);
 
+router.post(
+  "/pay/:trainerId/subscribeToPlan",
+  authServices.protect,
+  paypal.createTrainerOrder
+);
+
 //router.get("/complete-order", paypal.capturePayment);
 
 router.post("/capture-payment", paypal.capturePayment);
+router.post("/captureTrainerPlanPayment", paypal.captureTrainerPlanPayment);
+
 
 router.get("/cancel-order", async (req, res) => {
   res.redirect("/");

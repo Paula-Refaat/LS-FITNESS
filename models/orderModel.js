@@ -13,6 +13,10 @@ const orderSchema = mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "Course",
     },
+    trainer: {
+      type: mongoose.Schema.ObjectId,
+      ref: "TrainerProfile",
+    },
     package: {
       type: mongoose.Schema.ObjectId,
       ref: "Package",
@@ -49,8 +53,10 @@ const orderSchema = mongoose.Schema(
 
 // Custom validation to ensure either course or package is provided
 orderSchema.pre("validate", function (next) {
-  if (!this.course && !this.package) {
-    return next(new Error("Order must include either a course or a package"));
+  if (!this.course && !this.package && !this.trainer) {
+    return next(
+      new Error("Order must include either a course or a package or a trainer")
+    );
   }
   next();
 });
