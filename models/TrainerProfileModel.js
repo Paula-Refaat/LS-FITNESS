@@ -14,7 +14,7 @@ const trainerProfileSchema = mongoose.Schema(
     },
     bio: {
       type: String,
-      required: [true, "Trainer bio is required"],
+      // required: [true, "Trainer bio is required"],
     },
     yearsOfExperience: {
       type: Number,
