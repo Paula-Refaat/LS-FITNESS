@@ -33,7 +33,7 @@ exports.handleMarketingReqsPdfs = asyncHandler(async (req, res, next) => {
     // معالجة جميع ملفات الشهادات
     req.body.certificates = [];
     for (const certificateFile of req.files.certificates) {
-      const certificateName = `trainerProfile-certificate-${uuidv4()}-${Date.now()}.jpeg`;
+      const certificateName = `trainerProfile-certificate-${uuidv4()}-${Date.now()}.webp`;
       const certificatePath = `${certificatesDir}/${certificateName}`;
 
       // حفظ الملف
