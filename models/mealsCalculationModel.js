@@ -102,11 +102,11 @@ const setCalculationImageURL = (doc) => {
       const splittedURL = editingMealCalculationImageURL.split("/");
       const imageName = splittedURL.pop();
 
-      const URL = `${process.env.BASE_URL}/mealsCalculations/${imageName}.png`;
+      const URL = `${process.env.BASE_URL}/mealsCalculations/${imageName}.webp`;
       doc.image = URL;
       return;
     }
-    const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}.png`;
+    const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}.webp`;
     doc.image = URL;
   }
 };

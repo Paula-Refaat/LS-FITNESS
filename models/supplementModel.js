@@ -65,7 +65,7 @@ supplementSchema.methods.toJSON = function () {
 const setSupplementImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const SupplementImageURL = `${process.env.BASE_URL}/supplements/${doc.image}`;
+    const SupplementImageURL = `${process.env.BASE_URL}/supplements/${doc.image}.webp`;
     doc.image = SupplementImageURL;
   }
 };

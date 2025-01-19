@@ -65,7 +65,7 @@ vitaminSchema.methods.toJSON = function () {
 const setVitaminImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}`;
+    const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}.webp`;
     doc.image = vitaminImageURL;
   }
 };
