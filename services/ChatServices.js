@@ -131,7 +131,7 @@ exports.createGroupChat = asyncHandler(async (req, res, next) => {
         await Notification.create({
           user: userId,
           message: `You have been added to the group chat "${name}"`,
-          targetModelId: newChat._id,
+          targetModelId: newGroupChat._id,
           targetModel: "Chat",
         });
       })

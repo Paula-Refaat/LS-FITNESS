@@ -101,6 +101,54 @@ exports.isMutedChat = asyncHandler(async (req, res, next) => {
   }
 });
 
+// exports.addMessage = asyncHandler(async (req, res, next) => {
+//   try {
+//     const { chatId } = req.params;
+//     const { text, media } = req.body;
+
+//     const sender = req.user._id; // logged user id
+
+//     // Check if the logged-in user is a participant of the chat
+//     const chat = await Chat.findById(chatId);
+
+//     if (!chat) {
+//       return res.status(404).json({ error: "Chat not found" });
+//     }
+
+//     // Check if the logged-in user is a participant of the chat
+//     const participantIds = chat.participants.map((participant) =>
+//       String(participant.user ? participant.user._id : null)
+//     );
+
+//     if (!participantIds.includes(String(sender))) {
+//       return next(
+//         new ApiError(
+//           "Unauthorized access: You are not a participant of this chat",
+//           403
+//         )
+//       );
+//     }
+
+//     // Create a new message
+//     const messageData = {
+//       chat,
+//       sender,
+//       text,
+//     };
+
+//     if (media) {
+//       messageData.media = media;
+//     }
+
+//     const msg = await Message.create(messageData);
+//     const newMessage = await Message.findById(msg._id);
+//     res.status(201).json(newMessage);
+//   } catch (error) {
+//     console.error("Error adding message to chat:", error);
+//     next(error);
+//   }
+// });
+
 exports.addMessage = asyncHandler(async (req, res, next) => {
   try {
     const { chatId } = req.params;
@@ -142,6 +190,26 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
 
     const msg = await Message.create(messageData);
     const newMessage = await Message.findById(msg._id);
+
+    // Send notification to other participants (added logic)
+    try {
+      const notificationMessage = `New message in chat ${chatId}: ${text}`;
+      const recipients = chat.participants.filter(
+        (participant) => String(participant.user._id) !== String(sender)
+      );
+
+      for (const recipient of recipients) {
+        await Notification.create({
+          user: recipient.user._id,
+          message: notificationMessage,
+          targetModelId: chat._id,
+          targetModel: "Chat",
+        });
+      }
+    } catch (error) {
+      console.error("Failed to send notifications:", error);
+    }
+
     res.status(201).json(newMessage);
   } catch (error) {
     console.error("Error adding message to chat:", error);
@@ -265,6 +333,57 @@ exports.deleteMessage = asyncHandler(async (req, res, next) => {
 //@desc Add a reaction to a message
 //@route POST /api/v1/message/:messageId/reactions
 //@access protected
+// exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
+//   const { messageId } = req.params;
+//   const { emoji } = req.body;
+//   const userId = req.user._id; // logged user id
+
+//   let message = await Message.findById(messageId);
+
+//   if (!message) {
+//     return next(new ApiError("Message not found", 404));
+//   }
+
+//   // Check if the user has already reacted to this message
+//   const existingReactionIndex = message.reactions.findIndex(
+//     (reaction) => String(reaction.user) === String(userId)
+//   );
+
+//   if (existingReactionIndex !== -1) {
+//     const existingReaction = message.reactions[existingReactionIndex];
+//     if (existingReaction.emoji === emoji) {
+//       // If the new reaction is the same as the existing one, do nothing
+//       message = await Message.findById(messageId).populate({
+//         path: "reactions.user",
+//         select: "username profileImg",
+//       });
+//       return res.status(200).json({ data: message });
+//     } else {
+//       // If the new reaction is different, update the existing reaction
+//       await Message.updateOne(
+//         { _id: messageId, "reactions.user": userId },
+//         { $set: { "reactions.$.emoji": emoji } },
+//         { new: true }
+//       );
+//     }
+//   } else {
+//     // If the user has not reacted, add the reaction
+//     await Message.findByIdAndUpdate(
+//       messageId,
+//       { $push: { reactions: { user: userId, emoji: emoji } } },
+//       { new: true }
+//     );
+//   }
+
+//   // Fetch the updated message after toggling the reaction
+//   const updatedMessage = await Message.findById(messageId).populate({
+//     path: "reactions.user",
+//     select: "username profileImg",
+//   });
+
+//   res.status(200).json({ data: updatedMessage });
+// });
+
 exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
   const { messageId } = req.params;
   const { emoji } = req.body;
@@ -313,8 +432,27 @@ exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
     select: "username profileImg",
   });
 
+  // Send notification to the message sender (added logic)
+  try {
+    if (String(updatedMessage.sender) !== String(userId)) {
+      const notificationMessage = `
+        Someone reacted to your message: "${emoji}"
+      `;
+
+      await Notification.create({
+        user: updatedMessage.sender, // Notify the message sender
+        message: notificationMessage,
+        targetModelId: messageId,
+        targetModel: "Message",
+      });
+    }
+  } catch (error) {
+    console.error("Failed to send notification:", error);
+  }
+
   res.status(200).json({ data: updatedMessage });
 });
+
 
 //@desc Get reactions to a message
 //@route GET /api/v1/message/:messageId/reactions
