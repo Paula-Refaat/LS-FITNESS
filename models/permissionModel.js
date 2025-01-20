@@ -28,6 +28,8 @@ const allowedModels = [
   "ToolOrMachine",
   "SocialMediaLinks",
   "TrainerProfile",
+  "Policies",
+  "ContactUs",
 ];
 
 const permissionSchema = new mongoose.Schema({
