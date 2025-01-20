@@ -77,7 +77,7 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
     if (!fs.existsSync(directoryPath)) {
       fs.mkdirSync(directoryPath, { recursive: true });
     }
-    const imageName = `course-${uuidv4()}-${Date.now()}.jpeg`;
+    const imageName = `course-${uuidv4()}-${Date.now()}.webp`;
     const imagePath = `uploads/courses/${imageName}`;
 
     fs.writeFileSync(imagePath, req.file.buffer);

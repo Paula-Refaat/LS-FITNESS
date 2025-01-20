@@ -91,9 +91,30 @@ mealsCalculationSchema.pre(/^find/, function (next) {
   next();
 });
 
+// const setCalculationImageURL = (doc) => {
+//   //return image base url + iamge name
+//   if (doc.image) {
+//     if (
+//       doc.image.includes(process.env.BASE_URL) ||
+//       doc.image.includes("http")
+//     ) {
+//       let editingMealCalculationImageURL = doc.image;
+//       const splittedURL = editingMealCalculationImageURL.split("/");
+//       const imageName = splittedURL.pop();
+
+//       const URL = `${process.env.BASE_URL}/mealsCalculations/${imageName}.webp`;
+//       doc.image = URL;
+//       return;
+//     }
+//     const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}.webp`;
+//     doc.image = URL;
+//   }
+// };
+
 const setCalculationImageURL = (doc) => {
-  //return image base url + iamge name
+  // Return image base URL + image name
   if (doc.image) {
+    // Check if the image URL already includes the base URL or is an HTTP URL
     if (
       doc.image.includes(process.env.BASE_URL) ||
       doc.image.includes("http")
@@ -102,14 +123,29 @@ const setCalculationImageURL = (doc) => {
       const splittedURL = editingMealCalculationImageURL.split("/");
       const imageName = splittedURL.pop();
 
-      const URL = `${process.env.BASE_URL}/mealsCalculations/${imageName}.png`;
-      doc.image = URL;
-      return;
+      // If the image already has an extension, keep it
+      if (imageName.includes(".")) {
+        const URL = `${process.env.BASE_URL}/mealsCalculations/${imageName}`;
+        doc.image = URL;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/mealsCalculations/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
     }
-    const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}.png`;
-    doc.image = URL;
+
+    // For local image names
+    if (doc.image.includes(".")) {
+      const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}`;
+      doc.image = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/mealsCalculations/${doc.image}.webp`;
+      doc.image = URL;
+    }
   }
 };
+
 mealsCalculationSchema.methods.toJSON = function () {
   const obj = this.toObject();
   if (!obj.createdAt) {

@@ -18,7 +18,7 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
     // Ensure the directory exists
     await fs.mkdir(directoryPath, { recursive: true });
 
-    const imageName = `mealsCalculations-${uuidv4()}-${Date.now()}.png`;
+    const imageName = `mealsCalculations-${uuidv4()}-${Date.now()}.webp`;
     const imagePath = path.join(directoryPath, imageName);
 
     // Save the image buffer asynchronously

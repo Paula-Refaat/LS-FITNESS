@@ -62,11 +62,26 @@ vitaminSchema.methods.toJSON = function () {
   return obj;
 };
 
+// const setVitaminImageURL = (doc) => {
+//   //return image base url + iamge name
+//   if (doc.image) {
+//     const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}.webp`;
+//     doc.image = vitaminImageURL;
+//   }
+// };
+
 const setVitaminImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}`;
-    doc.image = vitaminImageURL;
+    if (doc.image.includes(".")) {
+      const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}`;
+      doc.image = vitaminImageURL;
+      return;
+    } else {
+      const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}.webp`;
+      doc.image = vitaminImageURL;
+      return;
+    }
   }
 };
 
