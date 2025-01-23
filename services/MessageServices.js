@@ -10,6 +10,8 @@ const factory = require("./handllerFactory");
 const ApiError = require("../utils/ApiError");
 // const sendEmail = require("../utils/sendEmail");
 const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
+const ObjectId = require("mongoose").Types.ObjectId;
+
 const allowedMimeTypes =
   process.env.ALLOWED_MIME_TYPES ||
   "image/jpeg|image/png|image/gif|application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|video/mp4|video/mpeg|audio/mpeg|audio/wav";
@@ -149,10 +151,18 @@ exports.isMutedChat = asyncHandler(async (req, res, next) => {
 //   }
 // });
 
+const validateMessageId = (messageId, next) => {
+  if (!ObjectId.isValid(messageId)) {
+    return next(new ApiError("Invalid message id format", 400));
+  }
+};
+
 exports.addMessage = asyncHandler(async (req, res, next) => {
   try {
     const { chatId } = req.params;
-    const { text, media } = req.body;
+    const { messageId, text, media } = req.body;
+
+    validateMessageId(messageId, next);
 
     const sender = req.user._id; // logged user id
 
@@ -179,6 +189,7 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
 
     // Create a new message
     const messageData = {
+      _id: new ObjectId(messageId),
       chat,
       sender,
       text,
@@ -453,7 +464,6 @@ exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: updatedMessage });
 });
 
-
 //@desc Get reactions to a message
 //@route GET /api/v1/message/:messageId/reactions
 //@access protected
@@ -483,11 +493,13 @@ exports.getReactionsToMessage = asyncHandler(async (req, res, next) => {
 //@route POST /api/v1/message/:messageId/reply
 //@access protected
 exports.replyToMessage = asyncHandler(async (req, res, next) => {
-  const { messageId } = req.params;
-  const { text, media } = req.body;
+  const { replyToMessageId } = req.params;
+  const { messageId, text, media } = req.body;
   const sender = req.user._id; // logged user id
 
-  const repliedMessage = await Message.findById(messageId);
+  validateMessageId(messageId, next);
+
+  const repliedMessage = await Message.findById(replyToMessageId);
 
   if (!repliedMessage) {
     return next(new ApiError("Message not found", 404));
@@ -495,6 +507,7 @@ exports.replyToMessage = asyncHandler(async (req, res, next) => {
 
   // Prepare reply message data
   const replyData = {
+    _id: new ObjectId(messageId),
     chat: repliedMessage.chat,
     sender,
     text,

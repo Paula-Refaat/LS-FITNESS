@@ -31,6 +31,7 @@ router.post(
   isMutedChat,
   addMessage
 );
+
 router.get(
   "/:chatId",
   authServices.protect,
@@ -51,8 +52,9 @@ router.put(
   isMutedChat,
   updateMessage
 );
+
 router.post(
-  "/:messageId/reply",
+  "/:replyToMessageId/reply",
   authServices.protect,
   authServices.allowTo("admin", "sub-admin", "Ls-trainer", "trainer", "user"),
   checkPermission("Message", "create"),
@@ -61,6 +63,7 @@ router.post(
   isMutedChat,
   replyToMessage
 );
+
 router.get(
   "/:messageId/replies",
   authServices.protect,
@@ -68,6 +71,7 @@ router.get(
   checkPermission("Message", "read"),
   getRepliesToMessage
 );
+
 router.delete(
   "/:messageId",
   authServices.protect,
@@ -76,6 +80,7 @@ router.delete(
   isMutedChat,
   deleteMessage
 );
+
 router.post(
   "/:messageId/reactions",
   authServices.protect,
@@ -83,6 +88,7 @@ router.post(
   checkPermission("Message", "create"),
   toggleReactionToMessage
 );
+
 router.get(
   "/:messageId/reactions",
   authServices.protect,
@@ -90,4 +96,5 @@ router.get(
   checkPermission("Message", "read"),
   getReactionsToMessage
 );
+
 module.exports = router;
