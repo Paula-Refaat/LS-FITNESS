@@ -183,6 +183,9 @@ exports.listenOnNotificationsExceptChat = asyncHandler(
     changeStream.on("change", (change) => {
       const notification = change.fullDocument;
 
+      console.log("Notification Change [Chat]: ", change);
+      console.log("Notification Change [Chat]: ", notification);
+
       if (
         notification &&
         notification.user.toString() === req.user._id.toString() &&
@@ -224,6 +227,9 @@ exports.listenOnChatNotifications = asyncHandler(async (req, res, next) => {
 
   changeStream.on("change", (change) => {
     const notification = change.fullDocument;
+
+    console.log("Notification Change [Chat]: ", change);
+    console.log("Notification Change [Chat]: ", notification);
 
     if (
       notification &&

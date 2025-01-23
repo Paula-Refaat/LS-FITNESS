@@ -209,6 +209,12 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
         (participant) => String(participant.user._id) !== String(sender)
       );
 
+      console.log(
+        `Sending Notifications to ${recipients.map((participant) =>
+          String(participant.user._id)
+        )}`
+      );
+
       for (const recipient of recipients) {
         await Notification.create({
           user: recipient.user._id,
