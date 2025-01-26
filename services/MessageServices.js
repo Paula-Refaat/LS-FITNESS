@@ -181,7 +181,6 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
 
     // Create a new message
     const messageData = {
-      _id: new ObjectId(messageId),
       chat,
       sender,
       text,
@@ -503,7 +502,6 @@ exports.replyToMessage = asyncHandler(async (req, res, next) => {
 
   // Prepare reply message data
   const replyData = {
-    _id: new ObjectId(messageId),
     chat: repliedMessage.chat,
     sender,
     text,
