@@ -151,18 +151,10 @@ exports.isMutedChat = asyncHandler(async (req, res, next) => {
 //   }
 // });
 
-const validateMessageId = (messageId, next) => {
-  if (!ObjectId.isValid(messageId)) {
-    return next(new ApiError("Invalid message id format", 400));
-  }
-};
-
 exports.addMessage = asyncHandler(async (req, res, next) => {
   try {
     const { chatId } = req.params;
-    const { messageId, text, media } = req.body;
-
-    validateMessageId(messageId, next);
+    const { text, media } = req.body;
 
     const sender = req.user._id; // logged user id
 
@@ -500,10 +492,8 @@ exports.getReactionsToMessage = asyncHandler(async (req, res, next) => {
 //@access protected
 exports.replyToMessage = asyncHandler(async (req, res, next) => {
   const { replyToMessageId } = req.params;
-  const { messageId, text, media } = req.body;
+  const { text, media } = req.body;
   const sender = req.user._id; // logged user id
-
-  validateMessageId(messageId, next);
 
   const repliedMessage = await Message.findById(replyToMessageId);
 
