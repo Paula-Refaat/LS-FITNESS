@@ -10,6 +10,7 @@ const factory = require("./handllerFactory");
 const ApiError = require("../utils/ApiError");
 // const sendEmail = require("../utils/sendEmail");
 const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
+const { getUserSocketId } = require("../socket");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const allowedMimeTypes =
@@ -196,9 +197,13 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
     // Send notification to other participants (added logic)
     try {
       const notificationMessage = `New message in chat ${chatId}: ${text}`;
-      const recipients = chat.participants.filter(
-        (participant) => String(participant.user._id) !== String(sender)
-      );
+      const recipients = chat.participants
+        .filter(
+          (participant) => String(participant.user._id) !== String(sender)
+        )
+        .filter(
+          (participant) => !getUserSocketId(String(participant.user._id))
+        );
 
       console.log(
         `Sending Notifications to ${recipients.map((participant) =>

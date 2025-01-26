@@ -3,6 +3,7 @@ const socketIO = require("socket.io");
 
 let io;
 let users = [];
+
 const getUserSocketId = (userId) => {
   const user = users.find((user) => user.userId === userId);
   return user ? user.socketId : null;
@@ -202,7 +203,7 @@ function initSocket(server) {
       }
     });
     socket.on("disconnect", () => {
-      removeUser(removeUser);
+      removeUser(socket.id);
       console.log(`User disconnected: ${socket.id}`);
     });
   });
@@ -212,4 +213,5 @@ function initSocket(server) {
 
 module.exports = {
   initSocket,
+  getUserSocketId,
 };
