@@ -26,7 +26,7 @@ const removeUser = (socketId) => {
 
 const sendPrivateMessage = (
   socket,
-  { senderId, receiverId, ownMessageName, text, media = [] }
+  { messageId, senderId, receiverId, ownMessageName, text, media = [] }
 ) => {
   if ((!text || text.trim() === "") && media.length === 0) {
     return socket.emit(
@@ -37,6 +37,7 @@ const sendPrivateMessage = (
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
     io.to(receiverSocketId).emit("receiveMessage", {
+      messageId,
       senderId,
       ownMessageName,
       text,
@@ -51,6 +52,7 @@ const sendPrivateMessage = (
 const sendPrivateReplyMessage = (
   socket,
   {
+    messageId,
     senderId,
     receiverId,
     ownMessageName,
@@ -69,6 +71,7 @@ const sendPrivateReplyMessage = (
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
     io.to(receiverSocketId).emit("receiveRepliedMessage", {
+      messageId,
       senderId,
       text,
       ownMessageName,
@@ -100,7 +103,7 @@ const toggleReactionToPrivateMessage = (
 
 const sendGroupMessage = (
   socket,
-  { senderId, roomId, payload, media = [], action }
+  { messageId, senderId, roomId, payload, media = [], action }
 ) => {
   if ((!payload || payload.trim() === "") && media.length === 0) {
     return socket.emit(
@@ -113,12 +116,13 @@ const sendGroupMessage = (
   }
   socket
     .to(roomId)
-    .emit("receiveMessage", { senderId, payload, action, media });
+    .emit("receiveMessage", { messageId, senderId, payload, action, media });
 };
 
 const sendGroupReplyMessage = (
   socket,
   {
+    messageId,
     senderId,
     roomId,
     payload,
@@ -139,6 +143,7 @@ const sendGroupReplyMessage = (
     return socket.emit("errorMessage", "Invalid sender or room.");
   }
   socket.to(roomId).emit("receiveRepliedMessage", {
+    messageId,
     senderId,
     payload,
     ownMessageName,
@@ -148,6 +153,7 @@ const sendGroupReplyMessage = (
     media,
   });
 };
+
 const toggleReactionToGroupMessage = (
   socket,
   { senderId, messageId, roomId, emoji }
