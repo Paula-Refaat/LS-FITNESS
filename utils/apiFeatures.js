@@ -77,6 +77,19 @@ class ApiFeatures {
             { Title_EN: { $regex: this.queryStr.keyword, $options: "i" } },
           ],
         };
+      } else if (modelName === "Meals") {
+        query = {
+          $or: [
+            { title_ar: { $regex: this.queryStr.keyword, $options: "i" } },
+            { title_en: { $regex: this.queryStr.keyword, $options: "i" } },
+            {
+              description_ar: { $regex: this.queryStr.keyword, $options: "i" },
+            },
+            {
+              description_en: { $regex: this.queryStr.keyword, $options: "i" },
+            },
+          ],
+        };
       } else {
         query = {
           title: { $regex: this.queryStr.keyword, $options: "i" },
