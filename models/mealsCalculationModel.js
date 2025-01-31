@@ -1,5 +1,38 @@
 const mongoose = require("mongoose");
 
+const MealCalculationAttributes = [
+  "Calories",
+  "Protein",
+  "Carbohydrates",
+  "Fats",
+  "Fiber",
+  "Sugar",
+  "Vitamin_A",
+  "Vitamin_B1",
+  "Vitamin_B2",
+  "Vitamin_B3",
+  "Vitamin_B4",
+  "Vitamin_B5",
+  "Vitamin_B6",
+  "Vitamin_B7",
+  "Vitamin_B9",
+  "Vitamin_B12",
+  "Vitamin_C",
+  "Vitamin_D",
+  "Vitamin_E",
+  "Vitamin_K",
+  "Calcium",
+  "Iron",
+  "Magnesium",
+  "Phosphorus",
+  "Potassium",
+  "Sodium",
+  "Zinc",
+  "Copper",
+  "Manganese",
+  "Selenium",
+];
+
 // Constants for validation messages
 const validationMessages = {
   required: (field) => `${field} is required`,
@@ -47,35 +80,9 @@ const mealsCalculationSchema = mongoose.Schema(
       min: [1, validationMessages.minValue("Quantity", 1)],
       max: [100, validationMessages.maxValue("Quantity", 100)],
     },
-    Calories: createNutrientField("Calories"),
-    Protein: createNutrientField("Protein"),
-    Carbohydrates: createNutrientField("Carbohydrates"),
-    Fats: createNutrientField("Fats"),
-    Fiber: createNutrientField("Fiber"),
-    Sugar: createNutrientField("Sugar"),
-    Vitamin_A: createNutrientField("Vitamin A"),
-    Vitamin_B1: createNutrientField("Vitamin B1"),
-    Vitamin_B2: createNutrientField("Vitamin B2"),
-    Vitamin_B3: createNutrientField("Vitamin B3"),
-    Vitamin_B5: createNutrientField("Vitamin B5"),
-    Vitamin_B6: createNutrientField("Vitamin B6"),
-    Vitamin_B7: createNutrientField("Vitamin B7"),
-    Vitamin_B9: createNutrientField("Vitamin B9"),
-    Vitamin_B12: createNutrientField("Vitamin B12"),
-    Vitamin_C: createNutrientField("Vitamin C"),
-    Vitamin_D: createNutrientField("Vitamin D"),
-    Vitamin_E: createNutrientField("Vitamin E"),
-    Vitamin_K: createNutrientField("Vitamin K"),
-    Calcium: createNutrientField("Calcium"),
-    Iron: createNutrientField("Iron"),
-    Magnesium: createNutrientField("Magnesium"),
-    Phosphorus: createNutrientField("Phosphorus"),
-    Potassium: createNutrientField("Potassium"),
-    Sodium: createNutrientField("Sodium"),
-    Zinc: createNutrientField("Zinc"),
-    Copper: createNutrientField("Copper"),
-    Manganese: createNutrientField("Manganese"),
-    Selenium: createNutrientField("Selenium"),
+    ...MealCalculationAttributes.map((attribute) => {
+      return createNutrientField(attribute);
+    }),
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
   },
@@ -174,5 +181,7 @@ const MealsCalculationModel = mongoose.model(
   "MealsCalculation",
   mealsCalculationSchema
 );
+
+MealsCalculationModel.MealCalculationAttributes = MealCalculationAttributes;
 
 module.exports = MealsCalculationModel;

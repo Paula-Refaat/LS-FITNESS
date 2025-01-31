@@ -86,3 +86,29 @@ exports.deleteMealsValidator = [
   check("id").isMongoId().withMessage("Invalid Meals id format"),
   validatorMiddleware,
 ];
+
+exports.calculateAllMealIngredientsValidator = [
+  body("ingredients")
+    .isArray()
+    .withMessage("ingredients must be an array")
+    .custom((ingredients) => {
+      ingredients.forEach((ingredient, index) => {
+        if (!ingredient.id) {
+          throw new Error(
+            `ingredients[${index}].id is required and must be a valid object id`
+          );
+        }
+        if (
+          ingredient.quantities &&
+          typeof ingredient.quantities !== "number"
+        ) {
+          throw new Error(`ingredients[${index}].quantities must be a number`);
+        }
+        // Default quantity if not provided
+        ingredient.quantities = ingredient.quantities || 100;
+      });
+      return true;
+    }),
+
+  validatorMiddleware,
+];

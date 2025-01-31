@@ -1,5 +1,14 @@
 const mongoose = require("mongoose");
 
+const mealIngredientsAttributes = [
+  "Calories",
+  "Protein",
+  "Carbohydrates",
+  "Fats",
+  "Fiber",
+  "Sugar",
+];
+
 const validationMessages = {
   required: (field) => `${field} is required`,
   minLength: (field, length) =>
@@ -67,11 +76,6 @@ const mealsSchema = mongoose.Schema(
       type: String,
       required: [true, validationMessages.required("Meal Cover Image")],
     },
-    quantities: {
-      type: Number,
-      required: false,
-      default: 100,
-    },
     video_url: {
       type: String,
       required: [true, validationMessages.required("Meal Video")],
@@ -90,7 +94,12 @@ const mealsSchema = mongoose.Schema(
 );
 
 mealsSchema.pre(/^find/, function (next) {
-  this.populate("ingredients");
+  this.populate(
+    "ingredients",
+    `isDeleted _id mealCategory image Title_AR Title_EN quantities ${mealIngredientsAttributes.join(
+      " "
+    )}`
+  );
   next();
 });
 

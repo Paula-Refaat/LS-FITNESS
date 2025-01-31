@@ -7,12 +7,14 @@ const {
   getSpecificMeal,
   updateMeal,
   deleteMeal,
+  calculateAllMealIngredients,
 } = require("../../services/mealsService");
 const {
   createMealsValidator,
   updateMealsValidator,
   deleteMealsValidator,
   getOneMealsValidator,
+  calculateAllMealIngredientsValidator,
 } = require("../../utils/validators/mealsValidator");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
@@ -57,5 +59,14 @@ router
     deleteMealsValidator,
     deleteMeal
   );
+
+router.post(
+  "/:id/calculate",
+  authServices.protect,
+  authServices.allowTo("user", "admin", "sub-admin"),
+  checkPermission("MealsCalculation", "create"),
+  calculateAllMealIngredientsValidator,
+  calculateAllMealIngredients
+);
 
 module.exports = router;
