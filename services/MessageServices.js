@@ -157,6 +157,8 @@ exports.addMessage = asyncHandler(async (req, res, next) => {
     const { chatId } = req.params;
     const { text, media } = req.body;
 
+    console.log("media -> ", media);
+
     const sender = req.user._id; // logged user id
 
     // Check if the logged-in user is a participant of the chat

@@ -7,6 +7,10 @@ class RegisterResponseDTO {
     this.isOAuthUser = user.isOAuthUser;
     this.role = user.role;
     this.active = user.active;
+
+    if (user?.gender || user._doc?.gender) {
+      this.gender = user?.gender || user._doc?.gender;
+    }
   }
 }
 

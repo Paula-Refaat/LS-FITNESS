@@ -131,7 +131,7 @@ passport.use(
 // @route   POST /api/v1/auth/signup
 // @access  Public
 exports.signup = asyncHandler(async (req, res, next) => {
-  const { username, email, password, phone, deviceId } = req.body;
+  const { username, email, phone, deviceId } = req.body;
 
   // 1- التحقق من وجود البريد الإلكتروني في قاعدة البيانات
   const existingUser = await User.findOne({ email });
