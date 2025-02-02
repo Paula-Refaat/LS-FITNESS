@@ -10,7 +10,7 @@ const {
 } = require("../../services/contactUsServices");
 const router = express.Router();
 
-router.use(authServices.protect, authServices.allowTo("sub-admin", "admin"));
+router.use(authServices.protect);
 
 router.post("/", checkPermission("ContactUs", "create"), createContactUs);
 

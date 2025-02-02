@@ -9,7 +9,7 @@ const {
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
-router.use(authServices.protect, authServices.allowTo("sub-admin", "admin"));
+router.use(authServices.protect);
 
 router.get("/", checkPermission("Policies", "read"), getPolicies);
 
