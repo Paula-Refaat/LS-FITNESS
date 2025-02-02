@@ -53,6 +53,10 @@ exports.uploadMedia = uploadMixOfMedia(
 );
 
 exports.resize = asyncHandler(async (req, res, next) => {
+  console.log("req.body => ", req.body);
+  console.log("req.file => ", req.file);
+  console.log("req.files => ", req.files);
+
   if (req.files && req.files.media && req.files.media.length) {
     req.body.media = [];
     const uploadDir = path.join("uploads", "messages");
