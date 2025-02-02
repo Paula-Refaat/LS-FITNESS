@@ -9,6 +9,7 @@ const ApiError = require("../utils/ApiError");
 const UserAuthorization = require("../utils/UserAuthorization");
 const sendEmail = require("../utils/sendEmail");
 const createToken = require("../utils/createToken");
+const createMobileToken = require("../utils/createMobileToken");
 
 const User = require("../models/userModel");
 const { LoginResponseDTO } = require("../utils/dtos/LoginResponseDTO");
@@ -229,7 +230,7 @@ exports.userLogin = asyncHandler(async (req, res, next) => {
 
   // إعداد استجابة تسجيل الدخول
   const loginResponse = new LoginResponseDTO(user);
-  const token = createToken(user._id);
+  const token = createMobileToken(user._id, deviceId);
 
   // إرسال الاستجابة
   res.status(200).json({ data: loginResponse, token });
@@ -395,10 +396,22 @@ exports.logout = asyncHandler(async (req, res, next) => {
   if (token) {
     const decoded = await userAuthorization.tokenVerification(token);
 
+    if (decoded?.deviceId && decoded?.userId) {
+      await User.updateOne(
+        {
+          _id: decoded.userId,
+        },
+        {
+          $pull: { deviceIds: decoded.deviceId },
+        }
+      );
+    }
+
     await BlacklistedToken.create({
       token,
       expiresAt: new Date(decoded.exp * 1000), // تاريخ انتهاء التوكن
     });
+
     res.json({
       status: "success",
       message: "You are logged out successfully",

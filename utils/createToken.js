@@ -8,4 +8,5 @@ const createToken = (payload) => {
         : undefined,
   });
 };
+
 module.exports = createToken;
