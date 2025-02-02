@@ -22,18 +22,18 @@ const checkPermission = require("../../middlewares/permissionMiddleware");
 router.get(
   "/",
   authServices.protect,
-  authServices.allowTo("admin", "sub-admin"),
   checkPermission("TrainingPlan", "read"),
   filterOnTrainingPlanNotInTrash,
   getAllTrainingPlan
 );
+
 router.get(
   "/:id",
   authServices.protect,
-  authServices.allowTo("admin", "sub-admin"),
   checkPermission("TrainingPlan", "read"),
   getOneTrainingPlan
 );
+
 router.post(
   "/",
   authServices.protect,
@@ -44,6 +44,7 @@ router.post(
   makeParsingToDays,
   createTrainingPlan
 );
+
 router.put(
   "/:id",
   authServices.protect,
@@ -54,6 +55,7 @@ router.put(
   makeParsingToDays,
   updateTrainingPlan
 );
+
 router.delete(
   "/:id",
   authServices.protect,
@@ -61,6 +63,7 @@ router.delete(
   checkPermission("TrainingPlan", "delete"),
   deleteTrainingPlan
 );
+
 router.delete(
   "/:id/moveToTrash",
   authServices.protect,
@@ -68,6 +71,7 @@ router.delete(
   checkPermission("TrainingPlan", "delete"),
   moveTrainingPlanToRecycleBin
 );
+
 router.put(
   "/:id/restore",
   authServices.protect,
@@ -75,6 +79,7 @@ router.put(
   checkPermission("TrainingPlan", "delete"),
   restoreTrainingPlanFromRecycleBin
 );
+
 router.get(
   "/deleted/trash",
   authServices.protect,
@@ -83,4 +88,5 @@ router.get(
   filterOnTrainingPlanInTrash,
   getAllTrainingPlan
 );
+
 module.exports = router;
