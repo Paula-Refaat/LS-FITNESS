@@ -5,22 +5,22 @@ const { v4: uuidv4 } = require("uuid");
 const Message = require("../models/MessageModel");
 const Chat = require("../models/ChatModel");
 const Notification = require("../models/notificationModel");
-// const User = require("../models/userModel");
 const factory = require("./handllerFactory");
 const ApiError = require("../utils/ApiError");
-// const sendEmail = require("../utils/sendEmail");
 const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
 const { getUserSocketId } = require("../socket");
-const ObjectId = require("mongoose").Types.ObjectId;
 
 const allowedMimeTypes =
   process.env.ALLOWED_MIME_TYPES ||
-  "image/jpeg|image/png|image/gif|application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|video/mp4|video/mpeg|audio/mpeg|audio/wav";
+  "image/jpg|image/jpeg|image/png|image/gif|image/heic|image/heif|application/pdf|application/msword|application/vnd.openxmlformats-officedocument.wordprocessingml.document|video/mp4|video/mpeg|audio/mpeg|audio/wav";
 
 const ALLOWED_MIME_TYPES = {
+  "image/jpg": "image",
   "image/jpeg": "image",
   "image/png": "image",
   "image/gif": "image",
+  "image/heic": "image",
+  "image/heif": "image",
   "application/pdf": "pdf",
   "application/msword": "document",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
