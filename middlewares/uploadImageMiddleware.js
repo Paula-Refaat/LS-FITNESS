@@ -5,6 +5,8 @@ const multerOptions = (media) => {
   const multerStorage = multer.memoryStorage();
 
   const multerFilter = function (req, file, cb) {
+    console.log(file);
+
     const allowedMediaTypes = media.split("|");
     if (allowedMediaTypes.some((type) => file.mimetype.startsWith(type))) {
       cb(null, true);
