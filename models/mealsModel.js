@@ -76,9 +76,18 @@ const mealsSchema = mongoose.Schema(
       type: String,
       required: [true, validationMessages.required("Meal Cover Image")],
     },
-    video_url: {
-      type: String,
-      required: [true, validationMessages.required("Meal Video")],
+    video: {
+      url: {
+        type: String,
+        required: [true, "video url required"],
+      },
+      public_id: {
+        type: Number,
+        required: [true, "video public_id required"],
+      },
+      thumbnail: {
+        type: String,
+      },
     },
     ingredients: {
       type: [mongoose.Schema.Types.ObjectId],

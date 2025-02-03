@@ -36,11 +36,11 @@ exports.createMealsValidator = [
     .isLength({ min: 3, max: 32 })
     .withMessage(validationMessages.minLength("Meal English description", 3)),
 
-  check("video_url")
+  check("vimeo_video_Url")
     .notEmpty()
-    .withMessage("video_url required")
+    .withMessage("vimeo_video_Url required")
     .isURL()
-    .withMessage("video_url must be a valid URL"),
+    .withMessage("vimeo_video_Url must be a valid URL"),
 
   body("howToMakeSteps")
     .isArray()
