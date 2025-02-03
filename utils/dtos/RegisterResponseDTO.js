@@ -8,8 +8,8 @@ class RegisterResponseDTO {
     this.role = user.role;
     this.active = user.active;
 
-    if (user?.gender || user._doc?.gender) {
-      this.gender = user?.gender || user._doc?.gender;
+    if (user?.goalsData && user.goalsData?.gender) {
+      this.gender = user.goalsData.gender;
     }
   }
 }
