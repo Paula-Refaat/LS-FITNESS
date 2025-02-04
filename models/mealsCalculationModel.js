@@ -95,6 +95,9 @@ const mealsCalculationSchema = mongoose.Schema(
 
 mealsCalculationSchema.pre(/^find/, function (next) {
   this.populate("mealCategory");
+
+  this.lean();
+
   next();
 });
 
