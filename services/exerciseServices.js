@@ -11,9 +11,9 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   if (req.user.role === "admin" || req.user.role === "sub-admin") {
     return next();
   }
-  if (req.user.gender === "male") {
+  if (req.user.goalsData.gender === "male") {
     req.filterObj.targetGender = "men";
-  } else if (req.user.gender === "female") {
+  } else if (req.user.goalsData.gender === "female") {
     req.filterObj.targetGender = "women";
   }
   next();
