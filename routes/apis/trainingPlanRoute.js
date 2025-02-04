@@ -16,6 +16,7 @@ const {
   uploadTrainingPlanImg,
   resizeImage,
   makeParsingToDays,
+  filterTrainingPlansBasedOnGender,
 } = require("../../services/trainingPlanServices");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
@@ -23,6 +24,7 @@ router.get(
   "/",
   authServices.protect,
   checkPermission("TrainingPlan", "read"),
+  filterTrainingPlansBasedOnGender,
   filterOnTrainingPlanNotInTrash,
   getAllTrainingPlan
 );

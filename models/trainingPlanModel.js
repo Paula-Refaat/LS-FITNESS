@@ -22,7 +22,11 @@ const trainingPlanSchema = new mongoose.Schema(
         ],
       },
     ],
-
+    targetGender: {
+      type: String,
+      enum: ["men", "women"],
+      required: [true, "targetGender field is required"],
+    },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
   },

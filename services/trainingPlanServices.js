@@ -5,6 +5,25 @@ const trainingPlan = require("../models/trainingPlanModel");
 const { uploadSingleMedia } = require("../middlewares/uploadImageMiddleware");
 const asyncHandler = require("express-async-handler");
 
+// Filter training plans based on user's gender
+exports.filterTrainingPlansBasedOnGender = (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  if (req.user.role === "admin" || req.user.role === "sub-admin") {
+    return next();
+  }
+
+  if (req.user.goalsData.gender === "male") {
+    req.filterObj.targetGender = "men";
+  } else if (req.user.goalsData.gender === "female") {
+    req.filterObj.targetGender = "women";
+  }
+
+  next();
+};
+
 // Filter out TrainingPlan that are not in the trash
 exports.filterOnTrainingPlanNotInTrash = (req, res, next) => {
   if (!req.filterObj) {

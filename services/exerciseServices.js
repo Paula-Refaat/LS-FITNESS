@@ -7,10 +7,11 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   if (!req.filterObj) {
     req.filterObj = {};
   }
-  // console.log(req.user.role)
+
   if (req.user.role === "admin" || req.user.role === "sub-admin") {
     return next();
   }
+
   if (req.user.goalsData.gender === "male") {
     req.filterObj.targetGender = "men";
   } else if (req.user.goalsData.gender === "female") {
@@ -18,6 +19,7 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   }
   next();
 };
+
 // Filter out exercises that are not in the trash
 exports.filterOnExercisesNotInTrash = (req, res, next) => {
   if (!req.filterObj) {
