@@ -10,6 +10,11 @@ const mealsCategorySchema = new mongoose.Schema(
       type: String,
       required: [true, "Please provide a title in english"],
     },
+    targetModel: {
+      type: String,
+      enum: ["MealsCalculation", "Meals"],
+      default: "MealsCalculation",
+    },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
   },

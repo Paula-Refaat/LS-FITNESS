@@ -98,6 +98,11 @@ const mealsSchema = mongoose.Schema(
       type: [mealHowToMakeStepsSchema],
       required: true,
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "MealCategory",
+      required: [true, validationMessages.required("Meal Category")],
+    },
   },
   { timestamps: true }
 );
@@ -108,7 +113,8 @@ mealsSchema.pre(/^find/, function (next) {
     `isDeleted _id mealCategory image Title_AR Title_EN quantities ${mealIngredientsAttributes.join(
       " "
     )}`
-  );
+  ).populate("category");
+
   next();
 });
 

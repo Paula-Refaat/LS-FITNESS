@@ -61,7 +61,10 @@ exports.createMealsCalculationValidator = [
     .isMongoId()
     .withMessage("Invalid Meal category ID")
     .custom(async (val) => {
-      const mealCategory = await MealCategory.findById(val);
+      const mealCategory = await MealCategory.findOne({
+        _id: val,
+        targetModel: "MealsCalculation",
+      });
       if (!mealCategory) {
         throw new Error(`This ID not related to meal category`);
       }
