@@ -52,6 +52,13 @@ const createNutrientField = (fieldName) => ({
   max: [10000, validationMessages.maxValue(fieldName, 10000)],
 });
 
+const mealCalculationFields = Object.fromEntries(
+  MealCalculationAttributes.map((attribute) => [
+    attribute,
+    createNutrientField(attribute),
+  ])
+);
+
 const mealsCalculationSchema = mongoose.Schema(
   {
     title_AR: {
@@ -80,9 +87,7 @@ const mealsCalculationSchema = mongoose.Schema(
       min: [1, validationMessages.minValue("Quantity", 1)],
       max: [100, validationMessages.maxValue("Quantity", 100)],
     },
-    ...MealCalculationAttributes.map((attribute) => {
-      return createNutrientField(attribute);
-    }),
+    ...mealCalculationFields,
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
   },
@@ -95,8 +100,6 @@ const mealsCalculationSchema = mongoose.Schema(
 
 mealsCalculationSchema.pre(/^find/, function (next) {
   this.populate("mealCategory");
-
-  this.lean();
 
   next();
 });
