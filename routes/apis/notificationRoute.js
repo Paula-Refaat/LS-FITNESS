@@ -21,7 +21,7 @@ router
     checkPermission("Notification", "create"),
     notificationService.convertToArray,
     notificationService.sendSystemNotificationToUsers
-  ) //send notification to users
+  )
   .put(
     authServices.protect,
     authServices.allowTo("admin", "sub-admin", "user", "trainer", "Ls-trainer"),

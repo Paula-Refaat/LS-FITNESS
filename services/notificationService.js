@@ -31,7 +31,7 @@ exports.createFilterObjToGetBasicNotifications = (req, res, next) => {
 };
 
 exports.convertToArray = (req, res, next) => {
-  if (req.body.users) {
+  if (req.body?.users) {
     // If it's not an array, convert it to an array
     if (!Array.isArray(req.body.users)) {
       req.body.users = [req.body.users];
@@ -40,11 +40,29 @@ exports.convertToArray = (req, res, next) => {
   next();
 };
 
+const getNotificationTargetUsers = async (users, filters) => {
+  try {
+    if (users && Array.isArray(users) && users.length > 0) {
+      return await User.find({ _id: { $in: users } }).select("_id");
+    }
+
+    if (filters) {
+      const { gender } = filters;
+
+      return await User.find({ "goalsData.gender": gender }).select("_id");
+    }
+
+    return [];
+  } catch (err) {
+    throw err;
+  }
+};
+
 //@desc create system notification to specific users
 //@route Post /api/v1/notifications
 //@access private
 exports.sendSystemNotificationToUsers = asyncHandler(async (req, res, next) => {
-  const { users, message, targetModel, targetModelId } = req.body; // array of users
+  const { users, message, targetModel, targetModelId, filters } = req.body; // array of users
 
   if (targetModel && targetModelId) {
     const validModels = mongoose.modelNames();
@@ -66,24 +84,11 @@ exports.sendSystemNotificationToUsers = asyncHandler(async (req, res, next) => {
   }
 
   // Check if all users exist in the database
-  const existingUsers = await User.find({ _id: { $in: users } }).select("_id");
-  const existingUserIds = existingUsers.map((user) => user._id.toString());
-
-  const missingUsers = users.filter(
-    (userId) => !existingUserIds.includes(userId)
-  );
-
-  if (missingUsers.length > 0) {
-    return res.status(400).json({
-      status: "error",
-      message: "Some users do not exist in the database",
-      missingUsers,
-    });
-  }
+  const targetUsers = await getNotificationTargetUsers(users, filters);
 
   // Create notifications for users
   await Promise.all(
-    users.map(async (user) => {
+    targetUsers.map(async (user) => {
       await Notification.create({
         user,
         message,
