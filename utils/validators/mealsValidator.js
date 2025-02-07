@@ -88,7 +88,7 @@ exports.createMealsValidator = [
 ];
 
 exports.updateMealsValidator = [
-  check("id").isMongoId().withMessage("Invalid Exercise id format"),
+  check("id").isMongoId().withMessage("Invalid Meal id format"),
 
   ...this.createMealsValidator,
 ];

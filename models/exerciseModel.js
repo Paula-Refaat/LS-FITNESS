@@ -33,7 +33,6 @@ const exerciseSchema = mongoose.Schema(
         ref: "DeepAnatomy",
       },
     ],
-
     targetGender: {
       type: String,
       enum: ["men", "women"],

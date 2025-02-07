@@ -43,14 +43,14 @@ router
   .get(
     authServices.protect,
     authServices.allowTo("user", "admin", "sub-admin"),
-    checkPermission("MealsCalculation", "read"),
+    checkPermission("Meals", "read"),
     getOneMealsValidator,
     getSpecificMeal
   )
   .put(
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
-    checkPermission("MealsCalculation", "update"),
+    checkPermission("Meals", "update"),
     uploadMealImage,
     resizeImage,
     handlingVideoResponse,
@@ -60,7 +60,7 @@ router
   .delete(
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
-    checkPermission("MealsCalculation", "delete"),
+    checkPermission("Meals", "delete"),
     deleteMealsValidator,
     deleteMeal
   );
@@ -69,7 +69,7 @@ router.post(
   "/:id/calculate",
   authServices.protect,
   authServices.allowTo("user", "admin", "sub-admin"),
-  checkPermission("MealsCalculation", "create"),
+  checkPermission("Meals", "create"),
   calculateAllMealIngredientsValidator,
   calculateAllMealIngredients
 );

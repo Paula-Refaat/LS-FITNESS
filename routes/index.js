@@ -30,6 +30,7 @@ const trainerProfileRoute = require("./apis/trainerProfileRoute");
 const policiesRoute = require("./apis/policiesRoute");
 const contactUsRoute = require("./apis/contactUsRoute");
 const mealsRoute = require("./apis/mealsRoute");
+const bannersRoute = require("./apis/bannersRoute");
 
 const { getNutritionDetails } = require("../utils/helpers/nutrition");
 const trimAll = require("../middlewares/trimMiddleware");
@@ -70,6 +71,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/Policies", policiesRoute);
   app.use("/api/v1/contactUs", contactUsRoute);
   app.use("/api/v1/meals", mealsRoute);
+  app.use("/api/v1/banners", bannersRoute);
 
   // API endpoint to generate a signed URL for Vimeo video uploads
   app.use("/api/v1/vimeo", vimeoSignedUrlRoute);

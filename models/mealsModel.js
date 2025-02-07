@@ -118,14 +118,14 @@ mealsSchema.pre(/^find/, function (next) {
   next();
 });
 
-const setCalculationImageURL = (doc) => {
+const setMealImageURL = (doc) => {
   if (doc.image) {
     if (
       doc.image.includes(process.env.BASE_URL) ||
       doc.image.includes("http")
     ) {
-      let editingMealCalculationImageURL = doc.image;
-      const splittedURL = editingMealCalculationImageURL.split("/");
+      let editingMealImageURL = doc.image;
+      const splittedURL = editingMealImageURL.split("/");
       const imageName = splittedURL.pop();
 
       if (imageName.includes(".")) {
@@ -159,11 +159,11 @@ mealsSchema.methods.toJSON = function () {
 };
 
 mealsSchema.post("init", (doc) => {
-  setCalculationImageURL(doc);
+  setMealImageURL(doc);
 });
 
 mealsSchema.post("save", (doc) => {
-  setCalculationImageURL(doc);
+  setMealImageURL(doc);
 });
 
 const MealsModel = mongoose.model("Meals", mealsSchema);
