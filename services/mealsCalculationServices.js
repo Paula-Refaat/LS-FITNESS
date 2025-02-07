@@ -40,9 +40,13 @@ exports.filterOnMealsCalculationNotInTrash = (req, res, next) => {
   }
 
   // شمل المستندات التي لا تحتوي على isDeleted أو التي isDeleted ليست true
-  req.filterObj.$or = [
-    { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
-    { isDeleted: false }, // المستندات التي isDeleted = false
+  req.filterObj.$and = [
+    {
+      $or: [
+        { isDeleted: { $exists: false } }, // المستندات التي لا تحتوي على isDeleted
+        { isDeleted: false }, // المستندات التي isDeleted = false
+      ],
+    },
   ];
 
   next();
