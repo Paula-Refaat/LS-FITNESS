@@ -9,11 +9,11 @@ const bannersSchema = new mongoose.Schema(
     video: {
       url: {
         type: String,
-        required: [false, "video url required"],
+        required: false,
       },
       public_id: {
         type: Number,
-        required: [false, "video public_id required"],
+        required: false,
       },
       thumbnail: {
         type: String,
