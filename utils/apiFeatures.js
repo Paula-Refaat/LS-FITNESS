@@ -105,7 +105,7 @@ class ApiFeatures {
   paginate(totalDocuments) {
     // استخراج الصفحة والحد من الاستعلام مع القيم الافتراضية
     const page = Math.max(Number(this.queryStr.page) || 1, 1); // الصفحة الافتراضية 1
-    const limit = Math.min(Number(this.queryStr.limit) || 6, totalDocuments); // الحد الافتراضي 6
+    const limit = Math.min(Number(this.queryStr.limit) || 10, totalDocuments); // الحد الافتراضي 6
     const skip = (page - 1) * limit; // حساب عدد الوثائق التي يجب تخطيها
     const endIndex = page * limit; // نهاية الوثائق لهذه الصفحة
 
