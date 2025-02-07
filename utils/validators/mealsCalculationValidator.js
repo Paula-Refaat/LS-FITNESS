@@ -43,13 +43,13 @@ const nutrientValidation = (field) => [
 ];
 
 exports.createMealsCalculationValidator = [
-  body("title_AR")
+  body("Title_AR")
     .notEmpty()
     .withMessage(validationMessages.required("Meal Arabic title"))
     .isLength({ min: 3, max: 32 })
     .withMessage(validationMessages.minLength("Meal Arabic title", 3)),
 
-  body("title_EN")
+  body("Title_EN")
     .notEmpty()
     .withMessage(validationMessages.required("Meal English title"))
     .isLength({ min: 3, max: 32 })

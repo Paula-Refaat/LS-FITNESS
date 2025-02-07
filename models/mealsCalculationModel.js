@@ -60,13 +60,13 @@ const mealCalculationFields = Object.fromEntries(
 
 const mealsCalculationSchema = mongoose.Schema(
   {
-    title_AR: {
+    Title_AR: {
       type: String,
       required: [true, validationMessages.required("Meal Arabic title")],
       minlength: [3, validationMessages.minLength("Meal Arabic title", 3)],
       maxlength: [32, validationMessages.maxLength("Meal Arabic title", 32)],
     },
-    title_EN: {
+    Title_EN: {
       type: String,
       required: [true, validationMessages.required("Meal English title")],
       minlength: [3, validationMessages.minLength("Meal English title", 3)],

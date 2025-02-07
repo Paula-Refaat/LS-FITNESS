@@ -97,8 +97,8 @@ exports.calculateMeal = asyncHandler(async (req, res, next) => {
   try {
     const calculatedNutritionalValues = {
       _id: meal._id,
-      title_AR: meal.title_AR,
-      title_EN: meal.title_EN,
+      Title_AR: meal.Title_AR,
+      Title_EN: meal.Title_EN,
       mealCategory: meal.mealCategory,
       image: meal.image,
       calculationData: {
