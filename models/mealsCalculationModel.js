@@ -11,7 +11,6 @@ const MealCalculationAttributes = [
   "Vitamin_B1",
   "Vitamin_B2",
   "Vitamin_B3",
-  "Vitamin_B4",
   "Vitamin_B5",
   "Vitamin_B6",
   "Vitamin_B7",
