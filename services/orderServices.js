@@ -224,6 +224,8 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
         ).session(session);
       }
 
+      console.log("Before => ", order);
+
       order = await Order.findByIdAndUpdate(
         order._id,
         {
@@ -233,6 +235,8 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
         },
         { new: true, session } // Use session for atomic update
       );
+
+      console.log("After => ", order);
 
       const course = await Course.findById(order.course._id).session(session);
       if (!course) {
