@@ -68,7 +68,7 @@ orderSchema.pre(/^find/, function (next) {
     select: "username email profileImg",
   }).populate({
     path: "course",
-    select: "title",
+    select: "_id title",
   });
   next();
 });
