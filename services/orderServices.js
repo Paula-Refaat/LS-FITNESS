@@ -7,6 +7,8 @@ const factory = require("./handllerFactory");
 const mongoose = require("mongoose");
 const Coupon = require("../models/couponModel");
 const TrainerProfile = require("../models/TrainerProfileModel");
+const sleep = require("../utils/sleep");
+
 const PAYPAL_BASE_URL = process.env.PAYPAL_BASE_URL;
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
 const CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET;
@@ -142,6 +144,8 @@ exports.filterOrdersForLoggedUser = asyncHandler(async (req, res, next) => {
 });
 
 exports.capturePayment = asyncHandler(async (req, res, next) => {
+  await sleep(100);
+
   const accessToken = await generateAccessToken();
 
   let paypalToken = req.query.token;
@@ -382,6 +386,8 @@ exports.createTrainerOrder = async (req, res, next) => {
 };
 
 exports.captureTrainerPlanPayment = asyncHandler(async (req, res, next) => {
+  await sleep(100);
+
   const accessToken = await generateAccessToken();
 
   let paypalToken = req.query.token;
