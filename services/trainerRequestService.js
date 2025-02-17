@@ -8,6 +8,7 @@ const { uploadMixOfMedia } = require("../middlewares/uploadImageMiddleware");
 const Notification = require("../models/notificationModel");
 const ApiError = require("../utils/ApiError");
 const TrainerProfile = require("../models/TrainerProfileModel");
+const UserModel = require("../models/userModel");
 
 exports.createFilterObj = (req, res, next) => {
   let filterObject = {};
@@ -164,6 +165,8 @@ exports.acceptTrainerRequest = asyncHandler(async (req, res, next) => {
       note: req.body.note || null,
     }
   );
+
+  await UserModel.updateOne({_id : trainerRequest.user} , {role : "trainer"});
 
   // 4️⃣ إنشاء ملف المدرب في TrainerProfile
   const newTrainerProfile = await TrainerProfile.create({
