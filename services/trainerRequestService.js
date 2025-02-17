@@ -74,7 +74,7 @@ exports.requestToBeTrainer = asyncHandler(async (req, res, next) => {
   try {
     const isExistsTrainerRequest = await TrainerRequest.findOne({
       user: req.user.id,
-      status: "pending" || "approved",
+      status: {$in: ["pending", "approved"]},
     });
     if (isExistsTrainerRequest) {
       return res.status(400).json({
