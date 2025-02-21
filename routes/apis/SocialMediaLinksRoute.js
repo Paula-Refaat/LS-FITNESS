@@ -7,6 +7,8 @@ const {
   updateSocialMediaLink,
   deleteSocialMediaLinks,
   createSocialMediaLinks,
+  uploadSocialMediaImage,
+  resizeImage,
 } = require("../../services/SocialMediaLinksService");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 const {
@@ -30,6 +32,8 @@ router
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("SocialMediaLinks", "read"),
+    uploadSocialMediaImage,
+    resizeImage,
     createSocialMediaLinkValidator,
     createSocialMediaLinks
   );
@@ -46,6 +50,8 @@ router
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("SocialMediaLinks", "update"),
+    uploadSocialMediaImage,
+    resizeImage,
     updateSocialMediaLinkValidator,
     updateSocialMediaLink
   )
