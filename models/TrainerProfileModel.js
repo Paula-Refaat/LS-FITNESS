@@ -170,4 +170,6 @@ trainerProfileSchema.methods.toJSON = function () {
   delete obj.deletedAt;
   return obj;
 };
-module.exports = mongoose.model("TrainerProfile", trainerProfileSchema);
+module.exports =
+  mongoose.models.TrainerProfile ||
+  mongoose.model("TrainerProfile", trainerProfileSchema);

@@ -141,6 +141,29 @@ exports.getOne = (Model, populationOpt) =>
     res.status(200).json({ data: document });
   });
 
+exports.getOneWithFilterObject = (Model, populationOpt) =>
+  asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    //1-build query
+    let query;
+    if (req.filterObj) {
+      query = Model.findOne({ _id: id, ...req.filterObj });
+    } else {
+      query = Model.findById(id);
+    }
+
+    if (populationOpt) {
+      query = query.populate(populationOpt);
+    }
+    //2- excute query
+    const document = await query;
+
+    if (!document) {
+      return next(new ApiError(`No document For this id ${id}`, 404));
+    }
+    res.status(200).json({ data: document });
+  });
+
 exports.updateOne = (Model) =>
   asyncHandler(async (req, res, next) => {
     const document = await Model.findByIdAndUpdate(req.params.id, req.body, {
