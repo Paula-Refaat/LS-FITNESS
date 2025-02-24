@@ -462,7 +462,7 @@ exports.toggleReactionToMessage = asyncHandler(async (req, res, next) => {
         user: updatedMessage.sender, // Notify the message sender
         message: notificationMessage,
         targetModelId: messageId,
-        targetModel: "Message",
+        targetModel: "Chat",
       });
     }
   } catch (error) {
