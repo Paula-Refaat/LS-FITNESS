@@ -24,6 +24,7 @@ const {
   getMyTrainerProfileSubscribers,
   updateMyTrainerPlan,
   removeSpecificPlanFromMyProfile,
+  filterOnTrainerProfileUserSubscribedWith,
 } = require("../../services/trainerProfileService");
 
 const router = express.Router();
@@ -87,15 +88,16 @@ router.get(
   getMyTrainerProfileSubscribers
 );
 ////////////////////////////////////////////////////////////////////////
-/* Dashboard */
+/* Dashboard Or User */
 ////////////////////////////////////////////////////////////////////////
 
 router
   .route("/")
   .get(
-    // authServices.protect,
+    authServices.protect,
     // authServices.allowTo("user", "admin", "sub-admin"),
     // checkPermission("ToolOrMachine", "read"),
+    filterOnTrainerProfileUserSubscribedWith,
     filterOnTrainerProfilesNotInTrash,
     getAllTrainerProfile
   )

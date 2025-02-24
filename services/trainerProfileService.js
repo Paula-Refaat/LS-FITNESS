@@ -331,3 +331,17 @@ exports.getMyTrainerProfileSubscribers = asyncHandler(
     res.status(200).json({ data: profile.subscribers });
   }
 );
+
+exports.filterOnTrainerProfileUserSubscribedWith = asyncHandler(
+  async (req, res, next) => {
+    if (req.user.role !== "user") return next();
+
+    if (!req.filterObj) {
+      req.filterObj = {};
+    }
+
+    req.filterObj["subscribers.user"] = req.user._id;
+
+    return next();
+  }
+);
