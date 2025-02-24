@@ -35,7 +35,7 @@ exports.createFilterObj = (req, res, next) => {
 //filter to get my courses as admin , user => paula done
 exports.createFilterObjToGetMyCourses = async (req, res, next) => {
   let filterObject = {};
-  if (req.user.role === "user") {
+  if (["user", "trainer"].includes(req.user.role)) {
     filterObject = { users: req.user._id };
   }
   req.filterObj = filterObject;
