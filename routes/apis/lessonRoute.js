@@ -45,7 +45,6 @@ router.post(
 router.get(
   "/courseLessons/:courseId",
   authServices.protect,
-  authServices.allowTo("user", "admin", "sub-admin"),
   checkPermission("Lesson", "read"),
   filterOnLessonsNotInTrash,
   accessLessonsOfMyCourses,

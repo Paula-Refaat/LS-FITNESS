@@ -50,7 +50,7 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("user", "admin", "sub-admin"),
+    authServices.allowTo("user", "admin", "sub-admin", "Ls-trainer", "trainer"),
     checkPermission("Exercise", "read"),
     getExerciseValidator,
     getExercise
