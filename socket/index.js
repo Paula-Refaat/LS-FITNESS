@@ -36,6 +36,10 @@ const sendPrivateMessage = (
   }
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
+    console.log(`Emit message to ${receiverId} ${receiverSocketId}`, {
+      users,
+    });
+
     io.to(receiverSocketId).emit("receiveMessage", {
       messageId,
       senderId,
