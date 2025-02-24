@@ -1,5 +1,6 @@
 const factory = require("./handllerFactory");
 const MealsCategory = require("../models/mealsCategoryModel");
+const asyncHandler = require("express-async-handler");
 
 // Filter out MealsCategory that are not in the trash
 exports.filterOnMealsCategoryNotInTrash = (req, res, next) => {
@@ -55,3 +56,24 @@ exports.restoreMealsCategoryFromRecycleBin =
 //@route DELETE /api/v1/mealsCategory
 //access protected
 exports.deleteMealsCategory = factory.deleteOne(MealsCategory);
+
+exports.filterOnParentCategories = asyncHandler(async (req, res, next) => {
+  if (!req.filterObj) {
+    req.filterObj = {};
+  }
+
+  if ("isParent" in req.query) {
+    req.filterObj["parentCategory"] =
+      req.query.isParent === "true"
+        ? {
+            $eq: null,
+          }
+        : {
+            $ne: null,
+          };
+
+    delete req.query?.isParent;
+  }
+
+  return next();
+});

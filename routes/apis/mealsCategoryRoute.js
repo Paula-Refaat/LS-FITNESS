@@ -9,6 +9,7 @@ const {
   restoreMealsCategoryFromRecycleBin,
   filterOnMealsCategoryInTrash,
   filterOnMealsCategoryNotInTrash,
+  filterOnParentCategories,
 } = require("../../services/mealsCategoryService");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
@@ -34,6 +35,7 @@ router
   .get(
     authServices.protect,
     filterOnMealsCategoryNotInTrash,
+    filterOnParentCategories,
     getMealsCategories
   );
 
