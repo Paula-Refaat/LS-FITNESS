@@ -191,11 +191,6 @@ function initSocket(server) {
     });
 
     socket.on("sendMessage", (messageData) => {
-      console.log("sendMessage => ", {
-        messageData,
-        users,
-      });
-
       if (messageData.roomId) {
         sendGroupMessage(socket, messageData);
       } else if (messageData.repliedToMessageData) {
