@@ -36,10 +36,6 @@ const sendPrivateMessage = (
   }
   const receiverSocketId = getUserSocketId(receiverId);
   if (receiverSocketId) {
-    console.log(`Emit message to ${receiverId} ${receiverSocketId}`, {
-      users,
-    });
-
     io.to(receiverSocketId).emit("receiveMessage", {
       messageId,
       senderId,
@@ -195,8 +191,6 @@ function initSocket(server) {
     });
 
     socket.on("sendMessage", (messageData) => {
-      console.log("sendMessage => ", messageData);
-
       if (messageData.roomId) {
         sendGroupMessage(socket, messageData);
       } else if (messageData.repliedToMessageData) {
