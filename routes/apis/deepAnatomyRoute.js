@@ -9,6 +9,7 @@ const {
   moveDeepAnatomyToRecycleBin,
   restoreDeepAnatomyFromRecycleBin,
   filterOnDeepAnatomyInTrash,
+  filterOnDeepAnatomyNotInTrash,
   // deleteCategory,
 } = require("../../services/deepAnatomyService");
 
@@ -33,6 +34,7 @@ router
     authServices.protect,
     authServices.allowTo("user", "admin", "sub-admin"),
     checkPermission("DeepAnatomy", "read"),
+    filterOnDeepAnatomyNotInTrash,
     getDeepAnatomies
   )
   .post(
