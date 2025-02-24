@@ -20,9 +20,6 @@ const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 const authServices = require("../../services/authServices");
-const {
-  handlingVideoResponse,
-} = require("../../middlewares/handle-video-response");
 
 router
   .route("/")
@@ -33,7 +30,6 @@ router
     checkPermission("Meals", "create"),
     uploadMealImage,
     resizeImage,
-    handlingVideoResponse,
     createMealsValidator,
     createMeal
   );
@@ -53,7 +49,6 @@ router
     checkPermission("Meals", "update"),
     uploadMealImage,
     resizeImage,
-    handlingVideoResponse,
     updateMealsValidator,
     updateMeal
   )
