@@ -40,7 +40,6 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("user", "admin", "sub-admin"),
     checkPermission("Prizes", "read"),
     getOnePrizeValidator,
     getSpecificPrize

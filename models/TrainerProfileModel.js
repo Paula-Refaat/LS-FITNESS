@@ -157,6 +157,15 @@ trainerProfileSchema.methods.addSubscriber = function (
 
   this.totalTrainees = this.subscribers.length;
 };
+
+trainerProfileSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "subscribers.user",
+  });
+
+  next();
+});
+
 trainerProfileSchema.methods.toJSON = function () {
   const obj = this.toObject();
   if (!obj.createdAt) {
@@ -165,6 +174,11 @@ trainerProfileSchema.methods.toJSON = function () {
   if (!obj.updatedAt) {
     obj.updatedAt = "2024-11-23T19:20:13.186Z";
   }
+
+  obj.plans.forEach((plan, index) => {
+    plan["_id"] = index;
+  });
+
   delete obj.__v;
   delete obj.isDeleted;
   delete obj.deletedAt;
