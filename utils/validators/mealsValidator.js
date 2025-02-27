@@ -44,16 +44,25 @@ exports.createMealsValidator = [
     .withMessage("vimeo_video_Url must be a valid URL"),
 
   body("howToMakeSteps")
-    .isArray()
-    .withMessage("howToMakeSteps must be an array")
-    .custom((steps) => {
-      steps.forEach((step, index) => {
-        if (!step.stepOrder || !step.stepText_en || !step.stepText_ar) {
-          throw new Error(
-            `howToMakeSteps[${index}] must have stepOrder, stepText_en, and stepText_ar`
-          );
-        }
-      });
+    .isString()
+    .withMessage("howToMakeSteps must be an string")
+    .custom((stepsString) => {
+      try {
+        const steps = JSON.parse(stepsString);
+
+        steps.forEach((step, index) => {
+          if (!step.stepOrder || !step.stepText_en || !step.stepText_ar) {
+            throw new Error(
+              `howToMakeSteps[${index}] must have stepOrder, stepText_en, and stepText_ar`
+            );
+          }
+        });
+
+        stepsString = steps;
+      } catch (err) {
+        throw new Error(err?.message ?? err);
+      }
+
       return true;
     }),
 
