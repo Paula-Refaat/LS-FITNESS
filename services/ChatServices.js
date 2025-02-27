@@ -38,6 +38,28 @@ exports.createSingleChat = asyncHandler(async (req, res, next) => {
     const senderId = req.user._id;
     const { receiverId } = req.params;
 
+    const { code, jsonData, newChat } = await this.createSingleChatRoomHelper(
+      senderId,
+      receiverId,
+      req.user.username
+    );
+
+    if (code && jsonData) {
+      return res.status(code).json(jsonData);
+    }
+
+    res.status(201).json({ data: newChat });
+  } catch (error) {
+    next(error);
+  }
+});
+
+exports.createSingleChatRoomHelper = async (
+  senderId,
+  receiverId,
+  senderUsername
+) => {
+  try {
     // Check if a chat already exists between sender and receiver
     const existingChat = await Chat.findOne({
       $and: [
@@ -48,10 +70,13 @@ exports.createSingleChat = asyncHandler(async (req, res, next) => {
     });
 
     if (existingChat) {
-      return res.status(200).json({
-        message: "Chat already exists between these users",
-        data: existingChat,
-      });
+      return {
+        code: 200,
+        jsonData: {
+          message: "Chat already exists between these users",
+          data: existingChat,
+        },
+      };
     }
 
     // Create a new chat
@@ -65,16 +90,16 @@ exports.createSingleChat = asyncHandler(async (req, res, next) => {
     // Create a notification for the receiver
     await Notification.create({
       user: receiverId,
-      message: `${req.user.username} has started a chat with you`,
+      message: `${senderUsername} has started a chat with you`,
       targetModelId: newChat._id,
       targetModel: "Chat",
     });
 
-    res.status(201).json({ data: newChat });
-  } catch (error) {
-    next(error);
+    return { newChat };
+  } catch (err) {
+    throw err;
   }
-});
+};
 
 //@desc Create a group chat
 //@route POST /api/v1/chat/group

@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const Coupon = require("../models/couponModel");
 const TrainerProfile = require("../models/TrainerProfileModel");
 const sleep = require("../utils/sleep");
+const { createSingleChatRoomHelper } = require("./ChatServices");
 
 const PAYPAL_BASE_URL = process.env.PAYPAL_BASE_URL;
 const CLIENT_ID = process.env.PAYPAL_CLIENT_ID;
@@ -497,6 +498,12 @@ exports.captureTrainerPlanPayment = asyncHandler(async (req, res, next) => {
       );
 
       await session.commitTransaction();
+
+      await createSingleChatRoomHelper(
+        req.user._id,
+        trainerProfile.user,
+        req.user.username
+      );
 
       res.status(200).json({
         message: "Trainer Plan purchased successfully",
