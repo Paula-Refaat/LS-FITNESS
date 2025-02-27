@@ -79,11 +79,9 @@ const mealsSchema = mongoose.Schema(
     video: {
       url: {
         type: String,
-        required: [true, "video url required"],
       },
       public_id: {
         type: Number,
-        required: [true, "video public_id required"],
       },
       thumbnail: {
         type: String,
