@@ -54,10 +54,7 @@ trainingPlanSchema.methods.toJSON = function () {
 };
 const setImageURL = (doc) => {
   //return image base url + iamge name
-  if (
-    doc.image &&
-    (!doc.image.startsWith("https://") || !doc.image.startsWith("http://"))
-  ) {
+  if (doc.image) {
     const ImageUrl = `${process.env.BASE_URL}/trainingPlan/${doc.image}`;
     doc.image = ImageUrl;
   }

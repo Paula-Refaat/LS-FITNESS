@@ -13,6 +13,9 @@ const ApiError = require("./utils/ApiError");
 const globalError = require("./middlewares/errorMiddleware");
 const mountRoute = require("./routes");
 const trimAll = require("./middlewares/trimMiddleware");
+const {
+  handleImageMiddleware,
+} = require("./middlewares/handleImageFieldsMiddleware");
 
 const cleanupTokens = require("./utils/cronJobs/cleanupTokens");
 
@@ -35,6 +38,8 @@ app.use(express.static(path.join(__dirname, "uploads")));
 
 // Trim Input Middleware
 app.use(trimAll);
+
+app.use(handleImageMiddleware);
 
 // Enable CORS
 app.use(
@@ -78,6 +83,7 @@ const server = app.listen(PORT, () => {
 
 // Initialize Socket.IO server and integrate with Express
 const { initSocket } = require("./socket/index");
+
 initSocket(server);
 
 // Handle unhandled promise rejection
