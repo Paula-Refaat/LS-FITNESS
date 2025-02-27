@@ -18,7 +18,6 @@ const {
   filterOnVitaminsInTrash,
   uploadVitaminImage,
   resizeImage,
-  handlingVideoResponse,
 } = require("../../services/vitaminService");
 
 const authServices = require("../../services/authServices");
@@ -37,7 +36,6 @@ router
     checkPermission("Vitamin", "create"),
     uploadVitaminImage,
     resizeImage,
-    handlingVideoResponse,
     createVitaminValidator,
     createVitamin
   );
@@ -50,7 +48,6 @@ router
     checkPermission("Vitamin", "update"),
     uploadVitaminImage,
     resizeImage,
-    handlingVideoResponse,
     updateVitaminValidator,
     updateVitamin
   )

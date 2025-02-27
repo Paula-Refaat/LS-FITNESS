@@ -18,7 +18,6 @@ const {
   filterOnSupplementsInTrash,
   uploadSupplementImage,
   resizeImage,
-  handlingVideoResponse,
 } = require("../../services/supplementServices");
 
 const authServices = require("../../services/authServices");
@@ -37,7 +36,6 @@ router
     checkPermission("Supplement", "create"),
     uploadSupplementImage,
     resizeImage,
-    handlingVideoResponse,
     createSupplementValidator,
     createSupplement
   );
@@ -50,7 +48,6 @@ router
     checkPermission("Supplement", "update"),
     uploadSupplementImage,
     resizeImage,
-    handlingVideoResponse,
     updateSupplementValidator,
     updateSupplement
   )

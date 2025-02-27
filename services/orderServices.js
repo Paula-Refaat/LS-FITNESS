@@ -500,9 +500,9 @@ exports.captureTrainerPlanPayment = asyncHandler(async (req, res, next) => {
       await session.commitTransaction();
 
       await createSingleChatRoomHelper(
-        req.user._id,
+        order.user._id,
         trainerProfile.user,
-        req.user.username
+        order.user.username
       );
 
       res.status(200).json({
@@ -515,8 +515,10 @@ exports.captureTrainerPlanPayment = asyncHandler(async (req, res, next) => {
       res.status(400).json({ message: "Payment not successful" });
     }
   } catch (error) {
+    console.error("Transaction error:", error.message, error.stack, error);
+
     await session.abortTransaction();
-    console.error("Transaction error:", error.message, error.stack);
+
     res.status(500).json({
       message: "An error occurred during the payment process.",
       error: error.message,
