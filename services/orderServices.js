@@ -299,6 +299,18 @@ exports.createTrainerOrder = async (req, res, next) => {
     return next(new ApiError("Selected plan is not available", 400));
   }
 
+  const isSubscribed = profile.subscribers.some(
+    (subscriber) => subscriber.user._id.toString() === req.user._id.toString()
+  );
+
+  console.log("Is user already subscribed:", isSubscribed);
+
+  if (isSubscribed) {
+    return next(
+      new ApiError("You are already subscribed to this Trainer Plan.", 400)
+    );
+  }
+
   let planPrice = selectedPlan.price;
 
   // 🟡 2) التحقق من الكوبون

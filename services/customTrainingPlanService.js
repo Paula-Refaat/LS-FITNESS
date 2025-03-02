@@ -15,6 +15,8 @@ exports.checkCanAddCustomTrainingPlan = asyncHandler(async (req, res, next) => {
   if (req.user.role === "user") return next();
 
   if (req.user.role === "trainer") {
+    if (!req.body?.user) return next();
+
     const isUserSubscribedToTrainerPlan = await TrainerProfileModel.findOne({
       "subscribers.user": req.body.user,
       isDeleted: false,
@@ -36,10 +38,7 @@ exports.checkCanEditCustomTrainingPlan = asyncHandler(
     if (!trainingPlan)
       return next(new ApiError("Training plan not found", 404));
 
-    if (
-      req.user.role === "user" &&
-      trainingPlan.user.toString() === req.user._id.toString()
-    ) {
+    if (trainingPlan.user.toString() === req.user._id.toString()) {
       return next();
     }
 
@@ -80,15 +79,10 @@ exports.addFilterObjToReq = asyncHandler((req, res, next) => {
 
 // Add creator ID in data
 exports.addIDsInData = asyncHandler((req, res, next) => {
-  const { role, _id } = req.user;
+  const { _id } = req.user;
 
   req.body.createdBy = _id;
-
-  if (role === "user") {
-    req.body.user = _id;
-  } else if (!req.body.user) {
-    return next(new ApiError("User id is required", 400));
-  }
+  req.body.user = _id;
 
   next();
 });
