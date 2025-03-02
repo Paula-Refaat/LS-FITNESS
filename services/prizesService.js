@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require("uuid");
 const { uploadSingleMedia } = require("../middlewares/uploadImageMiddleware");
 const PrizesModel = require("../models/prizesModel");
 const factory = require("./handllerFactory");
+const ApiError = require("../utils/ApiError");
 
 exports.uploadPrizeImage = uploadSingleMedia("image", "image");
 
@@ -25,6 +26,33 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
   }
 
   next();
+});
+
+exports.checkIsCoverOnCreate = asyncHandler(async (req, res, next) => {
+  if (req.body?.isCover === "true") {
+    const isCoverAlreadyExists = await PrizesModel.findOne({
+      isCover: true,
+    });
+    if (isCoverAlreadyExists)
+      return next(new ApiError("Cannot add more than cover prize", 400));
+  }
+
+  return next();
+});
+
+exports.checkIsCoverOnUpdate = asyncHandler(async (req, res, next) => {
+  const prizeBeforeEdit = await PrizesModel.findById(req.params.id);
+  if (!prizeBeforeEdit) return next(new ApiError("Prize is not exist", 400));
+
+  if (req.body?.isCover === "true" && !prizeBeforeEdit?.isCover) {
+    const isCoverAlreadyExists = await PrizesModel.findOne({
+      isCover: true,
+    });
+    if (isCoverAlreadyExists)
+      return next(new ApiError("Cannot add more than cover prize", 400));
+  }
+
+  return next();
 });
 
 exports.createPrize = factory.createOne(PrizesModel);

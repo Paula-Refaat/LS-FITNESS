@@ -7,6 +7,8 @@ const {
   getAllPrizes,
   getSpecificPrize,
   updatePrize,
+  checkIsCoverOnCreate,
+  checkIsCoverOnUpdate,
 } = require("../../services/prizesService");
 const {
   createPrizeValidator,
@@ -33,6 +35,7 @@ router
     resizeImage,
     handlingVideoResponse,
     createPrizeValidator,
+    checkIsCoverOnCreate,
     createPrize
   );
 
@@ -52,6 +55,7 @@ router
     resizeImage,
     handlingVideoResponse,
     updatePrizeValidator,
+    checkIsCoverOnUpdate,
     updatePrize
   )
   .delete(

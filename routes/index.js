@@ -51,7 +51,7 @@ const mountRoute = (app) => {
   app.use("/api/v1/exercises", upload.none(), trimAll, exerciseRoute);
   app.use("/api/v1/mealsCalculation", trimAll, mealsCalculationRoute);
   app.use("/api/v1/progress", upload.none(), trimAll, progressRoute);
-  app.use("/api/v1/mealsCategory", upload.none(), trimAll, mealsCategoryRoute);
+  app.use("/api/v1/mealsCategory", trimAll, mealsCategoryRoute);
   app.use("/api/v1/coupons", upload.none(), trimAll, couponRoute);
   app.use("/api/v1/categories", upload.none(), trimAll, categoryRoute);
   app.use("/api/v1/courses", courseRoute);

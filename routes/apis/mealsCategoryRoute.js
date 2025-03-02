@@ -10,6 +10,10 @@ const {
   filterOnMealsCategoryInTrash,
   filterOnMealsCategoryNotInTrash,
   filterOnParentCategories,
+  resizeImage,
+  uploadMealCategoryImage,
+  canSetImageOnCreate,
+  canSetImageOnUpdate,
 } = require("../../services/mealsCategoryService");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
@@ -29,7 +33,10 @@ router
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("MealCategory", "create"),
+    uploadMealCategoryImage,
+    resizeImage,
     createMealCategoryValidator,
+    canSetImageOnCreate,
     createMealsCategory
   )
   .get(
@@ -46,7 +53,10 @@ router
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("MealCategory", "update"),
+    uploadMealCategoryImage,
+    resizeImage,
     updateMealCategoryValidator,
+    canSetImageOnUpdate,
     updateMealsCategory
   )
   .delete(

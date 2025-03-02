@@ -68,6 +68,15 @@ const prizesSchema = new mongoose.Schema(
         type: String,
       },
     },
+    name: {
+      type: String,
+      required: [true, validationMessages.required("Prize Winner Name")],
+    },
+    isCover: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   { timestamps: true }
 );
