@@ -40,7 +40,6 @@ router
   .route("/:id")
   .get(
     authServices.protect,
-    authServices.allowTo("user", "admin", "sub-admin"),
     checkPermission("Meals", "read"),
     mergeCalculationInGetById,
     getOneMealsValidator,
@@ -66,7 +65,6 @@ router
 router.post(
   "/:id/calculate",
   authServices.protect,
-  authServices.allowTo("user", "admin", "sub-admin"),
   checkPermission("Meals", "create"),
   calculateAllMealIngredientsValidator,
   calculateAllMealIngredients
