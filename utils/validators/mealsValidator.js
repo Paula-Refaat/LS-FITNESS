@@ -46,7 +46,7 @@ exports.createMealsValidator = [
   body("howToMakeSteps")
     .isString()
     .withMessage("howToMakeSteps must be an string")
-    .custom((stepsString) => {
+    .customSanitizer((stepsString) => {
       try {
         const steps = JSON.parse(stepsString);
 
@@ -58,7 +58,7 @@ exports.createMealsValidator = [
           }
         });
 
-        stepsString = steps;
+        return steps;
       } catch (err) {
         throw new Error(err?.message ?? err);
       }

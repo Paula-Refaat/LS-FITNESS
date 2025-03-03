@@ -102,3 +102,26 @@ const roundMealTotals = (meal) => {
     meal._doc["total"][key] = parseFloat(meal._doc["total"][key].toFixed(2));
   });
 };
+
+exports.mergeCalculationInGetAll = asyncHandler(async (req, res, next) => {
+  // Save a reference to the original res.send function
+  const originalSend = res.json.bind(res);
+
+  // Override res.send to intercept the response data
+  res.json = (body) => {
+    const meals = body.data;
+
+    meals.forEach((meal) => {
+      mergeCustomRequestedIngredientsIntoMeal(meal, []);
+
+      calculateEachMealIngredients(meal);
+
+      roundMealTotals(meal);
+    });
+
+    // Send the modified response
+    return originalSend(body);
+  };
+
+  next();
+});

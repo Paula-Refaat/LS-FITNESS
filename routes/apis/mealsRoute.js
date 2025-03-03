@@ -8,6 +8,7 @@ const {
   updateMeal,
   deleteMeal,
   calculateAllMealIngredients,
+  mergeCalculationInGetAll,
 } = require("../../services/mealsService");
 const {
   createMealsValidator,
@@ -23,7 +24,7 @@ const authServices = require("../../services/authServices");
 
 router
   .route("/")
-  .get(getAllMeals)
+  .get(mergeCalculationInGetAll, getAllMeals)
   .post(
     authServices.protect,
     authServices.allowTo("admin", "sub-admin"),
