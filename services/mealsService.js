@@ -80,7 +80,7 @@ const calculateEachMealIngredients = (meal) => {
         i[attributeKey] = calculateNutritionalValue(
           i.quantities,
           i[attributeKey],
-          i?.customQuantity ?? i.quantities
+          i?.customQuantity === undefined ?? i.quantities
         );
 
         if (i?.customQuantity) {
