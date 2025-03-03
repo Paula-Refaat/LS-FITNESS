@@ -125,3 +125,24 @@ exports.mergeCalculationInGetAll = asyncHandler(async (req, res, next) => {
 
   next();
 });
+
+exports.mergeCalculationInGetById = asyncHandler(async (req, res, next) => {
+  // Save a reference to the original res.send function
+  const originalSend = res.json.bind(res);
+
+  // Override res.send to intercept the response data
+  res.json = (body) => {
+    const meal = body.data;
+
+    mergeCustomRequestedIngredientsIntoMeal(meal, []);
+
+    calculateEachMealIngredients(meal);
+
+    roundMealTotals(meal);
+
+    // Send the modified response
+    return originalSend(body);
+  };
+
+  next();
+});

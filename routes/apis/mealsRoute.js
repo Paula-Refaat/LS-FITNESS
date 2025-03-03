@@ -9,6 +9,7 @@ const {
   deleteMeal,
   calculateAllMealIngredients,
   mergeCalculationInGetAll,
+  mergeCalculationInGetById,
 } = require("../../services/mealsService");
 const {
   createMealsValidator,
@@ -41,6 +42,7 @@ router
     authServices.protect,
     authServices.allowTo("user", "admin", "sub-admin"),
     checkPermission("Meals", "read"),
+    mergeCalculationInGetById,
     getOneMealsValidator,
     getSpecificMeal
   )
