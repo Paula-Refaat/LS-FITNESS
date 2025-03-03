@@ -7,6 +7,7 @@ const asyncHandler = require("express-async-handler");
 const { v4: uuidv4 } = require("uuid");
 const MealCalculationModel = require("../models/mealsCalculationModel");
 const calculateNutritionalValue = require("../utils/calculationFormula");
+const ApiError = require("../utils/ApiError");
 
 exports.uploadMealImage = uploadSingleMedia("image", "image");
 
@@ -80,17 +81,17 @@ const calculateEachMealIngredients = (meal) => {
         i[attributeKey] = calculateNutritionalValue(
           i.quantities,
           i[attributeKey],
-          i?.customQuantity === undefined ?? i.quantities
+          i?.customQuantity !== undefined ? i?.customQuantity : i.quantities
         );
-
-        if (i?.customQuantity) {
-          i.quantities = i.customQuantity;
-          delete i.customQuantity;
-        }
 
         meal._doc["total"][attributeKey] =
           (meal._doc["total"]?.[attributeKey] ?? 0) + i[attributeKey];
       });
+
+    if (i?.customQuantity) {
+      i.quantities = i.customQuantity;
+      delete i.customQuantity;
+    }
 
     meal._doc["total"]["quantities"] =
       (meal._doc["total"]?.["quantities"] ?? 0) + +i.quantities;
@@ -112,7 +113,7 @@ exports.mergeCalculationInGetAll = asyncHandler(async (req, res, next) => {
     const meals = body.data;
 
     meals.forEach((meal) => {
-      mergeCustomRequestedIngredientsIntoMeal(meal, []);
+      mergeCustomRequestedIngredientsIntoMeal(meal, meal?.ingredient ?? []);
 
       calculateEachMealIngredients(meal);
 
@@ -134,7 +135,7 @@ exports.mergeCalculationInGetById = asyncHandler(async (req, res, next) => {
   res.json = (body) => {
     const meal = body.data;
 
-    mergeCustomRequestedIngredientsIntoMeal(meal, []);
+    mergeCustomRequestedIngredientsIntoMeal(meal, meal?.ingredient ?? []);
 
     calculateEachMealIngredients(meal);
 

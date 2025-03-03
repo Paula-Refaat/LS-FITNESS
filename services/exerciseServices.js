@@ -4,6 +4,8 @@ const { getThumbnailsFromUrl } = require("../utils/getThumbnailsFromUrl");
 
 // Filter exercises based on user's gender
 exports.filterExercisesBasedOnGender = (req, res, next) => {
+  if (req.query?.targetGender) return next();
+
   if (!req.filterObj) {
     req.filterObj = {};
   }
@@ -17,6 +19,7 @@ exports.filterExercisesBasedOnGender = (req, res, next) => {
   } else if (req.user.goalsData.gender === "female") {
     req.filterObj.targetGender = "women";
   }
+
   next();
 };
 
