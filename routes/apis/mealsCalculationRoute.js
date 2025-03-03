@@ -72,7 +72,6 @@ router
 router.post(
   "/calc",
   authServices.protect,
-  authServices.allowTo("user", "admin", "sub-admin"),
   checkPermission("MealsCalculation", "create"),
   uploadMealCalculationImage,
   makeCalculationValidator,
