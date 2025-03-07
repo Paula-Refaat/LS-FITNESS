@@ -9,6 +9,7 @@ const compression = require("compression");
 // Load environment variables from.env file
 dotenv.config({ path: "config.env" });
 
+
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
 const globalError = require("./middlewares/errorMiddleware");
