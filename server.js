@@ -6,6 +6,7 @@ const passport = require("passport");
 const cors = require("cors");
 const compression = require("compression");
 
+// Load environment variables from.env file
 dotenv.config({ path: "config.env" });
 
 const dbConnection = require("./config/database");
