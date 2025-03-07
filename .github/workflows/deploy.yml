@@ -29,15 +29,11 @@ jobs:
             source $NVM_DIR/nvm.sh  
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
             
-            npm ci   # أسرع وأكثر استقرارًا من npm install  
+             npm install  
             
-            # تأكد إن العملية شغالة، وإلا شغلها من جديد
-            pm2 describe api > /dev/null 2>&1  
-            if [ $? -eq 0 ]; then  
-              pm2 reload api --update-env  
-            else  
-              pm2 start server.js --name api  
-            fi  
+            pm2 delete api || true 
 
+            pm2 start server.js --name api
+            
             pm2 save  # يحفظ التغييرات عشان تفضل شغالة بعد الـ Restart  
           EOF
