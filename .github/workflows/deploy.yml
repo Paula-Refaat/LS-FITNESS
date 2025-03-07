@@ -21,30 +21,34 @@ jobs:
       - name: 🚀 Deploy to Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.SSH_HOST }} << 'EOF'
-            set -e  # يوقف التنفيذ لو حصل خطأ
+            set -e  # يوقف التنفيذ لو فيه خطأ
             
+            echo "🔄 Switching to project directory..."
             cd /home/ls-fitnes-api/htdocs/api.ls-fitnes.com
+
+            echo "🔄 Resetting and pulling latest code..."
             git reset --hard origin/master    
             git pull origin master
 
+            echo "🔄 Setting up Node.js environment..."
             export NVM_DIR="$HOME/.nvm"
             source $NVM_DIR/nvm.sh  
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
             
+            echo "🔄 Installing dependencies..."
             npm ci  # أسرع وأكثر استقرارًا من npm install  
-            
-            # تأكد إن الملف موجود قبل تشغيله
-            if [ ! -f server.js ]; then
-              echo "⚠️ ملف server.js غير موجود! تأكد من المسار."
-              exit 1
-            fi
-            
-            # إذا كان PM2 شغال، أعد تشغيله، وإلا شغّله لأول مرة
+
+            echo "🔄 Checking if PM2 process exists..."
             if pm2 list | grep -q "api"; then
+              echo "✅ API process found, restarting..."
               pm2 restart api --update-env
             else
+              echo "⚠️ API process not found, starting new process..."
               pm2 start server.js --name api --update-env
             fi
             
-            pm2 save  # يحفظ التغييرات عشان تفضل شغالة بعد الـ Restart  
+            echo "🔄 Saving PM2 process..."
+            pm2 save  
+
+            echo "🚀 Deployment completed successfully!"
           EOF
