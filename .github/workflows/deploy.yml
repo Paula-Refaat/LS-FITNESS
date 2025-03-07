@@ -21,6 +21,8 @@ jobs:
       - name: 🚀 Deploy to Server
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e  # يوقف التنفيذ لو حصل خطأ
+            
             cd /home/ls-fitnes-api/htdocs/api.ls-fitnes.com
             git reset --hard origin/master    
             git pull origin master
@@ -29,11 +31,15 @@ jobs:
             source $NVM_DIR/nvm.sh  
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
             
-             npm install  
+            npm ci  # أسرع وأكثر استقرارًا من npm install  
             
-            pm2 delete api || true 
-
-            pm2 start server.js --name api
+            # تحقق إن الملف موجود قبل تشغيله
+            if [ ! -f server.js ]; then
+              echo "⚠️ ملف server.js غير موجود! تأكد من المسار."
+              exit 1
+            fi
             
+            pm2 delete api || true  
+            pm2 start server.js --name api --update-env  
             pm2 save  # يحفظ التغييرات عشان تفضل شغالة بعد الـ Restart  
           EOF
