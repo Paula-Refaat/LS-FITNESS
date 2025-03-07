@@ -28,17 +28,23 @@ jobs:
             export NVM_DIR="$HOME/.nvm"
             source $NVM_DIR/nvm.sh  
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
-            
-            npm install  
 
-            # 🔥 حذف الكاش الخاص بـ pm2 وإعادة تشغيل السيرفر
-            pm2 delete api || true
-            pm2 start server.js --name api
-            pm2 save  
-
-            # 🛑 تنظيف كاش Node.js
+            # 🔥 تنظيف المشروع بالكامل من الكاش
             rm -rf node_modules package-lock.json
             npm install  
+            
+            # 🛑 تنظيف كاش PM2
+            pm2 kill  
+            pm2 flush  
+
+            # ❌ حذف التطبيق لو موجود (تجنب تشغيل نسخة قديمة)
+            pm2 delete api || true 
+
+            # 🚀 تشغيل التطبيق من جديد
+            NODE_ENV=production pm2 start server.js --name api
+
+            # 🛠 حفظ العملية عشان تستمر حتى بعد الـ restart
+            pm2 save  
 
             echo "✅ Deployment completed successfully!"
           EOF
