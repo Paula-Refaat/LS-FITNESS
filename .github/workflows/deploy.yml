@@ -22,7 +22,14 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.SSH_HOST }} << 'EOF'
             cd /home/ls-fitnes-api/htdocs/api.ls-fitnes.com
-            git pull origin master     
-            npm install
-            pm2 restart all           
+            git reset --hard origin/master    
+            git pull origin master
+
+            export NVM_DIR="$HOME/.nvm"
+            source $NVM_DIR/nvm.sh  
+            export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
+            
+            npm install   
+            restart all
+     
           EOF
