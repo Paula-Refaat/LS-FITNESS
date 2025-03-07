@@ -55,8 +55,24 @@ trainingPlanSchema.methods.toJSON = function () {
 const setImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const ImageUrl = `${process.env.BASE_URL}/trainingPlan/${doc.image}`;
-    doc.image = ImageUrl;
+    // Check if the image URL already includes the base URL or is an HTTP URL
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let editingImageUrl = doc.image;
+      const splittedUrl = editingImageUrl.split("/");
+      const imageName = splittedUrl.pop();
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/trainingPlan/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const ImageUrl = `${process.env.BASE_URL}/trainingPlan/${imageName}.webp`;
+        doc.image = ImageUrl;
+        return;
+      }
+    }
   }
 };
 //after initializ the doc in db
