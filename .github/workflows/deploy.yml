@@ -30,6 +30,7 @@ jobs:
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
             
             npm install   
-            restart all
+            pm2 restart all
+
      
           EOF
