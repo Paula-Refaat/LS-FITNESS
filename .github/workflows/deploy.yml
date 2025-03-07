@@ -30,5 +30,6 @@ jobs:
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
             
             npm install   
-            pm2 restart all || pm2 restart api || pm2 start api
+            pm2 restart all || pm2 delete api || pm2 start server.js --name api
+
           EOF
