@@ -33,13 +33,18 @@ jobs:
             
             npm ci  # أسرع وأكثر استقرارًا من npm install  
             
-            # تحقق إن الملف موجود قبل تشغيله
+            # تأكد إن الملف موجود قبل تشغيله
             if [ ! -f server.js ]; then
               echo "⚠️ ملف server.js غير موجود! تأكد من المسار."
               exit 1
             fi
             
-            pm2 delete api || true  
-            pm2 start server.js --name api --update-env  
+            # إذا كان PM2 شغال، أعد تشغيله، وإلا شغّله لأول مرة
+            if pm2 list | grep -q "api"; then
+              pm2 restart api --update-env
+            else
+              pm2 start server.js --name api --update-env
+            fi
+            
             pm2 save  # يحفظ التغييرات عشان تفضل شغالة بعد الـ Restart  
           EOF
