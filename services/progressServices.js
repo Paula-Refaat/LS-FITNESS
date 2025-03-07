@@ -2,61 +2,11 @@ const Progress = require("../models/progressModel");
 const asyncHandler = require("express-async-handler");
 const ApiError = require("../utils/ApiError");
 const factory = require("./handllerFactory");
+const TrainerProfile = require("../models/TrainerProfileModel");
+
 // @desc Create a new progress entry
 // @route POST /api/v1/progress
 // @access private
-// exports.AddToProgress = asyncHandler(async (req, res, next) => {
-//   const { exerciseId, volume } = req.body;
-//   const userId = req.user.id;
-
-//   // Check if the progress for the exercise and user already exists
-//   const existsExerciseProgress = await Progress.findOne({ exerciseId, userId });
-
-//   if (existsExerciseProgress) {
-//     // Update the progress by pushing the new volume
-//     await Progress.updateOne(
-//       { exerciseId, userId },
-//       { $push: { volumes: volume } }
-//     );
-
-//     const data = {
-//       _id: existsExerciseProgress._id,
-//       user: {
-//         _id: existsExerciseProgress.userId._id,
-//         username: existsExerciseProgress.userId.username,
-//       },
-//       exercise: {
-//         _id: existsExerciseProgress._id,
-//         title: existsExerciseProgress.exerciseId.title,
-//       },
-//       volumes: existsExerciseProgress.volumes,
-//     };
-
-//     // Send the updated document as a response
-//     return res.status(200).json({ success: true, data: data });
-//   }
-//   // Create a new progress entry
-//   const newProgress = await Progress.create({
-//     exerciseId,
-//     userId,
-//     volumes: [volume],
-//   });
-//   const newProgressPopulated = await newProgress.populate("userId exerciseId");
-//   const data = {
-//     _id: newProgressPopulated._id,
-//     user: {
-//       _id: newProgressPopulated.userId._id,
-//       username: newProgressPopulated.userId.username,
-//     },
-//     exercise: {
-//       _id: newProgressPopulated._id,
-//       title: newProgressPopulated.exerciseId.title,
-//     },
-//     volumes: newProgressPopulated.volumes,
-//   };
-//   res.status(201).json({ success: true, data: data });
-// });
-
 exports.AddToProgress = asyncHandler(async (req, res, next) => {
   const { exerciseId, volume } = req.body;
   const userId = req.user.id;
@@ -119,63 +69,50 @@ exports.AddToProgress = asyncHandler(async (req, res, next) => {
   res.status(201).json({ success: true, data });
 });
 
-// @desc Get progress by exerciseId
-// @route GET /api/v1/progress/:exerciseId
-// @access private
-// exports.getMyProgressByExerciseId = asyncHandler(async (req, res, next) => {
-//   const userId = req.user.id;
-//   const { exerciseId } = req.params;
-//   const progress = await Progress.findOne({ userId, exerciseId });
-//   if (!progress) {
-//     return res
-//       .status(404)
-//       .json({ success: false, message: "Progress not found" }); // Progress not found for the given exerciseId and userId
-//   }
-//   const data = {
-//     _id: progress._id,
-//     user: {
-//       _id: progress.userId._id,
-//       username: progress.userId.username,
-//     },
-//     exercise: {
-//       _id: progress._id,
-//       title: progress.exerciseId.title,
-//     },
-//     volumes: progress.volumes,
-//   };
+exports.createFilterObj = async (req, res, next) => {
+  try {
+    let filterObject = {};
+    const { userId } = req.body;
+    const { exerciseId } = req.params;
 
-//   res.status(200).json({
-//     success: true,
-//     data: data,
-//   });
-// });
+    if (!exerciseId)
+      return next(new ApiError("You must provide an exerciseId", 400));
 
-exports.createFilterObj = (req, res, next) => {
-  let filterObject = {};
+    if (req.user.role === "admin" || req.user.role === "sub-admin") {
+      if (!userId) return next(new ApiError("You must provide a userId", 400));
+      filterObject = { exerciseId, userId };
+    } else if (req.user.role === "trainer" || req.user.role === "Ls-trainer") {
+      if (!userId) return next(new ApiError("You must provide a userId", 400));
 
-  if (req.params.exerciseId) {
-    if (req.user.role === "admin") {
-      filterObject = { exerciseId: req.params.exerciseId };
+      const trainerProfile = await TrainerProfile.findOne({
+        user: req.user.id,
+      });
+      if (!trainerProfile)
+        return next(new ApiError("You don't have a trainer profile", 400));
+
+      const isSubscribed = trainerProfile.subscribers?.some(
+        (subscriber) => subscriber.user._id.toString() === userId
+      );
+
+      if (!isSubscribed) {
+        return next(
+          new ApiError(
+            "You do not have permission to see this trainee's progress",
+            403
+          )
+        );
+      }
+
+      filterObject = { exerciseId, userId };
     } else {
-      filterObject = { exerciseId: req.params.exerciseId, userId: req.user.id };
+      filterObject = { exerciseId, userId: req.user.id };
     }
-  }
 
-  req.filterObj = filterObject;
-  next();
+    req.filterObj = filterObject;
+    next();
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.getMyProgressByExerciseId = factory.getAll(Progress);
-
-// @desc Get all progress for a user
-// @route GET /api/v1/progress
-//  @access private
-exports.getMyProgress = asyncHandler(async (req, res, next) => {
-  const userId = req.user.id;
-  const progress = await Progress.find({ userId });
-
-  res.status(200).json({
-    success: true,
-    data: progress,
-  });
-});

@@ -9,6 +9,7 @@ const {
   AddToProgress,
   getMyProgressByExerciseId,
   createFilterObj,
+  createFilterObjForLoggedUser,
 } = require("../../services/progressServices");
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
@@ -26,7 +27,7 @@ router
   .route("/:exerciseId")
   .get(
     authServices.protect,
-    authServices.allowTo("user", "admin", "sub-admin", "Ls-trainer", "trainer"),
+    authServices.allowTo("user", "admin", "sub-admin", "trainer", "Ls-trainer"),
     checkPermission("Progress", "read"),
     createFilterObj,
     getProgressByExerciseIdValidator,
