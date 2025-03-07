@@ -73,6 +73,14 @@ const setImageURL = (doc) => {
         return;
       }
     }
+    // For local image names
+    if (doc.image.includes(".")) {
+      const URL = `${process.env.BASE_URL}/trainingPlan/${doc.image}`;
+      doc.image = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/trainingPlan/${doc.image}.webp`;
+      doc.image = URL;
+    }
   }
 };
 //after initializ the doc in db
