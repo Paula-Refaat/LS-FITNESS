@@ -14,6 +14,7 @@ const {
   uploadCustomTrainingPlanImage,
   resizeImage,
   makeParsingToDaysAndType,
+  filterToGetCustomTrainingPlanBasedOnUserId,
 } = require("../../services/customTrainingPlanService");
 
 const {
@@ -76,5 +77,11 @@ router
     checkCanEditCustomTrainingPlan,
     deleteCustomTrainingPlan
   );
-
+router.get(
+  "/:userId/getCustomTrainingPlan",
+  authServices.protect,
+  checkPermission("CustomTrainingPlan", "read"),
+  filterToGetCustomTrainingPlanBasedOnUserId,
+  getCustomTrainingPlans
+);
 module.exports = router;

@@ -151,6 +151,22 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
   next();
 });
+exports.filterToGetCustomTrainingPlanBasedOnUserId = asyncHandler(
+  async (req, res, next) => {
+    // Ensure req.filterObj is initialized
+    req.filterObj = req.filterObj || {};
+
+    // Apply filter only if a trainer is requesting a specific user's plan
+    if (req.params.userId && req.user.role === "trainer") {
+      req.filterObj = {
+        user: req.params.userId,
+        createdBy: req.user.id,
+      };
+    }
+
+    next();
+  }
+);
 
 exports.createCustomTrainingPlan = factory.createOne(CustomTrainingPlanModel);
 exports.getCustomTrainingPlan = factory.getOneWithFilterObject(
