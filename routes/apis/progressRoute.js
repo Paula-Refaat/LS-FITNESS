@@ -23,15 +23,15 @@ router
     AddToProgressValidator,
     AddToProgress
   );
-router
-  .route("/:exerciseId")
-  .get(
-    authServices.protect,
-    authServices.allowTo("user", "admin", "sub-admin", "trainer", "Ls-trainer"),
-    checkPermission("Progress", "read"),
-    createFilterObj,
-    getProgressByExerciseIdValidator,
-    getMyProgressByExerciseId
-  );
+// router
+//   .route("/:exerciseId")
+//   .get(
+//     authServices.protect,
+//     authServices.allowTo("user", "admin", "sub-admin", "trainer", "Ls-trainer"),
+//     checkPermission("Progress", "read"),
+//     createFilterObj,
+//     getProgressByExerciseIdValidator,
+//     getMyProgressByExerciseId
+//   );
 
 module.exports = router;

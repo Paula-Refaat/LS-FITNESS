@@ -29,21 +29,29 @@ jobs:
             source $NVM_DIR/nvm.sh  
             export PATH=$PATH:$NVM_DIR/versions/node/v22.13.0/bin 
 
-            # 🔥 تنظيف المشروع بالكامل من الكاش
-            rm -rf node_modules package-lock.json
-            npm install  
-            
-            # 🛑 تنظيف كاش PM2
-            pm2 kill  
-            pm2 flush  
+            echo "🔍 Checking environment..."
+            whoami
+            which pm2
+            node -v
+            npm -v
+            ls -lah
 
-            # ❌ حذف التطبيق لو موجود (تجنب تشغيل نسخة قديمة)
+            echo "🔥 Cleaning old cache..."
+            rm -rf node_modules package-lock.json
+            npm install 
+
+
+            echo "🛑 Killing PM2 processes..."
+            pm2 kill  
+            pm2 flush 
+
+            echo "❌ Deleting old API process..."
             pm2 delete api || true 
 
-            # 🚀 تشغيل التطبيق من جديد
+            echo "🚀 Starting API..."
             NODE_ENV=production pm2 start server.js --name api
 
-            # 🛠 حفظ العملية عشان تستمر حتى بعد الـ restart
+            echo "🛠 Saving PM2 process..."
             pm2 save  
 
             echo "✅ Deployment completed successfully!"
