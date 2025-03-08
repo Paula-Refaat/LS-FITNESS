@@ -209,7 +209,7 @@ exports.getCourseUsers = asyncHandler(async (req, res) => {
 // Applying coupon on the course
 exports.applyCouponOnCourse = asyncHandler(async (req, res, next) => {
   const { courseId } = req.params;
-  const { coupon } = req.body;
+  let { coupon } = req.body;
 
   // 1) Fetch the course by ID
   const course = await Course.findById(courseId);
@@ -222,14 +222,19 @@ exports.applyCouponOnCourse = asyncHandler(async (req, res, next) => {
   let couponDoc = null; // Define couponDoc here, so it can be used later
 
   if (coupon) {
+    coupon = coupon.trim();
     // Handle the coupon code only if provided
     couponDoc = await Coupon.findOne({ name: coupon });
     if (!couponDoc) {
-      return next(new ApiError("Invalid coupon code", 400));
+      return next(new ApiError("Invalid coupon code.", 400));
     }
 
     if (couponDoc.expire < new Date()) {
-      return next(new ApiError("Coupon has expired", 400));
+      return next(new ApiError("This coupon has expired.", 400));
+    }
+
+    if (couponDoc.numberOfUsage <= 0) {
+      return next(new ApiError("This coupon is no longer available.", 400));
     }
 
     const discount = couponDoc.discount / 100;

@@ -15,8 +15,8 @@ const couponSchema = new mongoose.Schema(
     },
     numberOfUsage: {
       type: Number,
-      // required: [true, "Coupon number Of Usage required"],
-      default: 0,
+      required: [true, "Coupon number Of Usage required"],
+      // default: 0,
     },
     discount: {
       type: Number,

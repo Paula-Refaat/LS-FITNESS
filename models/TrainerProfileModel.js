@@ -78,24 +78,6 @@ const trainerProfileSchema = mongoose.Schema(
       },
     ],
 
-    // reviews: [
-    //   {
-    //     user: {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       ref: "User",
-    //     },
-    //     comment: String,
-    //     rating: {
-    //       type: Number,
-    //       min: 1,
-    //       max: 5,
-    //     },
-    //   },
-    // ],
-    // averageRating: {
-    //   type: Number,
-    //   default: 0,
-    // },
     totalTrainees: {
       type: Number,
       default: 0,
@@ -110,15 +92,6 @@ const trainerProfileSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-// 🧠 **حساب متوسط التقييم**
-// trainerProfileSchema.methods.calculateAverageRating = function () {
-//   if (this.reviews.length > 0) {
-//     const sum = this.reviews.reduce((acc, review) => acc + review.rating, 0);
-//     this.averageRating = sum / this.reviews.length;
-//   } else {
-//     this.averageRating = 0;
-//   }
-// };
 const setImageURL = (doc) => {
   if (doc.certificates && Array.isArray(doc.certificates)) {
     // تحديث كل شهادة في المصفوفة
@@ -137,26 +110,6 @@ const setImageURL = (doc) => {
 // ربط الدالة بالأحداث
 trainerProfileSchema.post("init", setImageURL);
 trainerProfileSchema.post("save", setImageURL);
-// 🧠 **إضافة مشترك جديد**
-trainerProfileSchema.methods.addSubscriber = function (
-  userId,
-  planType,
-  planName
-) {
-  const endDate =
-    planType === "monthly"
-      ? new Date(new Date().setMonth(new Date().getMonth() + 1))
-      : new Date(new Date().setFullYear(new Date().getFullYear() + 1));
-
-  this.subscribers.push({
-    user: userId,
-    plan: { name: planName, type: planType },
-    startDate: new Date(),
-    endDate,
-  });
-
-  this.totalTrainees = this.subscribers.length;
-};
 
 trainerProfileSchema.pre(/^find/, function (next) {
   this.populate({

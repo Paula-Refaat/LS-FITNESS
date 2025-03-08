@@ -37,7 +37,7 @@ async function generateAccessToken() {
 
 exports.createCourseOrder = asyncHandler(async (req, res, next) => {
   const { courseId } = req.params;
-  const { coupon } = req.body; // أضف successUrl و cancelUrl
+  let { coupon } = req.body; // أضف successUrl و cancelUrl
 
   // 1) Fetch the course by ID
   const course = await Course.findById(courseId);
@@ -54,8 +54,13 @@ exports.createCourseOrder = asyncHandler(async (req, res, next) => {
   let couponDoc = null;
 
   if (coupon) {
+    coupon = coupon.trim();
     couponDoc = await Coupon.findOne({ name: coupon });
-    if (!couponDoc || couponDoc.expire < new Date()) {
+    if (
+      !couponDoc ||
+      couponDoc.expire < new Date() ||
+      couponDoc.numberOfUsage <= 0
+    ) {
       return next(new ApiError("Invalid or expired coupon code", 400));
     }
     coursePrice -= coursePrice * (couponDoc.discount / 100);
@@ -211,7 +216,7 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
       }
 
       if (order && order.coupon && order.coupon.name) {
-        // Get coupon and increment numberOfUsage by 1
+        // Get coupon and decrement numberOfUsage by 1
         let coupon = await Coupon.findOne({
           name: order.coupon.name,
         }).session(session);
@@ -220,7 +225,7 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
         }
         coupon = await Coupon.findByIdAndUpdate(
           coupon._id,
-          { $inc: { numberOfUsage: 1 } },
+          { $inc: { numberOfUsage: -1 } },
           { new: true }
         ).session(session);
       }
@@ -279,7 +284,7 @@ exports.capturePayment = asyncHandler(async (req, res, next) => {
 // ✅ إنشاء طلب PayPal
 exports.createTrainerOrder = async (req, res, next) => {
   const { trainerId } = req.params;
-  const { planType, planName, coupon } = req.body;
+  let { planType, planName, coupon } = req.body;
   const userId = req.user.id;
 
   // 🟡 1) التحقق من الخطة
@@ -316,8 +321,13 @@ exports.createTrainerOrder = async (req, res, next) => {
   // 🟡 2) التحقق من الكوبون
   let couponDoc = null;
   if (coupon) {
+    coupon = coupon.trim();
     couponDoc = await Coupon.findOne({ name: coupon });
-    if (!couponDoc || couponDoc.expire < new Date()) {
+    if (
+      !couponDoc ||
+      couponDoc.expire < new Date() ||
+      couponDoc.numberOfUsage <= 0
+    ) {
       return next(new ApiError("Invalid or expired coupon code", 400));
     }
     planPrice -= planPrice * (couponDoc.discount / 100);
@@ -452,6 +462,21 @@ exports.captureTrainerPlanPayment = asyncHandler(async (req, res, next) => {
 
       if (!order) {
         return next(new ApiError("Order not found or already paid", 404));
+      }
+
+      if (order && order.coupon && order.coupon.name) {
+        // Get coupon and decrement numberOfUsage by 1
+        let coupon = await Coupon.findOne({
+          name: order.coupon.name,
+        }).session(session);
+        if (!coupon) {
+          return next(new ApiError("Coupon not found", 404));
+        }
+        coupon = await Coupon.findByIdAndUpdate(
+          coupon._id,
+          { $inc: { numberOfUsage: -1 } },
+          { new: true }
+        ).session(session);
       }
 
       order = await Order.findByIdAndUpdate(
