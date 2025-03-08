@@ -26,6 +26,7 @@ const {
   removeSpecificPlanFromMyProfile,
   filterOnTrainerProfileUserSubscribedWith,
 } = require("../../services/trainerProfileService");
+const { handleImageMiddleware } = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 
@@ -124,6 +125,7 @@ router
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("TrainerProfile", "update"),
     uploadinfo,
+    handleImageMiddleware,
     handleMarketingReqsPdfs,
     // updateToolOrMachineValidator,
     updateTrainerProfile

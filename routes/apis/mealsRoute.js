@@ -22,6 +22,9 @@ const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const router = express.Router();
 const authServices = require("../../services/authServices");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 router
   .route("/")
@@ -50,6 +53,7 @@ router
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("Meals", "update"),
     uploadMealImage,
+    handleImageMiddleware,
     resizeImage,
     updateMealsValidator,
     updateMeal

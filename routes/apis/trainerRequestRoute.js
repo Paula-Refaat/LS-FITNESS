@@ -21,6 +21,7 @@ const {
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const authServices = require("../../services/authServices");
+const { handleImageMiddleware } = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 router.post(
@@ -58,6 +59,7 @@ router
   .put(
     checkPermission("TrainerRequest", "update"),
     uploadinfo,
+    handleImageMiddleware,
     handleMarketingReqsPdfs,
     // idCheckValidator,
     // updateTrainerRequestValidator,

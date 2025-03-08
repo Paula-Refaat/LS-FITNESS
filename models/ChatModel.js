@@ -59,8 +59,32 @@ chatSchema.pre(/^find/, function (next) {
 const setImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const ImageUrl = `${process.env.BASE_URL}/chats/${doc.image}`;
-    doc.image = ImageUrl;
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let editingChatImageURL = doc.image;
+      const splittedURL = editingChatImageURL.split("/");
+      const imageName = splittedURL.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/chats/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/chats/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
+    }
+    // For local image names
+    if (doc.image.includes(".")) {
+      const URL = `${process.env.BASE_URL}/chats/${doc.image}`;
+      doc.image = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/chats/${doc.image}.webp`;
+      doc.image = URL;
+    }
   }
 };
 //after initializ the doc in db

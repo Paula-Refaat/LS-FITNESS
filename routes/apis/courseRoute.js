@@ -31,6 +31,7 @@ const checkPermission = require("../../middlewares/permissionMiddleware");
 
 // nested routes
 const lessonRoute = require("./lessonRoute");
+const { handleImageMiddleware } = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router({ mergeParams: true });
 
@@ -92,6 +93,7 @@ router.put(
   authServices.allowTo("sub-admin", "admin"),
   checkPermission("Course", "update"),
   uploadCourseImage,
+  handleImageMiddleware,
   resizeImage,
   updateCourseValidator,
   updateCourse

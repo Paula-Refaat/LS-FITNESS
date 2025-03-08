@@ -72,15 +72,33 @@ vitaminSchema.methods.toJSON = function () {
 
 const setVitaminImageURL = (doc) => {
   //return image base url + iamge name
+
   if (doc.image) {
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let vitaminImageURL = doc.image;
+      const splittedURL = vitaminImageURL.split("/");
+      const imageName = splittedURL.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/vitamins/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/vitamins/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
+    }
+    // For local image names
     if (doc.image.includes(".")) {
-      const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}`;
-      doc.image = vitaminImageURL;
-      return;
+      const URL = `${process.env.BASE_URL}/vitamins/${doc.image}`;
+      doc.image = URL;
     } else {
-      const vitaminImageURL = `${process.env.BASE_URL}/vitamins/${doc.image}.webp`;
-      doc.image = vitaminImageURL;
-      return;
+      const URL = `${process.env.BASE_URL}/vitamins/${doc.image}.webp`;
+      doc.image = URL;
     }
   }
 };

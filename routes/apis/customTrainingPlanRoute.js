@@ -23,6 +23,9 @@ const {
   deleteCustomTrainingPlanValidator,
 } = require("../../utils/validators/customTrainingPlanValidator");
 const checkPermission = require("../../middlewares/permissionMiddleware");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 
@@ -59,6 +62,7 @@ router
     authServices.protect,
     checkPermission("CustomTrainingPlan", "update"),
     uploadCustomTrainingPlanImage,
+    handleImageMiddleware,
     resizeImage,
     updateCustomTrainingPlanValidator,
     makeParsingToDaysAndType,

@@ -40,6 +40,7 @@ const {
 const checkPermission = require("../../middlewares/permissionMiddleware");
 
 const multer = require("multer"); // Import multer
+const { handleImageMiddleware } = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 const upload = multer();
@@ -58,6 +59,7 @@ router.put(
   "/changeMyData",
   authServices.protect,
   uploadProfileImage,
+  handleImageMiddleware,
   resizeImage,
   updateLoggedUserValidator,
   updateLoggedUserData
@@ -115,6 +117,7 @@ router
     authServices.allowTo("sub-admin", "admin"),
     checkPermission("User", "update"),
     uploadProfileImage,
+    handleImageMiddleware,
     resizeImage,
     updateUserValidator,
     updateUser

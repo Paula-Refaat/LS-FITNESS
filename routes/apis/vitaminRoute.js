@@ -22,6 +22,9 @@ const {
 
 const authServices = require("../../services/authServices");
 const checkPermission = require("../../middlewares/permissionMiddleware");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 
@@ -47,6 +50,7 @@ router
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("Vitamin", "update"),
     uploadVitaminImage,
+    handleImageMiddleware,
     resizeImage,
     updateVitaminValidator,
     updateVitamin

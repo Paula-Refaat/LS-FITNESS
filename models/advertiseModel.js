@@ -21,12 +21,12 @@ const advertiseSchema = new mongoose.Schema(
         "Supplement",
         "Vitamin",
       ],
-        required: true,
+      required: true,
     },
     targetModelId: {
       type: mongoose.Schema.Types.ObjectId,
       refPath: "targetModel",
-        required: true,
+      required: true,
     },
   },
   { timestamps: true }
@@ -35,8 +35,32 @@ const advertiseSchema = new mongoose.Schema(
 const setAdvertiseImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const AdvertiseImageURL = `${process.env.BASE_URL}/advertises/${doc.image}`;
-    doc.image = AdvertiseImageURL;
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let editingAdvertiseImageURL = doc.image;
+      const splittedUrl = editingAdvertiseImageURL.split("/");
+      const imageName = splittedUrl.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/advertises/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/advertises/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
+    }
+    // For local image names
+    if (doc.image.includes(".")) {
+      const URL = `${process.env.BASE_URL}/advertises/${doc.image}`;
+      doc.image = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/advertises/${doc.image}.webp`;
+      doc.image = URL;
+    }
   }
 };
 

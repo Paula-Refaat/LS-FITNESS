@@ -26,6 +26,9 @@ const {
   // eslint-disable-next-line import/newline-after-import
 } = require("../../services/lessonServices");
 const checkPermission = require("../../middlewares/permissionMiddleware");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router({ mergeParams: true });
 
@@ -70,6 +73,7 @@ router.put(
   authServices.allowTo("admin", "sub-admin"),
   checkPermission("Lesson", "update"),
   uploadLessonMedia,
+  handleImageMiddleware,
   resizeMedia,
   handlingVideoResponse,
   updateLessonValidator,

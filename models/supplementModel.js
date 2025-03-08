@@ -65,15 +65,31 @@ supplementSchema.methods.toJSON = function () {
 const setSupplementImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    console.log(doc.image);
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let supplementsImageURL = doc.image;
+      const splittedURL = supplementsImageURL.split("/");
+      const imageName = splittedURL.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/supplements/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/supplements/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
+    }
+    // For local image names
     if (doc.image.includes(".")) {
-      const SupplementImageURL = `${process.env.BASE_URL}/supplements/${doc.image}`;
-      doc.image = SupplementImageURL;
-      return;
+      const URL = `${process.env.BASE_URL}/supplements/${doc.image}`;
+      doc.image = URL;
     } else {
-      const SupplementImageURL = `${process.env.BASE_URL}/supplements/${doc.image}.webp`;
-      doc.image = SupplementImageURL;
-      return;
+      const URL = `${process.env.BASE_URL}/supplements/${doc.image}.webp`;
+      doc.image = URL;
     }
   }
 };

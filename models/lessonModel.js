@@ -62,11 +62,61 @@ lessonSchema.pre(/^find/, function (next) {
 const setImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const imageUrl = `${process.env.BASE_URL}/lessons/images/${doc.image}`;
-    doc.image = imageUrl;
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let editingLessonImageURL = doc.image;
+      const splittedUrl = editingLessonImageURL.split("/");
+      const imageName = splittedUrl.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/lessons/images/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/lessons/images/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
+    }
+    // For local image names
+    if (doc.image.includes(".")) {
+      const URL = `${process.env.BASE_URL}/lessons/images/${doc.image}`;
+      doc.image = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/lessons/images/${doc.image}.webp`;
+      doc.image = URL;
+    }
   }
   //return attachment base url + attachment name
   if (doc.attachment) {
+    if (
+      doc.attachment.includes(process.env.BASE_URL) ||
+      doc.attachment.includes("http")
+    ) {
+      let editingAttachmentUrl = doc.attachment;
+      const splittedUrl = editingAttachmentUrl.split("/");
+      const attachmentName = splittedUrl.pop();
+
+      if (attachmentName.includes(".")) {
+        const attachmentUrl = `${process.env.BASE_URL}/lessons/attachments/${attachmentName}`;
+        doc.attachment = attachmentUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/lessons/attachments/${attachmentName}.pdf`;
+        doc.attachment = URL;
+        return;
+      }
+    }
+    // For local attachment names
+    if (doc.attachment.includes(".")) {
+      const URL = `${process.env.BASE_URL}/lessons/attachments/${doc.attachment}`;
+      doc.attachment = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/lessons/attachments/${doc.attachment}.pdf`;
+      doc.attachment = URL;
+    }
     const attachmentUrl = `${process.env.BASE_URL}/lessons/attachments/${doc.attachment}`;
     doc.attachment = attachmentUrl;
   }

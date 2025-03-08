@@ -67,15 +67,39 @@ courseSchema.set("toObject", {
     }
     delete ret.isDeleted;
     delete ret.deletedAt;
-    delete ret.__v
+    delete ret.__v;
     return ret;
   },
 });
 const setCourseImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.image) {
-    const CourseImageURL = `${process.env.BASE_URL}/courses/${doc.image}`;
-    doc.image = CourseImageURL;
+    if (
+      doc.image.includes(process.env.BASE_URL) ||
+      doc.image.includes("http")
+    ) {
+      let CourseImageURL = doc.image;
+      const splittedURL = CourseImageURL.split("/");
+      const imageName = splittedURL.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/courses/${imageName}`;
+        doc.image = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/courses/${imageName}.webp`;
+        doc.image = URL;
+        return;
+      }
+    }
+    // For local image names
+    if (doc.image.includes(".")) {
+      const URL = `${process.env.BASE_URL}/courses/${doc.image}`;
+      doc.image = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/courses/${doc.image}.webp`;
+      doc.image = URL;
+    }
   }
 };
 

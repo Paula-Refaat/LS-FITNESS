@@ -20,6 +20,9 @@ const authServices = require("../../services/authServices");
 const {
   handlingVideoResponse,
 } = require("../../middlewares/handle-video-response");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 
@@ -51,6 +54,7 @@ router
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("Banners", "update"),
     uploadBannerImage,
+    handleImageMiddleware,
     resizeImage,
     handlingVideoResponse,
     updateBannerValidator,

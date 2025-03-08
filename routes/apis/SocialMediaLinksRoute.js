@@ -17,6 +17,9 @@ const {
   updateSocialMediaLinkValidator,
   deleteSocialMediaLinkValidator,
 } = require("../../utils/validators/socialMediaValidator");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 
@@ -51,6 +54,7 @@ router
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("SocialMediaLinks", "update"),
     uploadSocialMediaImage,
+    handleImageMiddleware,
     resizeImage,
     updateSocialMediaLinkValidator,
     updateSocialMediaLink

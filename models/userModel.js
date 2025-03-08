@@ -174,8 +174,32 @@ userSchema.pre("save", async function (next) {
 const setProfileImageURL = (doc) => {
   //return image base url + iamge name
   if (doc.profileImg) {
-    const URL = `${process.env.BASE_URL}/users/${doc.profileImg}`;
-    doc.profileImg = URL;
+    if (
+      doc.profileImg.includes(process.env.BASE_URL) ||
+      doc.profileImg.includes("http")
+    ) {
+      let profileImageURL = doc.profileImg;
+      const splittedURL = profileImageURL.split("/");
+      const imageName = splittedURL.pop();
+
+      if (imageName.includes(".")) {
+        const ImageUrl = `${process.env.BASE_URL}/users/${imageName}`;
+        doc.profileImg = ImageUrl;
+        return;
+      } else {
+        const URL = `${process.env.BASE_URL}/users/${imageName}.webp`;
+        doc.profileImg = URL;
+        return;
+      }
+    }
+    // For local image names
+    if (doc.profileImg.includes(".")) {
+      const URL = `${process.env.BASE_URL}/users/${doc.profileImg}`;
+      doc.profileImg = URL;
+    } else {
+      const URL = `${process.env.BASE_URL}/users/${doc.profileImg}.webp`;
+      doc.profileImg = URL;
+    }
   }
 };
 //after initializ the doc in db

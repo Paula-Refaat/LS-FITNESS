@@ -11,6 +11,9 @@ const {
   resizeImage,
 } = require("../../services/advertiseService");
 const checkPermission = require("../../middlewares/permissionMiddleware");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 const router = express.Router();
 
@@ -35,6 +38,7 @@ router
     authServices.allowTo("sub-admin", "admin"),
     checkPermission("Advertise", "update"),
     uploadAdvertiseImage,
+    handleImageMiddleware,
     resizeImage,
     updateAdvertise
   )

@@ -26,6 +26,9 @@ const authServices = require("../../services/authServices");
 const {
   createMealCategoryValidator,
 } = require("../../utils/validators/mealCategoriesValidator");
+const {
+  handleImageMiddleware,
+} = require("../../middlewares/handleImageFieldsMiddleware");
 
 router
   .route("/")
@@ -58,6 +61,7 @@ router
     authServices.allowTo("admin", "sub-admin"),
     checkPermission("MealsCalculation", "update"),
     uploadMealCalculationImage,
+    handleImageMiddleware,
     resizeImage,
     updateMealsCalculationValidator,
     updateMealsCalculation
