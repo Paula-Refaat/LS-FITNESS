@@ -5,10 +5,23 @@ class ApiFeatures {
   }
 
   filter() {
-    // take copy from req.query and delete the page and limit and..... from the copy req.body to use in filter
     const queryStringObj = { ...this.queryStr };
     const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
     excludesFields.forEach((field) => delete queryStringObj[field]);
+
+    if (this.queryStr.today) {
+      const today = new Date();
+      const startOfDay = new Date(today);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(today);
+      endOfDay.setHours(23, 59, 59, 999);
+
+      this.mongooseeQuery = this.mongooseeQuery.find({
+        "volumes.date": { $gte: startOfDay, $lt: endOfDay },
+      });
+
+      return this;
+    }
 
     let queryStr = JSON.stringify(queryStringObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
@@ -16,28 +29,6 @@ class ApiFeatures {
     this.mongooseeQuery = this.mongooseeQuery.find(JSON.parse(queryStr));
     return this;
   }
-
-  // filter() {
-  //   // نسخ الاستعلام الأصلي مع استبعاد الحقول غير المرغوبة
-  //   const queryStringObj = { ...this.queryStr };
-  //   const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
-  //   excludesFields.forEach((field) => delete queryStringObj[field]);
-
-  //   let queryStr = JSON.stringify(queryStringObj);
-  //   queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-
-  //   // التحقق إذا كان هناك فلترة على volumes.date
-  //   if (queryStringObj["volumes.date"]) {
-  //     const dateFilter = JSON.parse(queryStr)["volumes.date"];
-  //     this.mongooseeQuery = this.mongooseeQuery.find({
-  //       volumes: { $elemMatch: { date: dateFilter } },
-  //     });
-  //   } else {
-  //     this.mongooseeQuery = this.mongooseeQuery.find(JSON.parse(queryStr));
-  //   }
-
-  //   return this;
-  // }
 
   sort() {
     if (this.queryStr.sort) {
