@@ -9,7 +9,6 @@ const compression = require("compression");
 // Load environment variables from.env file
 dotenv.config({ path: "config.env" });
 
-
 const dbConnection = require("./config/database");
 const ApiError = require("./utils/ApiError");
 const globalError = require("./middlewares/errorMiddleware");
@@ -71,9 +70,7 @@ app.use(passport.initialize());
 app.all("*", (req, res, next) => {
   next(new ApiError(`Can't found this Route : ${req.originalUrl}`, 400));
 });
-// const mongoose = require("mongoose");
-// const validModels = mongoose.modelNames();
-// console.log(validModels);
+
 // Global error handling middleware
 app.use(globalError);
 
