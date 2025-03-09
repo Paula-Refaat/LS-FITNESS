@@ -38,10 +38,10 @@ exports.createVitaminValidator = [
     .withMessage("Description required")
     .isLength({ min: 10 })
     .withMessage("too short description")
-    .isLength({ max: 1000 })
-    .withMessage("too long description"),
+    .isLength({ max: 50000 })
+    .withMessage("too long Description, max must be 50000 character"),
   check("image").notEmpty().withMessage("image required"),
-  check("benefits").notEmpty().withMessage("benefits required"),
+  // check("benefits").notEmpty().withMessage("benefits required"),
 
   check("vimeo_video_Url")
     .notEmpty()
@@ -97,10 +97,10 @@ exports.updateVitaminValidator = [
     .withMessage("Description required")
     .isLength({ min: 10 })
     .withMessage("too short Description, min must be 10 character")
-    .isLength({ max: 5000 })
-    .withMessage("too long Description, max must be 5000 character"),
+    .isLength({ max: 50000 })
+    .withMessage("too long Description, max must be 50000 character"),
   check("image").optional().notEmpty().withMessage("image required"),
-  check("benefits").optional().notEmpty().withMessage("benefits required"),
+  // check("benefits").optional().notEmpty().withMessage("benefits required"),
 
   check("vimeo_video_Url")
     .optional()
