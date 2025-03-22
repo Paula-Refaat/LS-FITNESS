@@ -39,16 +39,16 @@ const validationMessages = {
     `${field} must be at least ${length} characters`,
   maxLength: (field, length) =>
     `${field} must be no longer than ${length} characters`,
-  maxValue: (field, value) => `${field} must be less than or equal to ${value}`,
-  minValue: (field, value) => `${field} must be at least ${value}`,
+  // maxValue: (field, value) => `${field} must be less than or equal to ${value}`,
+  // minValue: (field, value) => `${field} must be at least ${value}`,
 };
 
 // Helper to define fields with repeated validation rules
 const createNutrientField = (fieldName) => ({
-  type: Number,
+  type: String,
   required: [true, validationMessages.required(fieldName)],
-  min: [0, validationMessages.minValue(fieldName, 0)],
-  max: [10000, validationMessages.maxValue(fieldName, 10000)],
+  // min: [0, validationMessages.minValue(fieldName, 0)],
+  // max: [10000, validationMessages.maxValue(fieldName, 10000)],
 });
 
 const mealCalculationFields = Object.fromEntries(
@@ -81,10 +81,10 @@ const mealsCalculationSchema = mongoose.Schema(
       type: String,
     },
     quantities: {
-      type: Number,
+      type: String,
       required: [true, validationMessages.required("Quantity")],
-      min: [1, validationMessages.minValue("Quantity", 1)],
-      max: [100, validationMessages.maxValue("Quantity", 100)],
+      // min: [1, validationMessages.minValue("Quantity", 1)],
+      // max: [100, validationMessages.maxValue("Quantity", 100)],
     },
     ...mealCalculationFields,
     isDeleted: { type: Boolean, default: false },

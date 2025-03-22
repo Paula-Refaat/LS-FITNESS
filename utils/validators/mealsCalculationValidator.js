@@ -16,11 +16,9 @@ exports.makeCalculationValidator = [
         }
       });
     }),
-  check("quantities")
-    .notEmpty()
-    .withMessage("quantities required")
-    .isFloat({ min: 1 })
-    .withMessage("quantities must be an integer more than 0"),
+  check("quantities").notEmpty().withMessage("quantities required"),
+  // .isFloat({ min: 1 })
+  // .withMessage("quantities must be an integer more than 0"),
   validatorMiddleware,
 ];
 
@@ -30,16 +28,14 @@ const validationMessages = {
     `${field} must be at least ${length} characters`,
   maxLength: (field, length) =>
     `${field} must be no longer than ${length} characters`,
-  maxValue: (field, value) => `${field} must be less than or equal to ${value}`,
-  minValue: (field, value) => `${field} must be at least ${value}`,
+  // maxValue: (field, value) => `${field} must be less than or equal to ${value}`,
+  // minValue: (field, value) => `${field} must be at least ${value}`,
 };
 
 const nutrientValidation = (field) => [
-  body(field)
-    .notEmpty()
-    .withMessage(validationMessages.required(field))
-    .isFloat({ min: 0, max: 10000 })
-    .withMessage(validationMessages.minValue(field, 0)),
+  body(field).notEmpty().withMessage(validationMessages.required(field)),
+  // .isFloat({ min: 0, max: 10000 })
+  // .withMessage(validationMessages.minValue(field, 0)),
 ];
 
 exports.createMealsCalculationValidator = [
@@ -72,9 +68,9 @@ exports.createMealsCalculationValidator = [
 
   body("quantities")
     .notEmpty()
-    .withMessage(validationMessages.required("Quantity"))
-    .isInt({ min: 1, max: 100 })
-    .withMessage(validationMessages.minValue("Quantity", 1)),
+    .withMessage(validationMessages.required("Quantity")),
+  // .isInt({ min: 1, max: 100 })
+  // .withMessage(validationMessages.minValue("Quantity", 1)),
 
   ...nutrientValidation("Calories"),
   ...nutrientValidation("Protein"),
@@ -109,10 +105,9 @@ exports.createMealsCalculationValidator = [
 ];
 
 const nutrientValidationForUpdate = (field) => [
-  body(field)
-    .optional()
-    .isFloat({ min: 0, max: 10000 })
-    .withMessage(validationMessages.minValue(field, 0)),
+  body(field).optional(),
+  // .isFloat({ min: 0, max: 10000 })
+  // .withMessage(validationMessages.minValue(field, 0)),
 ];
 
 exports.updateMealsCalculationValidator = [
@@ -133,10 +128,9 @@ exports.updateMealsCalculationValidator = [
     .isMongoId()
     .withMessage("Invalid Meal category ID"),
 
-  body("quantities")
-    .optional()
-    .isInt({ min: 1, max: 100 })
-    .withMessage(validationMessages.minValue("Quantity", 1)),
+  body("quantities").optional(),
+  // .isInt({ min: 1, max: 100 })
+  // .withMessage(validationMessages.minValue("Quantity", 1)),
 
   ...nutrientValidationForUpdate("Calories"),
   ...nutrientValidationForUpdate("Protein"),
