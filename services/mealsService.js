@@ -53,8 +53,6 @@ exports.calculateAllMealIngredients = asyncHandler(async (req, res, next) => {
 
   calculateEachMealIngredients(meal);
 
-  roundMealTotals(meal);
-
   return res.status(200).json(meal);
 });
 
@@ -65,6 +63,13 @@ const mergeCustomRequestedIngredientsIntoMeal = (meal, ingredients) => {
     );
     if (isIngredientExist) {
       isIngredientExist._doc.customQuantity = i.quantities;
+    }
+
+    const isAlternativeIngredientExist = meal.alternativeIngredients.find(
+      (ingredient) => String(ingredient._doc._id) === String(i.id)
+    );
+    if (isAlternativeIngredientExist) {
+      isAlternativeIngredientExist._doc.customQuantity = i.quantities;
     }
   });
 };
@@ -84,8 +89,14 @@ const calculateEachMealIngredients = (meal) => {
           i?.customQuantity !== undefined ? i?.customQuantity : i.quantities
         );
 
-        meal._doc["total"][attributeKey] =
-          (meal._doc["total"]?.[attributeKey] ?? 0) + i[attributeKey];
+        const unit = i[attributeKey].split(" ")[1];
+
+        console.log({ unit, key: attributeKey });
+
+        meal._doc["total"][attributeKey] = `${(
+          Number(parseFloat(meal._doc["total"]?.[attributeKey] ?? "0")) +
+          Number(parseFloat(i[attributeKey]))
+        ).toFixed(2)} ${unit}`;
       });
 
     if (i?.customQuantity) {
@@ -93,14 +104,45 @@ const calculateEachMealIngredients = (meal) => {
       delete i.customQuantity;
     }
 
-    meal._doc["total"]["quantities"] =
-      (meal._doc["total"]?.["quantities"] ?? 0) + +i.quantities;
-  });
-};
+    const unit = i?.quantities?.split?.(" ")?.[1] ?? "ml";
 
-const roundMealTotals = (meal) => {
-  Object.keys(meal._doc["total"]).forEach((key) => {
-    meal._doc["total"][key] = parseFloat(meal._doc["total"][key].toFixed(2));
+    meal._doc["total"]["quantities"] = `${
+      (Number(parseFloat(meal._doc["total"]?.["quantities"] ?? "0")) || 0) +
+      Number(parseFloat(i.quantities))
+    } ${unit}`;
+  });
+
+  meal.alternativeIngredients.forEach((i) => {
+    i = i._doc;
+
+    Object.keys(i)
+      .filter((k) => MealCalculationModel.MealCalculationAttributes.includes(k))
+      .forEach((attributeKey) => {
+        i[attributeKey] = calculateNutritionalValue(
+          i.quantities,
+          i[attributeKey],
+          i?.customQuantity !== undefined ? i?.customQuantity : i.quantities
+        );
+
+        const unit = i[attributeKey].split(" ")[1];
+
+        meal._doc["total"][attributeKey] = `${(
+          Number(parseFloat(meal._doc["total"]?.[attributeKey] ?? "0")) +
+          Number(parseFloat(i[attributeKey]))
+        ).toFixed(2)} ${unit}`;
+      });
+
+    if (i?.customQuantity) {
+      i.quantities = i.customQuantity;
+      delete i.customQuantity;
+    }
+
+    const unit = i?.quantities?.split?.(" ")?.[1] ?? "ml";
+
+    meal._doc["total"]["quantities"] = `${
+      (Number(parseFloat(meal._doc["total"]?.["quantities"] ?? "0")) || 0) +
+      Number(parseFloat(i.quantities))
+    } ${unit}`;
   });
 };
 
@@ -116,8 +158,6 @@ exports.mergeCalculationInGetAll = asyncHandler(async (req, res, next) => {
       mergeCustomRequestedIngredientsIntoMeal(meal, meal?.ingredient ?? []);
 
       calculateEachMealIngredients(meal);
-
-      roundMealTotals(meal);
     });
 
     // Send the modified response
@@ -138,8 +178,6 @@ exports.mergeCalculationInGetById = asyncHandler(async (req, res, next) => {
     mergeCustomRequestedIngredientsIntoMeal(meal, meal?.ingredient ?? []);
 
     calculateEachMealIngredients(meal);
-
-    roundMealTotals(meal);
 
     // Send the modified response
     return originalSend(body);
