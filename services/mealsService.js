@@ -76,6 +76,7 @@ const mergeCustomRequestedIngredientsIntoMeal = (meal, ingredients) => {
 
 const calculateEachMealIngredients = (meal) => {
   meal._doc["total"] = {};
+  meal._doc["alternativesTotal"] = {};
 
   meal.ingredients.forEach((i) => {
     i = i._doc;
@@ -126,9 +127,10 @@ const calculateEachMealIngredients = (meal) => {
 
         const unit = i[attributeKey].split(" ")[1];
 
-        meal._doc["total"][attributeKey] = `${(
-          Number(parseFloat(meal._doc["total"]?.[attributeKey] ?? "0")) +
-          Number(parseFloat(i[attributeKey]))
+        meal._doc["alternativesTotal"][attributeKey] = `${(
+          Number(
+            parseFloat(meal._doc["alternativesTotal"]?.[attributeKey] ?? "0")
+          ) + Number(parseFloat(i[attributeKey]))
         ).toFixed(2)} ${unit}`;
       });
 
@@ -139,9 +141,10 @@ const calculateEachMealIngredients = (meal) => {
 
     const unit = i?.quantities?.split?.(" ")?.[1] ?? "ml";
 
-    meal._doc["total"]["quantities"] = `${
-      (Number(parseFloat(meal._doc["total"]?.["quantities"] ?? "0")) || 0) +
-      Number(parseFloat(i.quantities))
+    meal._doc["alternativesTotal"]["quantities"] = `${
+      (Number(
+        parseFloat(meal._doc["alternativesTotal"]?.["quantities"] ?? "0")
+      ) || 0) + Number(parseFloat(i.quantities))
     } ${unit}`;
   });
 };
