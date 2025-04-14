@@ -29,7 +29,18 @@ exports.resizeImage = asyncHandler(async (req, res, next) => {
 
   next();
 });
+const { getThumbnailsFromUrl } = require("../utils/getThumbnailsFromUrl");
 
+// Function to get thumbnails using the video ID from Vimeo URL
+exports.handlingVideoResponse = async (req, res, next) => {
+  const videoResponse = await getThumbnailsFromUrl(req.body.vimeo_video_Url);
+  if (!videoResponse || videoResponse.success === false) {
+    console.error("Invalid Vimeo URL.");
+    return next(new ApiError("Invalid Vimeo URL", 400));
+  }
+  req.body.video = videoResponse;
+  next();
+};
 exports.createMeal = factory.createOne(MealsModel);
 
 exports.getAllMeals = factory.getAll(MealsModel, "Meals");

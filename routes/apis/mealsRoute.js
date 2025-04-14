@@ -10,6 +10,7 @@ const {
   calculateAllMealIngredients,
   mergeCalculationInGetAll,
   mergeCalculationInGetById,
+  handlingVideoResponse,
 } = require("../../services/mealsService");
 const {
   createMealsValidator,
@@ -35,6 +36,7 @@ router
     checkPermission("Meals", "create"),
     uploadMealImage,
     resizeImage,
+    handlingVideoResponse,
     createMealsValidator,
     createMeal
   );
@@ -55,6 +57,7 @@ router
     uploadMealImage,
     handleImageMiddleware,
     resizeImage,
+    handlingVideoResponse,
     updateMealsValidator,
     updateMeal
   )
